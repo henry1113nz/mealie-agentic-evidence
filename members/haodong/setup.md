@@ -62,3 +62,11 @@ The prompt used is still the exact Workflow A prompt, the run still starts from 
 `haodong/wf-a`, and the session is measured and logged in the same way. Results from this run
 must be reported as "agent with prior project context" and not compared directly with the
 other members' fresh Workflow A runs without saying so.
+
+## Deviation for haodong / wf-b
+
+Workflow B also runs in the same existing session, immediately after Workflow A. On top of the
+prior project context described above, the agent therefore starts B knowing the 24 problems it
+logged in A (implicit ORM behaviour, proxies, filterable columns, journal mode, and so on). Any
+improvement of B over A for this member is partly an order effect and must be reported as such.
+The human review of the plan (s01) is done by the member, not by the agent.
