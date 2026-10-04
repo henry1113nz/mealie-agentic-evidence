@@ -48,3 +48,17 @@ be recorded in the log.
 ```
 
 The file is ignored by git (`*.local.*` in .gitignore), so it never appears in the branch.
+
+## Deviation for haodong / wf-a
+
+Workflow A for this member was not run in a fresh session. At the member's request it was run
+inside an existing Claude Code session (same tool, model and effort level) that had already
+been used for several weeks on this project: upstream bug fixes in Mealie, the earlier course
+reports, and designing this experiment (including writing the prompts and the measurement
+script). That session therefore started with knowledge of the codebase and of the failure
+modes the experiment looks for, which a fresh session does not have.
+
+The prompt used is still the exact Workflow A prompt, the run still starts from e365efc71 on
+`haodong/wf-a`, and the session is measured and logged in the same way. Results from this run
+must be reported as "agent with prior project context" and not compared directly with the
+other members' fresh Workflow A runs without saying so.

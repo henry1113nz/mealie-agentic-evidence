@@ -4,7 +4,7 @@ One row per session. Fill it in straight after the session, not later.
 
 | Session | Date | Agent time (min) | Tokens | Cost (USD, API-equivalent) | Commit | What the agent did | Questions it asked and our answers | Problems seen (with transcript line or commit) |
 |---|---|---|---|---|---|---|---|---|
-| s01 | | | | | | | | |
+| s01 | 2026-10-04 | | | | | | | Run in an existing long session with prior project context (see setup.md, "Deviation"). |
 
 ## Problems to watch for
 
