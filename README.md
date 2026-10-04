@@ -35,7 +35,7 @@ commit `e365efc71`（upstream mealie-next）：
 | 依赖 SQLAlchemy 的文件（不含迁移） | 109 |
 | SQLAlchemy 模型类 | 56 个，在 41 个文件里 |
 | Alembic 迁移 | 54 个 |
-| 测试函数 / assert 数 | 1159 / 3845 |
+| 测试函数 / assert 数 / skip 标记 | 1158 / 3837 / 12 |
 
 详细输出在 [baseline/](baseline/)。
 

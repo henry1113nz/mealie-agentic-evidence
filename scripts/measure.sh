@@ -82,4 +82,4 @@ row="$(date -Iseconds),$MEMBER,$WORKFLOW,$SESSION,$commit,$passed,$failed,$error
 echo "$row" >> "$CSV"
 
 echo "$row"
-echo "baseline:  3177 passed, 0 failed, 0 mypy errors, 109 SQLAlchemy files, 56 SQLAlchemy models, 0 Tortoise models, 1159 test functions, 3845 asserts"
+echo "baseline:  3177 passed, 0 failed, 0 mypy errors, 109 SQLAlchemy files, 56 SQLAlchemy models, 0 Tortoise models, 1158 test functions, 3837 asserts, 12 skip markers"
