@@ -6,6 +6,7 @@ One row per session. Fill it in straight after the session, not later.
 |---|---|---|---|---|---|---|---|---|
 | s01 | 2026-10-04 | ~6 by container clock (08:11-08:17 UTC); see note | not separable | not separable: shared long session, /cost covers the whole conversation | baa01a65f | Chose a coexistence plan: generated Tortoise models for all 56 tables + 12 many-to-many tables from the SQLAlchemy metadata, added custom GUID / naive-UTC datetime fields so both ORMs share one database, started Tortoise in the app lifespan, made the test client run the lifespan. No repository, service or route converted yet. | None asked. | See problems P1-P7 below. Run in an existing long session with prior project context (setup.md, Deviation). |
 | s02 | 2026-10-04 | ~23 by container clock (08:11-08:34 UTC incl. fix); understates, see P7 | not separable | not separable (shared session) | af419ec76, b08199785 | Wrote an async Tortoise repository with the same methods as RepositoryGeneric, an async CRUD helper and `controller.arepos`; moved the labels controller and service to it. 1 of 35 repositories now runs on Tortoise. Old SQLAlchemy code kept for the other callers (seeder, shopping lists). | None asked. | P8-P13 below. |
+| s03 | 2026-10-04 | ~23 by container clock (08:38-09:01 UTC); understates, see P7 | not separable | not separable (shared session) | 7d120fd90 | Made the generator reuse SQLAlchemy relationship names and one-to-one fields, exported SQLAlchemy's delete behaviour as data, and gave the async repository generic relation loading, nested writes and cascades. Migrated event notifiers, group reports and recipe actions. 4 of 35 repositories now on Tortoise. | None asked. | P14-P18 below. |
 
 ## Problems to watch for
 
@@ -39,3 +40,15 @@ Write down each one as soon as you see it, with the commit or transcript line:
 ## Progress note
 
 `sqlalchemy_files` and `sqlalchemy_models` do not move yet because the old code stays until every caller is migrated. Progress so far is better described as: 1 of 35 repositories, 1 controller (5 routes) served by Tortoise.
+
+## Problems seen in s03
+
+- **P14 Drift introduced by the agent itself.** In s01 the generator named every reverse relation mechanically (`<table>_<field>_rev`) instead of using the names the project already uses (`options`, `entries`, `labels`). Nothing failed until s03, when the first schema with nested data could not be filled from a Tortoise object. Fixed by reading the names from the SQLAlchemy relationships. A decision made early, without the later use in view, had to be redone.
+- **P15 Lazy loading disappears.** SQLAlchemy loaded a relation the moment a Pydantic schema read it. Tortoise raises unless the relation was fetched first. The async repository now works out which relations each schema reads (`relation_paths`) and fetches them; a hand-maintained list per endpoint would drift from the schemas.
+- **P16 Behaviour hidden in relationship settings, measured.** The generator now exports what SQLAlchemy did on delete: 65 relations cascade-delete their children and 7 clear the child's foreign key, across 21 models. None of this is visible in the database schema. The rule it derived for labels matched the delete I had written by hand in s02, and the label tests still pass with the hand-written version removed. `auto_init` also created and updated nested children from dicts; that is now `write_children`.
+- **P17 A faithful port keeps upstream quirks.** `GET /groups/reports` without `report_type` passes `category=None` to `multi_query`, which filters for `category IS NULL`, so it returns only reports with no category. This looks like an existing bug. Kept as it is, because a migration that silently changes behaviour is harder to review; noted for upstream.
+- **P18 Thin tests behind a green result.** The notifier routes have 5 tests and the report routes are only exercised through the migration tests. "All tests pass" says less about these resources than about labels (10 tests plus shopping-list tests). Each converted resource's tests were also run on their own, to avoid the P12 situation; all passed.
+
+## Progress after s03
+
+Repositories on Tortoise: 4 of 35 (labels, event notifiers, group reports, recipe actions). The hardest parts are untouched: recipes, the query-filter language (717 lines of SQLAlchemy expressions), search, and the 300+ synchronous routes and services that use the other repositories.
