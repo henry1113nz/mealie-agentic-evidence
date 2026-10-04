@@ -1,0 +1,60 @@
+[INFO|migration|L611] 2026-10-04T05:57:12: Running upgrade 5ab195a474eb -> b04a08da2108, added shopping list label settings
+[INFO|migration|L611] 2026-10-04T05:57:12: Running upgrade b04a08da2108 -> 38514b39a824, add auth_method to user table
+[INFO|migration|L611] 2026-10-04T05:57:12: Running upgrade 38514b39a824 -> b3dbb554ba53, postgres fuzzy search
+[INFO|migration|L611] 2026-10-04T05:57:12: Running upgrade b3dbb554ba53 -> 04ac51cbe9a4, added group slug
+[INFO|migration|L611] 2026-10-04T05:57:13: Running upgrade 04ac51cbe9a4 -> 1825b5225403, added recipe note to shopping list recipe ref
+[INFO|migration|L611] 2026-10-04T05:57:13: Running upgrade 1825b5225403 -> bcfdad6b7355, remove tool name and slug unique contraints
+[INFO|migration|L611] 2026-10-04T05:57:13: Running upgrade bcfdad6b7355 -> 0341b154f79a, added normalized unit and food names
+[INFO|migration|L611] 2026-10-04T05:57:13: Running upgrade 0341b154f79a -> dded3119c1fe, added unique constraints
+[INFO|migration|L611] 2026-10-04T05:57:13: Running upgrade dded3119c1fe -> ba1e4a6cfe99, added plural names and alias tables for foods and units
+[INFO|migration|L611] 2026-10-04T05:57:13: Running upgrade ba1e4a6cfe99 -> 2298bb460ffd, added user to shopping list
+[INFO|migration|L611] 2026-10-04T05:57:13: Running upgrade 2298bb460ffd -> 09aba125b57a, add OIDC auth method
+[INFO|migration|L611] 2026-10-04T05:57:13: Running upgrade 09aba125b57a -> d7c6efd2de42, migrate favorites and ratings to user_ratings
+[INFO|migration|L611] 2026-10-04T05:57:13: Running upgrade d7c6efd2de42 -> 7788478a0338, add group recipe actions
+[INFO|migration|L611] 2026-10-04T05:57:13: Running upgrade 7788478a0338 -> 32d69327997b, Add staple flag to foods
+[INFO|migration|L611] 2026-10-04T05:57:13: Running upgrade 32d69327997b -> feecc8ffb956, add households
+[INFO|migration|L611] 2026-10-04T05:57:13: Running upgrade feecc8ffb956 -> be568e39ffdf, added household recipe lock setting and household management user permission
+[INFO|migration|L611] 2026-10-04T05:57:13: Running upgrade be568e39ffdf -> 1fe4bd37ccc8, add households filter to meal plans
+[INFO|migration|L611] 2026-10-04T05:57:13: Running upgrade 1fe4bd37ccc8 -> 602927e1013e, 'add the rest of the schema.org nutrition properties'
+[INFO|migration|L611] 2026-10-04T05:57:13: Running upgrade 602927e1013e -> 86054b40fd06, added query_filter_string to cookbook and mealplan
+[INFO|migration|L611] 2026-10-04T05:57:13: Running upgrade 86054b40fd06 -> 3897397b4631, 'Add summary to recipe instructions'
+[INFO|migration|L611] 2026-10-04T05:57:13: Running upgrade 3897397b4631 -> b1020f328e98, add recipe yield quantity
+[INFO|migration|L611] 2026-10-04T05:57:13: Running upgrade b1020f328e98 -> b9e516e2d3b3, add household to recipe last made, household to foods, and household to tools
+[INFO|2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_|L167] 2026-10-04T05:57:13: Running new model migration (migrate_recipe_last_made_to_household)
+[INFO|2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_|L167] 2026-10-04T05:57:13: Running new model migration (migrate_foods_on_hand_to_household)
+[INFO|2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_|L167] 2026-10-04T05:57:13: Running new model migration (migrate_tools_on_hand_to_household)
+[INFO|migration|L611] 2026-10-04T05:57:13: Running upgrade b9e516e2d3b3 -> 7cf3054cbbcc, remove instructions index
+[INFO|migration|L611] 2026-10-04T05:57:13: Running upgrade 7cf3054cbbcc -> d7b3ce6fa31a, empty migration to fix food flag data
+[INFO|migration|L611] 2026-10-04T05:57:13: Running upgrade d7b3ce6fa31a -> e6bb583aac2d, 'Add label notifier CRUD bools'
+[INFO|migration|L611] 2026-10-04T05:57:13: Running upgrade e6bb583aac2d -> 1d9a002d7234, 'Add referenced_recipe to ingredients'
+[INFO|migration|L611] 2026-10-04T05:57:13: Running upgrade 1d9a002d7234 -> a39c7f1826e3, add unit standardization fields
+[INFO|migration|L611] 2026-10-04T05:57:13: Running upgrade a39c7f1826e3 -> cdc93edaf73d, 'Add mealplan updated and deleted to group notifier options'
+[INFO|migration|L611] 2026-10-04T05:57:13: Running upgrade cdc93edaf73d -> 4395a04f7784, add announcements
+[INFO|migration|L611] 2026-10-04T05:57:13: Running upgrade 4395a04f7784 -> c7427796f7b6, more aggresive normalization
+[INFO|migration|L611] 2026-10-04T05:57:13: Running upgrade c7427796f7b6 -> 2187537c52b8, add table for ai providers
+[INFO|migration|L611] 2026-10-04T05:57:13: Running upgrade 2187537c52b8 -> 69e942bab3aa, add tokens valid after column to users
+[INFO|migration|L611] 2026-10-04T05:57:13: Running upgrade 69e942bab3aa -> b3f1c9a27d84, add external avatar hash to users
+[INFO|migration|L611] 2026-10-04T05:57:13: Running upgrade b3f1c9a27d84 -> f2191b69db2e, add ingredient substitutions
+[INFO|migration|L611] 2026-10-04T05:57:13: Running upgrade f2191b69db2e -> 4b91d3a7c0e2, backfill recipe image column from disk
+[INFO|2026-09-03-16.12.44_4b91d3a7c0e2_backfill_recipe_image_column|L96] 2026-10-04T05:57:13: Recipe image backfill checked 0 recipes: 0 image references restored, 0 cleared
+[INFO|migration|L611] 2026-10-04T05:57:13: Running upgrade 4b91d3a7c0e2 -> 3527efeeec34, 'add recipe_note_ref_link'
+[INFO|migration|L611] 2026-10-04T05:57:13: Running upgrade 3527efeeec34 -> 27621d27c7e1, add structured recipe times
+[INFO|2026-09-24-13.16.56_27621d27c7e1_add_structured_recipe_times|L194] 2026-10-04T05:57:13: Converted 0 recipe times to structured durations and cleared 0 empty ones across 0 recipes
+[INFO|init_db|L134] 2026-10-04T05:57:13: Database contains no users, initializing...
+[INFO|init_db|L44] 2026-10-04T05:57:13: Generating Default Group and Household
+[INFO|init_users|L62] 2026-10-04T05:57:13: Generating Default User
+
+=========================== short test summary info ============================
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:263: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:284: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:292: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:313: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:321: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:347: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:374: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:400: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:426: requires ldap service in github actions
+SKIPPED [6] tests/unit_tests/test_recipe_parser.py:18: Long Running API Test - manually run when updating the parser
+SKIPPED [2] tests/utils/routes/test_mixins.py:12: psycopg2 is only installed with the pgsql extra
+SKIPPED [1] tests/integration_tests/user_recipe_tests/test_recipe_bulk_import.py:8: Long Running Scraper
+3177 passed, 18 skipped in 72.16s (0:01:12)
