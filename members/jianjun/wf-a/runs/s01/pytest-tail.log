@@ -1,0 +1,14 @@
+ImportError while loading conftest '/home/luna/lab_project/mealie-wf-a/tests/conftest.py'.
+tests/conftest.py:46: in <module>
+    from mealie.app import app
+mealie/app.py:24: in <module>
+    from mealie.routes import router, spa, utility_routes
+mealie/routes/__init__.py:3: in <module>
+    from . import (
+mealie/routes/admin/__init__.py:1: in <module>
+    from mealie.routes._base.routers import AdminAPIRouter
+mealie/routes/_base/__init__.py:1: in <module>
+    from .base_controllers import *
+mealie/routes/_base/base_controllers.py:6: in <module>
+    from sqlalchemy.orm import Session
+E   ModuleNotFoundError: No module named 'sqlalchemy'
