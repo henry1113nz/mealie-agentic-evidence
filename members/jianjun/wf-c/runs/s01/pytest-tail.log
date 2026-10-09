@@ -1,0 +1,23 @@
+ImportError while loading conftest '/home/luna/lab_project/mealie-wf-c/tests/conftest.py'.
+tests/conftest.py:52: in <module>
+    from mealie.db.tortoise.setup import close_tortoise, init_tortoise
+mealie/db/tortoise/__init__.py:2: in <module>
+    from .models import IntIdModel, TortoiseBase, UUIDIdModel
+mealie/db/tortoise/models.py:39: in <module>
+    class IntIdModel(TortoiseBase):
+mealie/db/tortoise/models.py:40: in IntIdModel
+    id = fields.IntField(pk=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.14/site-packages/tortoise/fields/data.py:125: in __init__
+    super().__init__(primary_key=primary_key, **kwargs)
+.venv/lib/python3.14/site-packages/tortoise/fields/base.py:251: in __init__
+    warnings.warn(
+E   DeprecationWarning: `pk` is deprecated, please use `primary_key` instead
+[WARNING|settings|L109] 2026-10-10T10:21:34: Secrets directory '/run/secrets' does not exist
+[INFO|plugins|L37] 2026-10-10T10:21:36: setup plugin alembic.autogenerate.schemas
+[INFO|plugins|L37] 2026-10-10T10:21:36: setup plugin alembic.autogenerate.tables
+[INFO|plugins|L37] 2026-10-10T10:21:36: setup plugin alembic.autogenerate.types
+[INFO|plugins|L37] 2026-10-10T10:21:36: setup plugin alembic.autogenerate.constraints
+[INFO|plugins|L37] 2026-10-10T10:21:36: setup plugin alembic.autogenerate.defaults
+[INFO|plugins|L37] 2026-10-10T10:21:36: setup plugin alembic.autogenerate.comments
+[INFO|plugins|L37] 2026-10-10T10:21:36: setup plugin alembic.ext.checkconstraint_byname

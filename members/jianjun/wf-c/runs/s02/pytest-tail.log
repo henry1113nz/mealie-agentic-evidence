@@ -1,0 +1,60 @@
+        query = database.ingredient_foods.page_all(
+            PaginationQuery(
+                per_page=-1,
+                query_filter=f"created_at >= {current_time.isoformat()}",
+                order_by="label.name",
+                order_by_null_position=null_position,
+                order_direction=order_direction,
+            )
+        )
+>       assert len(query.items) == 2
+E       AssertionError: assert 582 == 2
+E        +  where 582 = len([IngredientFood(id=UUID('26e3f5f8-bca4-4244-8532-49320faa1272'), name='white wine', plural_name=None, description='', ...etime.timezone.utc), updated_at=datetime.datetime(2026, 10, 9, 22, 22, 39, 444227, tzinfo=datetime.timezone.utc)), ...])
+E        +    where [IngredientFood(id=UUID('26e3f5f8-bca4-4244-8532-49320faa1272'), name='white wine', plural_name=None, description='', ...etime.timezone.utc), updated_at=datetime.datetime(2026, 10, 9, 22, 22, 39, 444227, tzinfo=datetime.timezone.utc)), ...] = PaginationBase(page=1, per_page=582, total=582, total_pages=1, items=[IngredientFood(id=UUID('26e3f5f8-bca4-4244-8532-...pdated_at=datetime.datetime(2026, 10, 9, 22, 22, 39, 434550, tzinfo=datetime.timezone.utc))], next=None, previous=None).items
+
+tests/unit_tests/repository_tests/test_pagination.py:991: AssertionError
+=========================== short test summary info ============================
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:263: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:284: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:292: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:313: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:321: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:347: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:374: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:400: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:426: requires ldap service in github actions
+SKIPPED [6] tests/unit_tests/test_recipe_parser.py:18: Long Running API Test - manually run when updating the parser
+SKIPPED [1] tests/integration_tests/user_recipe_tests/test_recipe_bulk_import.py:8: Long Running Scraper
+FAILED tests/integration_tests/user_recipe_tests/test_recipe_crud.py::test_create_by_html_or_json_stream_error
+FAILED tests/integration_tests/user_recipe_tests/test_recipe_crud.py::test_create_by_html_or_json_stream_invalid_data[missing-schema-declaration]
+FAILED tests/integration_tests/user_recipe_tests/test_recipe_crud.py::test_create_by_html_or_json_stream_invalid_data[malformed-json]
+FAILED tests/integration_tests/user_recipe_tests/test_recipe_crud.py::test_create_by_html_or_json_stream_invalid_data[no-recipe-data]
+FAILED tests/integration_tests/user_recipe_tests/test_recipe_crud.py::test_create_by_html_or_json_invalid_data
+FAILED tests/integration_tests/user_recipe_tests/test_recipe_crud.py::test_create_recipe_from_zip
+FAILED tests/integration_tests/user_recipe_tests/test_recipe_crud.py::test_create_recipe_from_zip_reimport_into_same_instance
+FAILED tests/integration_tests/user_recipe_tests/test_recipe_crud.py::test_create_recipe_from_zip_reimport_preserves_contents
+FAILED tests/integration_tests/user_recipe_tests/test_recipe_crud.py::test_create_recipe_from_zip_keeps_unused_id
+FAILED tests/integration_tests/user_recipe_tests/test_recipe_crud.py::test_create_recipe_from_zip_without_id
+FAILED tests/integration_tests/user_recipe_tests/test_recipe_crud.py::test_create_recipe_from_zip_id_taken_in_another_group
+FAILED tests/integration_tests/user_recipe_tests/test_recipe_crud.py::test_create_recipe_from_zip_preserves_extras
+FAILED tests/integration_tests/user_recipe_tests/test_recipe_crud.py::test_create_recipe_from_zip_invalid_group
+FAILED tests/integration_tests/user_recipe_tests/test_recipe_crud.py::test_create_recipe_from_zip_invalid_user
+FAILED tests/integration_tests/user_recipe_tests/test_recipe_crud.py::test_create_recipe_from_zip_existing_category
+FAILED tests/integration_tests/user_recipe_tests/test_recipe_crud.py::test_create_recipe_from_zip_existing_tag
+FAILED tests/integration_tests/user_recipe_tests/test_recipe_crud.py::test_create_recipe_from_zip_existing_category_wrong_ids
+FAILED tests/integration_tests/user_recipe_tests/test_recipe_crud.py::test_create_recipe_from_zip_existing_tag_wrong_ids
+FAILED tests/integration_tests/user_recipe_tests/test_recipe_crud.py::test_create_recipe_from_zip_invalid_category
+FAILED tests/integration_tests/user_recipe_tests/test_recipe_crud.py::test_create_recipe_from_zip_invalid_tag
+FAILED tests/integration_tests/user_recipe_tests/test_recipe_crud.py::test_create_recipe_from_zip_existing_food_and_unit_wrong_ids
+FAILED tests/integration_tests/user_recipe_tests/test_recipe_crud.py::test_create_recipe_from_zip_existing_food_alias
+FAILED tests/integration_tests/user_recipe_tests/test_recipe_crud.py::test_create_recipe_from_zip_existing_unit_abbreviation
+FAILED tests/integration_tests/user_recipe_tests/test_recipe_crud.py::test_create_recipe_from_zip_invalid_food_and_unit
+FAILED tests/integration_tests/user_recipe_tests/test_recipe_crud.py::test_read_update
+FAILED tests/integration_tests/user_recipe_tests/test_recipe_crud.py::test_update_many[True]
+FAILED tests/integration_tests/user_recipe_tests/test_recipe_crud.py::test_update_many[False]
+FAILED tests/unit_tests/repository_tests/test_pagination.py::test_pagination_order_by_nested_model[order_ascending]
+FAILED tests/unit_tests/repository_tests/test_pagination.py::test_pagination_order_by_nested_model[order_descending]
+FAILED tests/unit_tests/repository_tests/test_pagination.py::test_pagination_order_by_doesnt_filter
+FAILED tests/unit_tests/repository_tests/test_pagination.py::test_pagination_order_by_nulls[order_by_nulls_first_order_direction_asc]
+FAILED tests/unit_tests/repository_tests/test_pagination.py::test_pagination_order_by_nulls[order_by_nulls_last_order_direction_asc]
+32 failed, 3152 passed, 16 skipped in 44.63s
