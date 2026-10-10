@@ -1,0 +1,103 @@
+diff --git a/tests/conftest.py b/tests/conftest.py
+index c5148ba5c..14d6468f5 100644
+--- a/tests/conftest.py
++++ b/tests/conftest.py
+@@ -41,16 +41,20 @@ if _WORKER_ID:
+             conn.execute(text(f'CREATE DATABASE "{worker_db}"'))
+         mp.setenv("POSTGRES_DB", worker_db)
+ 
++import asyncio
++
+ from fastapi.testclient import TestClient
+ 
+ from mealie.app import app
+ from mealie.core import config
+ from mealie.db.db_setup import SessionLocal, generate_session
+ from mealie.db.init_db import main
++from mealie.db.tortoise.setup import close_tortoise, init_tortoise
+ from tests import data as test_data
+ from tests.fixtures import *  # noqa: F403 F401
+ 
+ main()
++asyncio.run(init_tortoise())
+ 
+ 
+ def override_get_db():
+@@ -104,4 +108,18 @@ def global_cleanup() -> Generator[None]:
+     """Purges the .temp directory used for testing"""
+ 
+     yield None
++    with contextlib.suppress(Exception):
++        import asyncio
++
++        from mealie.db.tortoise.setup import close_tortoise
++
++        asyncio.run(close_tortoise())
+     _clean_temp_dir()
++
++
++@fixture
++async def tortoise_db():
++    from mealie.db.tortoise.setup import init_tortoise
++
++    await init_tortoise()
++    yield
+diff --git a/tests/unit_tests/test_tortoise_foundation.py b/tests/unit_tests/test_tortoise_foundation.py
+new file mode 100644
+index 000000000..9a1e3962d
+--- /dev/null
++++ b/tests/unit_tests/test_tortoise_foundation.py
+@@ -0,0 +1,53 @@
++import pytest
++from tortoise import Tortoise
++
++from mealie.db.models._model_base import SqlAlchemyBase
++from mealie.db.tortoise import (
++    TORTOISE_ORM,
++    IntIdModel,
++    TortoiseBase,
++    UUIDIdModel,
++    close_tortoise,
++    get_db_url,
++    get_tortoise_config,
++    init_tortoise,
++)
++
++
++def test_tortoise_config():
++    config = get_tortoise_config()
++    assert "connections" in config
++    assert "default" in config["connections"]
++    assert "apps" in config
++    assert "models" in config["apps"]
++    assert "models" in config["apps"]["models"]
++    assert "mealie.db.tortoise.models" in config["apps"]["models"]["models"]
++
++    custom_url = "sqlite:////tmp/test.db"
++    custom_config = get_tortoise_config(db_url=custom_url)
++    assert custom_config["connections"]["default"] == custom_url
++
++
++def test_tortoise_orm_dict_exported():
++    assert isinstance(TORTOISE_ORM, dict)
++    assert "connections" in TORTOISE_ORM
++
++
++def test_tortoise_base_normalize():
++    test_str = "Crème Brûlée & Co.! (Special #1)"
++    expected = SqlAlchemyBase.normalize(test_str)
++    actual = TortoiseBase.normalize(test_str)
++    assert actual == expected
++
++
++def test_tortoise_base_models_abstract():
++    assert TortoiseBase._meta.abstract is True
++    assert IntIdModel._meta.abstract is True
++    assert UUIDIdModel._meta.abstract is True
++
++
++@pytest.mark.asyncio
++async def test_tortoise_lifecycle():
++    # Calling init_tortoise when already inited should be safe and idempotent
++    await init_tortoise()
++    assert Tortoise._inited is True

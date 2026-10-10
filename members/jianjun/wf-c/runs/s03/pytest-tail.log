@@ -1,0 +1,60 @@
+------------------------------ Captured log call -------------------------------
+INFO     httpx2:_client.py:1085 HTTP Request: POST http://testserver/api/recipes/timeline/events "HTTP/1.1 401 Unauthorized"
+______________________ test_set_favorite_preserve_rating _______________________
+[gw1] linux -- Python 3.14.8 /home/luna/lab_project/mealie-wf-c/.venv/bin/python
+
+api_client = <starlette.testclient.TestClient object at 0x7006b9b67a10>
+user_tuple = [TestUser(email='aela2mhi2t@fake.com', user_id=UUID('61e2261c-d8ec-4280-889e-1b8a406f429c'), username='7dn7px5y85', fu...Tiwr2ZGh7stqFPNRWSJv6mNmk2cbwEDSM'}, repos=<mealie.repos.repository_factory.AllRepositories object at 0x700697eb2670>)]
+recipes = [Recipe(id=UUID('9c22709b-6f78-4b4c-9d41-1905ba57c015'), user_id=UUID('c2e1ce46-6320-421b-b3ba-3272c10b5d09'), househo...ts=True, landscape_view=True, disable_comments=False, locked=False), assets=[], notes=[], extras={}, comments=[]), ...]
+
+    def test_set_favorite_preserve_rating(
+        api_client: TestClient, user_tuple: tuple[TestUser, TestUser], recipes: list[Recipe]
+    ):
+        rating_value = random.uniform(1, 5)
+        initial_favorite_value = random_bool()
+    
+        unique_user = random.choice(user_tuple)
+        recipe = random.choice(recipes)
+        rating = UserRatingUpdate(rating=rating_value, is_favorite=initial_favorite_value)
+        response = api_client.post(
+            api_routes.users_id_ratings_slug(unique_user.user_id, recipe.slug),
+            json=rating.model_dump(),
+            headers=unique_user.token,
+        )
+>       assert response.status_code == 200
+E       assert 401 == 200
+E        +  where 401 = <Response [401 Unauthorized]>.status_code
+
+tests/integration_tests/user_recipe_tests/test_recipe_ratings.py:241: AssertionError
+----------------------------- Captured stdout call -----------------------------
+[INFO|_client|L1085] 2026-10-10T12:58:23: HTTP Request: POST http://testserver/api/users/61e2261c-d8ec-4280-889e-1b8a406f429c/ratings/5t8e6d2yn4 "HTTP/1.1 401 Unauthorized"
+------------------------------ Captured log call -------------------------------
+INFO     httpx2:_client.py:1085 HTTP Request: POST http://testserver/api/users/61e2261c-d8ec-4280-889e-1b8a406f429c/ratings/5t8e6d2yn4 "HTTP/1.1 401 Unauthorized"
+=========================== short test summary info ============================
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:263: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:284: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:292: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:313: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:321: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:347: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:374: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:400: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:426: requires ldap service in github actions
+SKIPPED [6] tests/unit_tests/test_recipe_parser.py:18: Long Running API Test - manually run when updating the parser
+SKIPPED [1] tests/integration_tests/user_recipe_tests/test_recipe_bulk_import.py:8: Long Running Scraper
+ERROR tests/integration_tests/user_recipe_tests/test_recipe_timeline_events.py::test_update_timeline_event[False]
+ERROR tests/integration_tests/user_recipe_tests/test_recipe_timeline_events.py::test_delete_timeline_event[True]
+ERROR tests/integration_tests/user_recipe_tests/test_recipe_timeline_events.py::test_delete_timeline_event[False]
+ERROR tests/integration_tests/user_recipe_tests/test_recipe_timeline_events.py::test_timeline_event_message_alias[True]
+ERROR tests/integration_tests/user_recipe_tests/test_recipe_timeline_events.py::test_timeline_event_message_alias[False]
+ERROR tests/integration_tests/user_recipe_tests/test_recipe_timeline_events.py::test_timeline_event_update_image[True]
+ERROR tests/integration_tests/user_recipe_tests/test_recipe_timeline_events.py::test_timeline_event_update_image[False]
+ERROR tests/integration_tests/user_recipe_tests/test_recipe_timeline_events.py::test_create_recipe_with_timeline_event[True]
+ERROR tests/integration_tests/user_recipe_tests/test_recipe_timeline_events.py::test_create_recipe_with_timeline_event[False]
+ERROR tests/integration_tests/user_recipe_tests/test_recipe_timeline_events.py::test_recipe_created_system_event_is_translated
+FAILED tests/integration_tests/category_tag_tool_tests/test_organizers_common.py::test_organizer_get_by_slug[tags]
+FAILED tests/integration_tests/category_tag_tool_tests/test_organizers_common.py::test_organizer_get_by_slug[tools]
+FAILED tests/integration_tests/user_recipe_tests/test_recipe_timeline_events.py::test_invalid_recipe_id[True]
+FAILED tests/integration_tests/user_recipe_tests/test_recipe_timeline_events.py::test_invalid_recipe_id[False]
+FAILED tests/integration_tests/user_recipe_tests/test_recipe_ratings.py::test_set_favorite_preserve_rating
+5 failed, 3169 passed, 16 skipped, 10 errors in 45.47s
