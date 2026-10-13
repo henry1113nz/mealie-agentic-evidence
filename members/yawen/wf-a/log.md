@@ -47,3 +47,15 @@ The saved `tests.diff` shows async/await adaptations and test-client lifecycle c
 The participant decided to end Workflow A early due to stagnation. The planned approximately six-hour agent budget was not verified as completed. Total agent time is unavailable in the Markdown export; tokens and cost remain unavailable. The transcript has been saved as transcripts/s01.md.
 
 Code push was denied for tiantongluo66-crypto. The participant decided not to request write access or retry the push. Code remains in the local clone at ba55d682472c2cac88afa177526087694826dd22; experiment evidence is stored in the evidence repository.
+
+## Recovered token usage
+The final cumulative token usage in the local Codex session record was:
+- Input tokens: 52,800,151
+- Cached input tokens (included in input): 51,884,288
+- Non-cached input tokens (calculated): 915,863
+- Output tokens: 167,232
+- Reasoning output tokens: 74,783
+- Total tokens: 52,967,383
+
+Session ID: 01a132a2-85aa-7811-93be-0041be9859a3.
+These are whole-session totals, including the initial “Reply with OK” test exchange. They are not verified billed usage; cost remains unavailable. This supplements the earlier “Not available” token entry.
