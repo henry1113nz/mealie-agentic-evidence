@@ -42,3 +42,8 @@ The saved `tests.diff` shows async/await adaptations and test-client lifecycle c
 - Save the complete Codex transcript as `transcripts/s01.md`.
 - Calculate actual agent time from the session records; do not substitute elapsed wall-clock time.
 - Record any available token and cost information.
+
+## Final workflow status
+The participant decided to end Workflow A early due to stagnation. The planned approximately six-hour agent budget was not verified as completed. Total agent time is unavailable in the Markdown export; tokens and cost remain unavailable. The transcript has been saved as transcripts/s01.md.
+
+Code push was denied for tiantongluo66-crypto. The participant decided not to request write access or retry the push. Code remains in the local clone at ba55d682472c2cac88afa177526087694826dd22; experiment evidence is stored in the evidence repository.
