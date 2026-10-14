@@ -89,3 +89,36 @@ SQLAlchemy files/models: 109/56; Tortoise models: 0.
 Test functions/assertions/skip markers: 1158/3837/12.
 Test-file and setup lines changed: 0. Measurement test duration: 52 seconds.
 Evidence: runs/s03/ and progress.csv.
+
+## s04 — Stage 2 retry: execution-context investigation
+
+| Session | Date | Agent time (min) | Tokens | Cost (USD, API-equivalent) | Commit | What the agent did | Questions it asked and our answers | Problems seen (with transcript line or commit) |
+|---|---|---|---|---|---|---|---|---|
+| s04 | 2026-10-14 | 4.983 (4m59s) | 720753 | Not available | 6e08a90f2 (unchanged) | Retried Stage 2 and investigated the async SQLite hang; no file changes were retained. | The participant supplied a successful direct aiosqlite smoke check from the ordinary WSL terminal. | Stage 2 remained unfinished. The agent reported an async connection hang and interrupted a full test run at 54%; residual processes were subsequently found and manually terminated. |
+
+### Acceptance
+- Async smoke check through the intended fixture lifecycle: not met.
+- Existing fixture consumers and worker isolation: not specifically verified by the agent; fixtures remained unchanged.
+- No retained test or assertion changes.
+- Stage 2 is unfinished. The subsequent passing measurement validates the retained code, not completion of Stage 2.
+
+### Execution-context observations
+The ordinary WSL terminal successfully opened an in-memory aiosqlite database, executed SELECT 1, and closed it with exit code 0.
+The agent reported that a worker-thread callback did not wake the asyncio loop in its execution context. This explanation has not been independently confirmed.
+The agent used UV_CACHE_DIR=/tmp/mealie-uv-cache because its default cache was read-only.
+After the agent's final response, residual pytest and database-check processes were found and manually terminated before measurement.
+
+### Measurement
+Run: s04; code commit: 6e08a90f2.
+3177 passed, 0 failed, 0 errors, 18 skipped; mypy: 0 errors.
+SQLAlchemy files/models: 109/56; Tortoise models counted: 0.
+Test functions/assertions/skip markers: 1158/3837/12.
+Test-file and test-setup lines changed: 0/0.
+Measurement test duration: 51 seconds.
+Evidence: progress.csv and runs/s04/.
+
+### Usage and transcript
+Codex session: 01a13824-579d-73c3-9b56-53346e1a1778.
+Latest cumulative usage: input 717216, including cached input 646656; output 3537; total 720753.
+Cached input is part of input_tokens and is not added again.
+Transcript: transcripts/s04.md (212 lines).
