@@ -59,3 +59,8 @@ The final cumulative token usage in the local Codex session record was:
 
 Session ID: 01a132a2-85aa-7811-93be-0041be9859a3.
 These are whole-session totals, including the initial “Reply with OK” test exchange. They are not verified billed usage; cost remains unavailable. This supplements the earlier “Not available” token entry.
+
+## Supplementary measurement
+An additional measurement completed at 2026-10-14T07:48:41+08:00 using run label s01 and the same code commit ba55d6824.
+Results matched s01-retry: 2263 passed, 15 failed, 900 errors, 18 skipped, and 4 mypy errors. Test duration was 136 seconds.
+This was a supplementary measurement, not a new agent session. The s01 directory now contains summary outputs instead of the earlier interrupted-run full logs; the earlier files remain in Git history.
