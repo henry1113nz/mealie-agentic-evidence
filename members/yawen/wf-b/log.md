@@ -156,3 +156,36 @@ These are cumulative session figures and replace the earlier 720753-token snapsh
 Known agent durations: 4m59s + 2m4s = 7m3s (7.05 minutes).
 The intervening diagnostic duration was not obtained, so the complete session duration remains unavailable.
 Cost: not available.
+
+## s05 — Stage 3 group, household and user models
+
+| Session | Date | Agent time (min) | Tokens | Cost (USD, API-equivalent) | Commit | What the agent did | Questions it asked and our answers | Problems seen |
+|---|---|---|---|---|---|---|---|---|
+| s05 | 2026-10-14 | 14.567 (11m32s + 3m2s) | See usage records below | Not available | 191ea2487 | Added and registered Stage 3 Tortoise models while retaining SQLAlchemy models and callers. | Provided the previously verified sandbox/outside-sandbox difference and requested approved acceptance checks outside the sandbox. | Initial sandbox checks stalled. The acceptance script misused ReverseRelation.count(); the first full suite encountered a UUIDField deprecation error. Both were corrected before successful verification. |
+
+### Acceptance
+Model discovery and isolated SQLite schema, CRUD, relationships and uniqueness checks passed according to the agent's recorded verification.
+UUIDField(pk=True) was replaced with UUIDField(primary_key=True).
+Stage 3 SQLite acceptance is complete. PostgreSQL was not tested and remains not verified.
+No Stage 4 work was started.
+
+### Independent measurement
+Run: s05; commit: 191ea2487.
+3178 passed, 0 failed, 0 errors, 18 skipped; mypy: 0 errors.
+SQLAlchemy files/models: 109/56; Tortoise models counted by the script: 1.
+The script count is not a verified overall migration completion percentage.
+Test functions/assertions/skip markers: 1159/3838/12.
+Test-file/setup lines changed relative to baseline: 8/21; these changes include earlier stages.
+Measurement duration: 51 seconds.
+Evidence: progress.csv, runs/s05/, transcripts/s05.md (515 lines).
+
+### Usage records
+Session 01a1385d-08f3-7db3-af9f-1db7f717d99e:
+input 3799036, including cached input 3683584; output 21377; total 3820413.
+
+Session 01a1385d-091e-7131-818d-c62f856b4da6:
+input 116169, including cached input 88064; output 481; total 116650.
+
+Both records were found for this workspace with the same start timestamp.
+Their relationship and whether their usage overlaps have not been verified, so no combined total is asserted.
+Cached input is included in input tokens; reasoning output is not added separately to the reported total.
