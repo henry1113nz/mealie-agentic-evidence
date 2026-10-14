@@ -189,3 +189,40 @@ input 116169, including cached input 88064; output 481; total 116650.
 Both records were found for this workspace with the same start timestamp.
 Their relationship and whether their usage overlaps have not been verified, so no combined total is asserted.
 Cached input is included in input tokens; reasoning output is not added separately to the reported total.
+
+## s06 — Stage 4 partial recipe and ingredient mappings
+
+| Session | Date | Agent time (min) | Tokens | Cost (USD, API-equivalent) | Commit | What the agent did | Questions it asked and our answers | Problems seen |
+|---|---|---|---|---|---|---|---|---|
+| s06 | 2026-10-14 | 6.183 (3m42s + 2m29s) | See usage snapshots below | Not available | 0f4fcc24e | Added recipe, nutrition, ingredient, food, unit, alias, substitution and household-food mappings; corrected FK delete actions. | Supplied prior sandbox diagnostic evidence and requested approved checks outside the sandbox. | Sandbox SQLite checks stalled. SQLite checks and full tests subsequently passed, but schema mapping differences remain unresolved. |
+
+### Acceptance and limitations
+Stage 4 remains incomplete.
+The approved outside-sandbox SQLite schema, CRUD, relationship and explicit ingredient-ordering checks passed.
+The agent's full suite passed: 3178 passed, 18 skipped.
+Unresolved differences:
+- Substitution CHECK constraints are not enforced by the current mappings.
+- PostgreSQL trigram indexes are absent.
+- UUID alias primary keys are stricter than the legacy composite primary keys.
+PostgreSQL was not tested. Passing tests do not resolve these schema differences.
+No Stage 5 work was started.
+
+### Plan update
+REWRITE_PLAN.md was committed separately to document implementation, verification and unresolved gaps.
+The acceptance requirements were retained.
+The updated plan is saved as plan-reviewed.md.
+
+### Independent measurement
+Run: s06; commit: 0f4fcc24e.
+3178 passed, 0 failed, 0 errors, 18 skipped; mypy: 0 errors.
+SQLAlchemy files/models: 109/56; Tortoise models counted by the script: 4.
+Test functions/assertions/skip markers: 1159/3838/12.
+Test-file/setup lines changed relative to baseline: 8/21.
+Measurement duration: 53 seconds.
+Evidence: progress.csv, runs/s06/ and transcripts/s06.md.
+
+### Usage snapshots
+One session record reported total_tokens 3036363; its identifying header was not included in the copied output.
+Session 01a13870-b63d-7101-937d-ce95654af7be reported:
+input 95218, including cached input 63744; output 309; total 95527.
+The relationship between these records and any overlap have not been verified; no combined total is asserted.
