@@ -63,3 +63,29 @@ Acceptance:
 - mypy: independently confirmed passing after repair.
 - Live PostgreSQL connection: not verified.
 Stage 1 accepted for progression with the PostgreSQL verification limitation recorded.
+
+## s03 — Stage 2 attempt (unfinished)
+
+- Date: 2026-10-14.
+- Agent time: 8.433 minutes (8m 26s), recorded from the Codex interface.
+- Session ID: 01a13815-5fd8-7991-852b-9bf469ad1018.
+- Input tokens: 2480135; cached input tokens: 2390272 (included in input).
+- Output tokens: 13012; total tokens: 2493147.
+- API-equivalent cost: not available.
+- Code commit remained 6e08a90f2; no implementation changes were retained.
+- Transcript: transcripts/s03.md, 280 lines.
+
+The agent reported that the focused async TestClient lifecycle check timed out after 30 seconds while aiosqlite opened SQLite. It also reported a direct aiosqlite connection hang, while synchronous SQLite worked. The default uv cache was reported read-only; redirecting it to /tmp did not resolve the hang. These causes have not been independently confirmed.
+
+Stage 2 acceptance:
+- Async smoke check through TestClient lifecycle: not met.
+- Existing fixture consumers: not verified by the agent; the subsequent full measurement passed on the retained code.
+- Worker isolation: not specifically verified.
+- Tests and assertions: no retained changes; integrity counts unchanged.
+Stage 2 is unfinished. A passing measurement of the retained Stage 1 code does not establish Stage 2 completion.
+
+Measurement s03: 3177 passed, 0 failed, 0 errors, 18 skipped; mypy 0 errors.
+SQLAlchemy files/models: 109/56; Tortoise models: 0.
+Test functions/assertions/skip markers: 1158/3837/12.
+Test-file and setup lines changed: 0. Measurement test duration: 52 seconds.
+Evidence: runs/s03/ and progress.csv.
