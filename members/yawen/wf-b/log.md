@@ -226,3 +226,47 @@ One session record reported total_tokens 3036363; its identifying header was not
 Session 01a13870-b63d-7101-937d-ce95654af7be reported:
 input 95218, including cached input 63744; output 309; total 95527.
 The relationship between these records and any overlap have not been verified; no combined total is asserted.
+
+## s06 final update — Stage 4 acceptance completed
+
+This update supersedes the earlier incomplete status while preserving the failed attempts and mapping-gap history.
+
+| Session | Date | Agent time (min) | Tokens | Cost (USD, API-equivalent) | Commit | What the agent did | Questions it asked and our answers | Problems seen |
+|---|---|---|---|---|---|---|---|---|
+| s06 | 2026-10-14 | 20.25 (20m15s) | Total pending reconciliation; see usage records below | Not available | cb2916619 | Completed Stage 4 database constraints, alias logical identity and PostgreSQL trigram indexes; verified SQLite and PostgreSQL migration behavior. | Participant reviewed the plan revision, provided a dedicated PostgreSQL test database, and approved bounded verification outside the sandbox. | Sandbox checks stalled; initial mappings did not preserve database invariants; an initial PostgreSQL probe made an unsuitable planner-selection assumption. These issues were investigated and corrected or explicitly qualified. |
+
+Transcript: transcripts/s06.md (1352 lines).
+
+### Implemented corrections
+Added database-enforced substitution CHECK constraints through ordered Aerich migrations.
+Preserved alias logical identity using an internal surrogate primary key and UNIQUE (id, owner_id).
+Added PostgreSQL pg_trgm and corresponding GIN trigram indexes.
+The plan revision was reviewed and committed separately.
+
+### Acceptance evidence
+SQLite: actual Aerich baseline, upgrade and downgrade checks passed, including data preservation, constraints, relationships, ordering and alias row-scoped operations.
+PostgreSQL 16: the agent reported successful ordered migration, substitution constraints, alias identity and row-scoped operations against the dedicated stage4_test database.
+All 12 expected GIN indexes were reported present, ready and valid with gin_trgm_ops.
+The fuzzy-search operator returned matches. EXPLAIN with sequential scans disabled demonstrated index usability; this does not establish default planner selection.
+The PostgreSQL probe was refined after an initial planner-selection expectation failed.
+Evidence: transcripts/s06.md and the PostgreSQL acceptance script in runs/s06-final/, if present.
+
+### Independent final measurement
+Run: s06-final; commit: cb2916619.
+3179 passed, 0 failed, 0 errors, 18 skipped; mypy: 0 errors.
+SQLAlchemy files/models: 109/56; Tortoise models counted by the script: 5.
+Test functions/assertions/skip markers: 1160/3873/12.
+Test-file/setup lines changed relative to baseline: 172/21.
+Measurement duration: 52 seconds.
+Evidence: progress.csv and runs/s06-final/.
+Stage 4 acceptance is complete; Stage 5 was not started.
+
+### Usage reconciliation pending
+The latest query selected the two most recent workspace session files, which is insufficient to establish total Stage 4 usage.
+Session 01a13870-b63d-7101-937d-ce95654af7be reported total 567655
+(input 566788, cached input 485888, output 867).
+Session 01a1389f-a603-7b70-a628-92aa9bfccdd9 reported total 270989
+(input 270083, cached input 221696, output 906).
+Earlier output also included an unidentified record with total 3036363.
+These snapshots are not summed: session ownership and possible overlap require verification.
+Complete Stage 4 token total and API-equivalent cost remain unavailable.
