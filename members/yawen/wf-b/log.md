@@ -122,3 +122,37 @@ Codex session: 01a13824-579d-73c3-9b56-53346e1a1778.
 Latest cumulative usage: input 717216, including cached input 646656; output 3537; total 720753.
 Cached input is part of input_tokens and is not added again.
 Transcript: transcripts/s04.md (212 lines).
+
+## s04 final update — Stage 2 SQLite acceptance completed
+
+This update supersedes the earlier unfinished status for s04. The earlier failed attempt remains part of the session history.
+
+### Diagnostic correction
+The worker-thread callback check succeeded inside the sandbox, disproving the earlier callback explanation.
+The identical aiosqlite SELECT 1 command timed out inside the sandbox (exit 124) and succeeded outside it after approval (exit 0).
+The exact cause of the sandbox-specific stall remains unknown. No persistent permission changes were made.
+
+### Implementation and acceptance
+Final code commit: 437959a71dccf5e1691acb58010e56ccdb7d3640.
+Added an async Tortoise fixture in tests/conftest.py and tests/unit_tests/test_tortoise_test_lifecycle.py.
+The agent reported that the fixture initializes the connection and closes it in finally, while preserving existing fixture consumers and worker-specific database configuration.
+The focused lifecycle test passed outside the sandbox after approval.
+Stage 2 SQLite acceptance criteria are met. Live PostgreSQL lifecycle behavior has not been verified.
+
+### Independent final measurement
+Run: s04-final; commit: 437959a71.
+3178 passed, 0 failed, 0 errors, 18 skipped; mypy: 0 errors.
+SQLAlchemy files/models: 109/56; Tortoise models counted: 0.
+Test functions/assertions/skip markers: 1159/3838/12.
+Test-file and setup lines changed: 8/21.
+Measurement test duration: 53 seconds.
+Evidence: progress.csv and runs/s04-final/.
+
+### Final session usage
+Latest cumulative total: 1684328 tokens.
+Input: 1676865, including cached input: 1568768.
+Output: 7463; reasoning output reported: 129.
+These are cumulative session figures and replace the earlier 720753-token snapshot; they are not added together.
+Known agent durations: 4m59s + 2m4s = 7m3s (7.05 minutes).
+The intervening diagnostic duration was not obtained, so the complete session duration remains unavailable.
+Cost: not available.
