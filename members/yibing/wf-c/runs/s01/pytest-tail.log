@@ -1,0 +1,60 @@
+        elif isinstance(database, bytes):
+            loc = database.decode("utf-8")
+        else:
+            loc = str(database)
+    
+>       return sqlite3.connect(loc, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       sqlite3.OperationalError: unable to open database file
+
+.venv/lib/python3.14/site-packages/aiosqlite/core.py:466: OperationalError
+
+During handling of the above exception, another exception occurred:
+
+database_config = {'connections': {'default': {'engine': 'mealie.db.tortoise_sqlite', 'credentials': {'file_path': '/private/var/folders...: {'models': ['mealie.db.models._tortoise_base'], 'default_connection': 'default'}}, 'use_tz': True, 'timezone': 'UTC'}
+tmp_path = PosixPath('/private/var/folders/tn/x_n9_53j0054skd9kvk7_dqr0000gn/T/pytest-of-estherzhang/pytest-6/popen-gw2/test_context_cleans_up_when_co0')
+
+    @pytest.mark.asyncio
+    async def test_context_cleans_up_when_connection_fails(database_config: dict[str, Any], tmp_path: Path) -> None:
+        database_config["connections"]["default"]["credentials"]["file_path"] = str(tmp_path / "missing" / "db.sqlite")
+        previous_context = get_current_context()
+        with pytest.raises(sqlite3.OperationalError, match="unable to open database"):
+>           async with database_context(database_config, global_fallback=True):
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit_tests/test_tortoise_setup.py:56: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/estherzhang/.local/share/uv/python/cpython-3.14.7-macos-aarch64-none/lib/python3.14/contextlib.py:214: in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+mealie/db/tortoise_setup.py:35: in database_context
+    await context.db().execute_query("SELECT 1")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <mealie.db.tortoise_sqlite.MealieSqliteClient object at 0x11f591bd0>
+query = 'SELECT 1', args = ()
+
+    @wraps(func)
+    async def translate_exceptions_(self, query, *args) -> T:
+        try:
+            return await func(self, query, *args)
+        except sqlite3.OperationalError as exc:
+>           raise OperationalError(exc)
+E           tortoise.exceptions.OperationalError: unable to open database file
+
+.venv/lib/python3.14/site-packages/tortoise/backends/sqlite/client.py:45: OperationalError
+=========================== short test summary info ============================
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:263: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:284: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:292: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:313: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:321: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:347: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:374: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:400: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:426: requires ldap service in github actions
+SKIPPED [6] tests/unit_tests/test_recipe_parser.py:18: Long Running API Test - manually run when updating the parser
+SKIPPED [2] tests/utils/routes/test_mixins.py:12: psycopg2 is only installed with the pgsql extra
+SKIPPED [1] tests/integration_tests/user_recipe_tests/test_recipe_bulk_import.py:8: Long Running Scraper
+FAILED tests/unit_tests/test_tortoise_setup.py::test_context_cleans_up_when_connection_fails
+1 failed, 3217 passed, 18 skipped in 40.56s

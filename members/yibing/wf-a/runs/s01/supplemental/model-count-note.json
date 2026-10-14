@@ -1,0 +1,7 @@
+{
+  "method": "AST count of direct TortoiseModel subclasses under mealie/db/models",
+  "count": 56,
+  "shared_script_value": 1,
+  "reason": "Shared regex matches the direct Model base and misses indirect application subclasses. Original progress.csv unchanged.",
+  "limitation": "A class count does not prove runtime correctness."
+}

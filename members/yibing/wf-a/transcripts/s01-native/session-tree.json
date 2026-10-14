@@ -1,0 +1,1091 @@
+{
+  "root": "01a1098e-d3c0-7c91-8205-f60d644adb1a",
+  "sessions": [
+    {
+      "id": "01a1098e-d3c0-7c91-8205-f60d644adb1a",
+      "parent": null,
+      "role": null,
+      "started_at": "2026-10-05T00:55:17.790Z",
+      "cwd": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-a",
+      "models": [
+        {
+          "model": "gpt-6-astra",
+          "effort": "ultra"
+        }
+      ],
+      "usage": {
+        "input_tokens": 24250109,
+        "cached_input_tokens": 23727488,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 56398,
+        "reasoning_output_tokens": 14975,
+        "total_tokens": 24306507
+      },
+      "effective_permissions": {
+        "approval_policy": "never",
+        "approvals_reviewer": "user",
+        "sandbox_policy": {
+          "type": "workspace-write",
+          "network_access": false,
+          "exclude_tmpdir_env_var": false,
+          "exclude_slash_tmp": false
+        },
+        "permission_profile": {
+          "type": "managed",
+          "file_system": {
+            "type": "restricted",
+            "entries": [
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/Users/estherzhang/.codex/archived_sessions"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/Users/estherzhang/.codex/auth.json"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/Users/estherzhang/.codex/sessions"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/controller"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/evidence"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-b"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-c"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/Users/estherzhang/.ssh"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/Users/estherzhang/Downloads/mealie-agentic-evidence-main"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/private/tmp/compx574-report-prep"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/private/tmp/compx574-yibing-contributions"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "special",
+                  "value": {
+                    "kind": "root"
+                  }
+                },
+                "access": "read"
+              },
+              {
+                "path": {
+                  "type": "special",
+                  "value": {
+                    "kind": "slash_tmp"
+                  }
+                },
+                "access": "write"
+              },
+              {
+                "path": {
+                  "type": "special",
+                  "value": {
+                    "kind": "tmpdir"
+                  }
+                },
+                "access": "write"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-a"
+                },
+                "access": "write"
+              }
+            ]
+          },
+          "network": "restricted"
+        },
+        "active_permission_profile": {
+          "id": "experiment",
+          "extends": ":workspace"
+        },
+        "file_system_sandbox_policy": {
+          "kind": "restricted",
+          "entries": [
+            {
+              "path": {
+                "type": "path",
+                "path": "/Users/estherzhang/.codex/archived_sessions"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/Users/estherzhang/.codex/auth.json"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/Users/estherzhang/.codex/sessions"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/controller"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/evidence"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-b"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-c"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/Users/estherzhang/.ssh"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/Users/estherzhang/Downloads/mealie-agentic-evidence-main"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/private/tmp/compx574-report-prep"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/private/tmp/compx574-yibing-contributions"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "special",
+                "value": {
+                  "kind": "root"
+                }
+              },
+              "access": "read"
+            },
+            {
+              "path": {
+                "type": "special",
+                "value": {
+                  "kind": "slash_tmp"
+                }
+              },
+              "access": "write"
+            },
+            {
+              "path": {
+                "type": "special",
+                "value": {
+                  "kind": "tmpdir"
+                }
+              },
+              "access": "write"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-a"
+              },
+              "access": "write"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "01a1098f-446c-7590-b918-37d73fab4366",
+      "parent": "01a1098e-d3c0-7c91-8205-f60d644adb1a",
+      "role": "/root/models",
+      "started_at": "2026-10-05T00:55:46.632Z",
+      "cwd": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-a",
+      "models": [
+        {
+          "model": "gpt-6-astra",
+          "effort": "ultra"
+        }
+      ],
+      "usage": {
+        "input_tokens": 20140847,
+        "cached_input_tokens": 19788160,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 62911,
+        "reasoning_output_tokens": 16532,
+        "total_tokens": 20203758
+      },
+      "effective_permissions": {
+        "approval_policy": "never",
+        "approvals_reviewer": "user",
+        "sandbox_policy": {
+          "type": "workspace-write",
+          "network_access": false,
+          "exclude_tmpdir_env_var": false,
+          "exclude_slash_tmp": false
+        },
+        "permission_profile": {
+          "type": "managed",
+          "file_system": {
+            "type": "restricted",
+            "entries": [
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/Users/estherzhang/.codex/archived_sessions"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/Users/estherzhang/.codex/auth.json"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/Users/estherzhang/.codex/sessions"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/controller"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/evidence"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-b"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-c"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/Users/estherzhang/.ssh"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/Users/estherzhang/Downloads/mealie-agentic-evidence-main"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/private/tmp/compx574-report-prep"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/private/tmp/compx574-yibing-contributions"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "special",
+                  "value": {
+                    "kind": "root"
+                  }
+                },
+                "access": "read"
+              },
+              {
+                "path": {
+                  "type": "special",
+                  "value": {
+                    "kind": "slash_tmp"
+                  }
+                },
+                "access": "write"
+              },
+              {
+                "path": {
+                  "type": "special",
+                  "value": {
+                    "kind": "tmpdir"
+                  }
+                },
+                "access": "write"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-a"
+                },
+                "access": "write"
+              }
+            ]
+          },
+          "network": "restricted"
+        },
+        "active_permission_profile": {
+          "id": "experiment",
+          "extends": ":workspace"
+        },
+        "file_system_sandbox_policy": {
+          "kind": "restricted",
+          "entries": [
+            {
+              "path": {
+                "type": "path",
+                "path": "/Users/estherzhang/.codex/archived_sessions"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/Users/estherzhang/.codex/auth.json"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/Users/estherzhang/.codex/sessions"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/controller"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/evidence"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-b"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-c"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/Users/estherzhang/.ssh"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/Users/estherzhang/Downloads/mealie-agentic-evidence-main"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/private/tmp/compx574-report-prep"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/private/tmp/compx574-yibing-contributions"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "special",
+                "value": {
+                  "kind": "root"
+                }
+              },
+              "access": "read"
+            },
+            {
+              "path": {
+                "type": "special",
+                "value": {
+                  "kind": "slash_tmp"
+                }
+              },
+              "access": "write"
+            },
+            {
+              "path": {
+                "type": "special",
+                "value": {
+                  "kind": "tmpdir"
+                }
+              },
+              "access": "write"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-a"
+              },
+              "access": "write"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "01a1098f-65da-79d0-867e-e4ac138e175e",
+      "parent": "01a1098e-d3c0-7c91-8205-f60d644adb1a",
+      "role": "/root/repositories",
+      "started_at": "2026-10-05T00:55:55.148Z",
+      "cwd": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-a",
+      "models": [
+        {
+          "model": "gpt-6-astra",
+          "effort": "ultra"
+        }
+      ],
+      "usage": {
+        "input_tokens": 19685927,
+        "cached_input_tokens": 19305984,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 58549,
+        "reasoning_output_tokens": 14735,
+        "total_tokens": 19744476
+      },
+      "effective_permissions": {
+        "approval_policy": "never",
+        "approvals_reviewer": "user",
+        "sandbox_policy": {
+          "type": "workspace-write",
+          "network_access": false,
+          "exclude_tmpdir_env_var": false,
+          "exclude_slash_tmp": false
+        },
+        "permission_profile": {
+          "type": "managed",
+          "file_system": {
+            "type": "restricted",
+            "entries": [
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/Users/estherzhang/.codex/archived_sessions"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/Users/estherzhang/.codex/auth.json"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/Users/estherzhang/.codex/sessions"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/controller"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/evidence"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-b"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-c"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/Users/estherzhang/.ssh"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/Users/estherzhang/Downloads/mealie-agentic-evidence-main"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/private/tmp/compx574-report-prep"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/private/tmp/compx574-yibing-contributions"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "special",
+                  "value": {
+                    "kind": "root"
+                  }
+                },
+                "access": "read"
+              },
+              {
+                "path": {
+                  "type": "special",
+                  "value": {
+                    "kind": "slash_tmp"
+                  }
+                },
+                "access": "write"
+              },
+              {
+                "path": {
+                  "type": "special",
+                  "value": {
+                    "kind": "tmpdir"
+                  }
+                },
+                "access": "write"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-a"
+                },
+                "access": "write"
+              }
+            ]
+          },
+          "network": "restricted"
+        },
+        "active_permission_profile": {
+          "id": "experiment",
+          "extends": ":workspace"
+        },
+        "file_system_sandbox_policy": {
+          "kind": "restricted",
+          "entries": [
+            {
+              "path": {
+                "type": "path",
+                "path": "/Users/estherzhang/.codex/archived_sessions"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/Users/estherzhang/.codex/auth.json"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/Users/estherzhang/.codex/sessions"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/controller"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/evidence"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-b"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-c"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/Users/estherzhang/.ssh"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/Users/estherzhang/Downloads/mealie-agentic-evidence-main"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/private/tmp/compx574-report-prep"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/private/tmp/compx574-yibing-contributions"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "special",
+                "value": {
+                  "kind": "root"
+                }
+              },
+              "access": "read"
+            },
+            {
+              "path": {
+                "type": "special",
+                "value": {
+                  "kind": "slash_tmp"
+                }
+              },
+              "access": "write"
+            },
+            {
+              "path": {
+                "type": "special",
+                "value": {
+                  "kind": "tmpdir"
+                }
+              },
+              "access": "write"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-a"
+              },
+              "access": "write"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "01a1098f-8334-7440-825e-66ac6612b8d9",
+      "parent": "01a1098e-d3c0-7c91-8205-f60d644adb1a",
+      "role": "/root/services",
+      "started_at": "2026-10-05T00:56:02.680Z",
+      "cwd": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-a",
+      "models": [
+        {
+          "model": "gpt-6-astra",
+          "effort": "ultra"
+        }
+      ],
+      "usage": {
+        "input_tokens": 17846505,
+        "cached_input_tokens": 17532416,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 50832,
+        "reasoning_output_tokens": 12528,
+        "total_tokens": 17897337
+      },
+      "effective_permissions": {
+        "approval_policy": "never",
+        "approvals_reviewer": "user",
+        "sandbox_policy": {
+          "type": "workspace-write",
+          "network_access": false,
+          "exclude_tmpdir_env_var": false,
+          "exclude_slash_tmp": false
+        },
+        "permission_profile": {
+          "type": "managed",
+          "file_system": {
+            "type": "restricted",
+            "entries": [
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/Users/estherzhang/.codex/archived_sessions"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/Users/estherzhang/.codex/auth.json"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/Users/estherzhang/.codex/sessions"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/controller"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/evidence"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-b"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-c"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/Users/estherzhang/.ssh"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/Users/estherzhang/Downloads/mealie-agentic-evidence-main"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/private/tmp/compx574-report-prep"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/private/tmp/compx574-yibing-contributions"
+                },
+                "access": "deny"
+              },
+              {
+                "path": {
+                  "type": "special",
+                  "value": {
+                    "kind": "root"
+                  }
+                },
+                "access": "read"
+              },
+              {
+                "path": {
+                  "type": "special",
+                  "value": {
+                    "kind": "slash_tmp"
+                  }
+                },
+                "access": "write"
+              },
+              {
+                "path": {
+                  "type": "special",
+                  "value": {
+                    "kind": "tmpdir"
+                  }
+                },
+                "access": "write"
+              },
+              {
+                "path": {
+                  "type": "path",
+                  "path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-a"
+                },
+                "access": "write"
+              }
+            ]
+          },
+          "network": "restricted"
+        },
+        "active_permission_profile": {
+          "id": "experiment",
+          "extends": ":workspace"
+        },
+        "file_system_sandbox_policy": {
+          "kind": "restricted",
+          "entries": [
+            {
+              "path": {
+                "type": "path",
+                "path": "/Users/estherzhang/.codex/archived_sessions"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/Users/estherzhang/.codex/auth.json"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/Users/estherzhang/.codex/sessions"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/controller"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/evidence"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-b"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-c"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/Users/estherzhang/.ssh"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/Users/estherzhang/Downloads/mealie-agentic-evidence-main"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/private/tmp/compx574-report-prep"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/private/tmp/compx574-yibing-contributions"
+              },
+              "access": "deny"
+            },
+            {
+              "path": {
+                "type": "special",
+                "value": {
+                  "kind": "root"
+                }
+              },
+              "access": "read"
+            },
+            {
+              "path": {
+                "type": "special",
+                "value": {
+                  "kind": "slash_tmp"
+                }
+              },
+              "access": "write"
+            },
+            {
+              "path": {
+                "type": "special",
+                "value": {
+                  "kind": "tmpdir"
+                }
+              },
+              "access": "write"
+            },
+            {
+              "path": {
+                "type": "path",
+                "path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-a"
+              },
+              "access": "write"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "usage_note": "Per-session native cumulative counters. Do not add to CLI counters, which overlap. Scope of any parent aggregation must be checked before totals.",
+  "export_note": "Only visible messages and tool calls/outputs exported. Hidden reasoning, system/developer instructions, encrypted internal payloads and full session configuration omitted."
+}

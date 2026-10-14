@@ -1,0 +1,6 @@
+FAILED tests/unit_tests/pkgs/safehttp/test_transport.py::test_async_transport_pins_connection_to_validated_ip
+FAILED tests/unit_tests/pkgs/safehttp/test_transport.py::test_async_transport_falls_back_to_a_reachable_address[ips0]
+FAILED tests/unit_tests/pkgs/safehttp/test_transport.py::test_async_transport_falls_back_to_a_reachable_address[ips1]
+FAILED tests/unit_tests/pkgs/safehttp/test_transport.py::test_sync_post_blocks_loopback_by_default
+FAILED tests/unit_tests/pkgs/safehttp/test_transport.py::test_sync_post_allows_configured_host
+FAILED tests/unit_tests/services_tests/backup_v2_tests/test_backup_v2.py::test_database_restore_data

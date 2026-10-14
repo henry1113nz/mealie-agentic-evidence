@@ -1,0 +1,4 @@
+prefix_rule(pattern = ["git", "push"], decision = "forbidden", justification = "Publishing is reserved for the user.")
+prefix_rule(pattern = ["gh"], decision = "forbidden", justification = "GitHub commands are disabled for this run.")
+prefix_rule(pattern = ["git", "config"], decision = "forbidden", justification = "Preserve the configured repository settings.")
+prefix_rule(pattern = ["git", "remote"], decision = "forbidden", justification = "Preserve the configured repository remotes.")

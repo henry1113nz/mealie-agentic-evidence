@@ -1,0 +1,22 @@
+{
+  "observed_at": "2026-10-05T00:59:37.283966+00:00",
+  "requested_flag": "features.multi_agent=false",
+  "actual_behavior": "Three subagent sessions observed in native Codex metadata",
+  "parent": "01a1098e-d3c0-7c91-8205-f60d644adb1a",
+  "children": [
+    "01a1098f-446c-7590-b918-37d73fab4366",
+    "01a1098f-65da-79d0-867e-e4ac138e175e",
+    "01a1098f-8334-7440-825e-66ac6612b8d9"
+  ],
+  "roles": [
+    "models",
+    "repositories",
+    "services"
+  ],
+  "all_models_observed": "gpt-6-astra",
+  "all_efforts_observed": "ultra",
+  "interpretation": "Native capability did not follow requested availability flag. Agent chose decomposition autonomously; supervisor did not request subagents in the experimental prompt. Preserve actual usage, do not report no subagents.",
+  "requested_approval": "on-request",
+  "effective_approval": "never",
+  "approval_interpretation": "Codex exec applies noninteractive fail-closed sandbox approval. No bypass flag used. Outside-sandbox commands cannot be approved in-run; this limits dependency installation."
+}

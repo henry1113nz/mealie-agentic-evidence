@@ -1,0 +1,23 @@
+Goal: replace SQLAlchemy with Tortoise ORM across the Mealie backend.
+
+Fixed decisions:
+- Use Tortoise ORM, which is async. When the rewrite is finished, nothing under mealie/
+  should import SQLAlchemy.
+- Keep support for both SQLite and PostgreSQL.
+- Replace Alembic with Aerich. Upgrading existing databases from the old Alembic history
+  is out of scope.
+- Keep the HTTP API and the Pydantic schemas in mealie/schema unchanged, so the frontend
+  does not need to change.
+- Database access becomes async. Make routes, services and scheduler tasks async where
+  they need to be.
+- You may change how the tests set up and access the database (tests/conftest.py,
+  tests/fixtures/, and database setup code inside test files). You must not delete tests,
+  skip them, mark them xfail, remove or weaken assertions, or change expected values.
+- Run the tests with: uv run pytest -n 4 --dist loadfile
+  (tests in the same file depend on each other, so they must run grouped by file).
+- Do not push, and do not change git remotes or git configuration.
+
+Read AGENTS.md first, especially the "Tortoise ORM rewrite" section. Then do step C1
+from that section and nothing else. Follow the conventions and decisions recorded there.
+When you finish, run the tests, then update the "Tortoise ORM rewrite" section: record any
+new convention or decision, and update the progress table.

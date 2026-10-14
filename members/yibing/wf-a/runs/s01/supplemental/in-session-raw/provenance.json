@@ -1,0 +1,68 @@
+[
+  {
+    "source_path": "/private/tmp/mealie-wf-a-pytest-1.txt",
+    "copy_path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/controller/a-runtime-raw/mealie-wf-a-pytest-1.txt",
+    "sha256": "376c2c9cf4d3ee5395e5010e74bf46caf87808b4efc78d60c271b696b9b24ca3",
+    "bytes": 293203,
+    "source_mtime_utc": "2026-10-05T01:27:31.383481+00:00",
+    "transcript": "01a1098e-d3c0-7c91-8205-f60d644adb1a.visible.jsonl",
+    "command_line": 266,
+    "observed_output_line": 283,
+    "note": "Copied after session; transcript names the exact path and its observed summary matches the surviving raw file. No claim that the file was cryptographically sealed during execution."
+  },
+  {
+    "source_path": "/private/tmp/mealie-wf-a-pytest-focused.txt",
+    "copy_path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/controller/a-runtime-raw/mealie-wf-a-pytest-focused.txt",
+    "sha256": "f0c2450cc8624b96fbfe7d45fee8dac8c7026f7e08ca30a424469131dd90b77c",
+    "bytes": 317,
+    "source_mtime_utc": "2026-10-05T01:33:14.723681+00:00",
+    "transcript": "01a1098e-d3c0-7c91-8205-f60d644adb1a.visible.jsonl",
+    "command_line": 328,
+    "observed_output_line": 331,
+    "note": "Copied after session; transcript names the exact path and its observed summary matches the surviving raw file. No claim that the file was cryptographically sealed during execution."
+  },
+  {
+    "source_path": "/private/tmp/mealie-wf-a-pytest-focused-2.txt",
+    "copy_path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/controller/a-runtime-raw/mealie-wf-a-pytest-focused-2.txt",
+    "sha256": "f2079057513cc2a5562ea78290605a13b59800f8625461eac8a68d0b0af6cc80",
+    "bytes": 13961,
+    "source_mtime_utc": "2026-10-05T01:33:56.554517+00:00",
+    "transcript": "01a1098e-d3c0-7c91-8205-f60d644adb1a.visible.jsonl",
+    "command_line": 332,
+    "observed_output_line": 337,
+    "note": "Copied after session; transcript names the exact path and its observed summary matches the surviving raw file. No claim that the file was cryptographically sealed during execution."
+  },
+  {
+    "source_path": "/private/tmp/mealie-wf-a-pytest-2.txt",
+    "copy_path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/controller/a-runtime-raw/mealie-wf-a-pytest-2.txt",
+    "sha256": "393fd1e0f4d4ed21c982fe7fcc7c3b69f6b10e979141b21e28eb1a166b4db7ed",
+    "bytes": 16743,
+    "source_mtime_utc": "2026-10-05T01:37:27.563954+00:00",
+    "transcript": "01a1098e-d3c0-7c91-8205-f60d644adb1a.visible.jsonl",
+    "command_line": 346,
+    "observed_output_line": 359,
+    "note": "Copied after session; transcript names the exact path and its observed summary matches the surviving raw file. No claim that the file was cryptographically sealed during execution."
+  },
+  {
+    "source_path": "/private/tmp/mealie-wf-a-pytest-final.txt",
+    "copy_path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/controller/a-runtime-raw/mealie-wf-a-pytest-final.txt",
+    "sha256": "c6ac243165fd38bbf62a1eec0977406026e0904ee018075c590baba230eef524",
+    "bytes": 16743,
+    "source_mtime_utc": "2026-10-05T01:41:18.877962+00:00",
+    "transcript": "01a1098e-d3c0-7c91-8205-f60d644adb1a.visible.jsonl",
+    "command_line": 372,
+    "observed_output_line": 383,
+    "note": "Copied after session; transcript names the exact path and its observed summary matches the surviving raw file. No claim that the file was cryptographically sealed during execution."
+  },
+  {
+    "source_path": "/private/tmp/mealie-backup-restore-smoke.log",
+    "copy_path": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/controller/a-runtime-raw/mealie-backup-restore-smoke.log",
+    "sha256": "a14e7b14fec827fe178706256e0b689613d2e9ce49b740595a42b5db852aab9c",
+    "bytes": 6245,
+    "source_mtime_utc": "2026-10-05T01:36:48.162041+00:00",
+    "transcript": "01a1098f-8334-7440-825e-66ac6612b8d9.visible.jsonl",
+    "command_line": 281,
+    "observed_output_line": 286,
+    "note": "Copied after session; transcript names the exact path and its observed summary matches the surviving raw file. No claim that the file was cryptographically sealed during execution."
+  }
+]

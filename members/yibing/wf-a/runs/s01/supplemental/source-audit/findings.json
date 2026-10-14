@@ -1,0 +1,28 @@
+[
+  {
+    "id": "A-AUDIT-01",
+    "confidence": "high",
+    "kind": "confirmed semantic test coverage regression",
+    "baseline": "e365efc71d04677324b9a4aa262b040de33d8676",
+    "head": "827d7d1868ecde35844fea1521c92311a6cf2274",
+    "locations": [
+      {
+        "file": "tests/unit_tests/repository_tests/test_search.py",
+        "line": 116
+      },
+      {
+        "file": "tests/unit_tests/repository_tests/test_recipe_repository.py",
+        "line": 571
+      }
+    ],
+    "summary": "Two PostgreSQL fuzzy-search tests return before the search and assertion because Tortoise dialect postgres is compared to postgresql.",
+    "proof": {
+      "backend_file": ".venv/lib/python3.14/site-packages/tortoise/backends/base_postgres/client.py",
+      "backend_line": 48,
+      "backend_value": "postgres",
+      "test_comparison": "postgresql"
+    },
+    "not_observed": "No test run was performed by this audit; runtime metrics belong to the separate measurement evidence.",
+    "fix_applied": false
+  }
+]

@@ -1,0 +1,1615 @@
+bringing up nodes...
+bringing up nodes...
+
+........................................................................ [  2%]
+........................................................................ [  4%]
+........................................................................ [  6%]
+........................................................................ [  8%]
+........................................................................ [ 10%]
+........................................................................ [ 13%]
+........................................................................ [ 15%]
+........................................................................ [ 17%]
+........................................................................ [ 19%]
+........................................................................ [ 21%]
+........................................................................ [ 23%]
+........................................................................ [ 26%]
+........................................................................ [ 28%]
+........................................................................ [ 30%]
+........................................................................ [ 32%]
+........................................................................ [ 34%]
+........................................................................ [ 37%]
+........................................................................ [ 39%]
+........................................................................ [ 41%]
+........................................................................ [ 43%]
+........................................................................ [ 45%]
+........................................................................ [ 47%]
+........................................................................ [ 50%]
+........................................................................ [ 52%]
+........................................................................ [ 54%]
+........................................................................ [ 56%]
+........................................................................ [ 58%]
+........................................................................ [ 61%]
+...................................FF..FFF.............................. [ 63%]
+........................................................................ [ 65%]
+...........sssssssss.................................................... [ 67%]
+........................................................................ [ 69%]
+........................................................................ [ 71%]
+........................................................................ [ 74%]
+........................................................................ [ 76%]
+........................................................................ [ 78%]
+........................................................................ [ 80%]
+........................................................................ [ 82%]
+........................................................................ [ 85%]
+........................................................................ [ 87%]
+........................................................................ [ 89%]
+........................................................................ [ 91%]
+...........................................................ssssss....... [ 93%]
+........................................................................ [ 95%]
+....................................................ss.................. [ 98%]
+...........................................s.............F...            [100%]
+=================================== FAILURES ===================================
+_____________ test_async_transport_pins_connection_to_validated_ip _____________
+[gw1] darwin -- Python 3.14.7 /Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-c/.venv/bin/python
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x117be1630>
+
+    @pytest.mark.asyncio
+    async def test_async_transport_pins_connection_to_validated_ip(monkeypatch):
+>       with _LocalServer() as server:
+             ^^^^^^^^^^^^^^
+
+tests/unit_tests/pkgs/safehttp/test_transport.py:174: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit_tests/pkgs/safehttp/test_transport.py:156: in __init__
+    self.server = http.server.HTTPServer(("127.0.0.1", 0), Handler)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/estherzhang/.local/share/uv/python/cpython-3.14.7-macos-aarch64-none/lib/python3.14/socketserver.py:457: in __init__
+    self.server_bind()
+/Users/estherzhang/.local/share/uv/python/cpython-3.14.7-macos-aarch64-none/lib/python3.14/http/server.py:148: in server_bind
+    socketserver.TCPServer.server_bind(self)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <http.server.HTTPServer object at 0x116320980>
+
+    def server_bind(self):
+        """Called by constructor to bind the socket.
+    
+        May be overridden.
+    
+        """
+        if self.allow_reuse_address and hasattr(socket, "SO_REUSEADDR"):
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        # Since Linux 6.12.9, SO_REUSEPORT is not allowed
+        # on other address families than AF_INET/AF_INET6.
+        if (
+            self.allow_reuse_port and hasattr(socket, "SO_REUSEPORT")
+            and self.address_family in (socket.AF_INET, socket.AF_INET6)
+        ):
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+>       self.socket.bind(self.server_address)
+E       PermissionError: [Errno 1] Operation not permitted
+
+/Users/estherzhang/.local/share/uv/python/cpython-3.14.7-macos-aarch64-none/lib/python3.14/socketserver.py:478: PermissionError
+_________ test_async_transport_falls_back_to_a_reachable_address[ips0] _________
+[gw1] darwin -- Python 3.14.7 /Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-c/.venv/bin/python
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x117a60670>
+ips = ['2001:db8::1', '127.0.0.1']
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("ips", [["2001:db8::1", "127.0.0.1"], ["127.0.0.1", "2001:db8::1"]])
+    async def test_async_transport_falls_back_to_a_reachable_address(monkeypatch, ips: list[str]):
+        """A dual-stack host must still connect when one of its address families isn't routable."""
+>       with _LocalServer() as server:
+             ^^^^^^^^^^^^^^
+
+tests/unit_tests/pkgs/safehttp/test_transport.py:188: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit_tests/pkgs/safehttp/test_transport.py:156: in __init__
+    self.server = http.server.HTTPServer(("127.0.0.1", 0), Handler)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/estherzhang/.local/share/uv/python/cpython-3.14.7-macos-aarch64-none/lib/python3.14/socketserver.py:457: in __init__
+    self.server_bind()
+/Users/estherzhang/.local/share/uv/python/cpython-3.14.7-macos-aarch64-none/lib/python3.14/http/server.py:148: in server_bind
+    socketserver.TCPServer.server_bind(self)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <http.server.HTTPServer object at 0x117b874d0>
+
+    def server_bind(self):
+        """Called by constructor to bind the socket.
+    
+        May be overridden.
+    
+        """
+        if self.allow_reuse_address and hasattr(socket, "SO_REUSEADDR"):
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        # Since Linux 6.12.9, SO_REUSEPORT is not allowed
+        # on other address families than AF_INET/AF_INET6.
+        if (
+            self.allow_reuse_port and hasattr(socket, "SO_REUSEPORT")
+            and self.address_family in (socket.AF_INET, socket.AF_INET6)
+        ):
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+>       self.socket.bind(self.server_address)
+E       PermissionError: [Errno 1] Operation not permitted
+
+/Users/estherzhang/.local/share/uv/python/cpython-3.14.7-macos-aarch64-none/lib/python3.14/socketserver.py:478: PermissionError
+_________ test_async_transport_falls_back_to_a_reachable_address[ips1] _________
+[gw1] darwin -- Python 3.14.7 /Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-c/.venv/bin/python
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x11c1c18d0>
+ips = ['127.0.0.1', '2001:db8::1']
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("ips", [["2001:db8::1", "127.0.0.1"], ["127.0.0.1", "2001:db8::1"]])
+    async def test_async_transport_falls_back_to_a_reachable_address(monkeypatch, ips: list[str]):
+        """A dual-stack host must still connect when one of its address families isn't routable."""
+>       with _LocalServer() as server:
+             ^^^^^^^^^^^^^^
+
+tests/unit_tests/pkgs/safehttp/test_transport.py:188: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit_tests/pkgs/safehttp/test_transport.py:156: in __init__
+    self.server = http.server.HTTPServer(("127.0.0.1", 0), Handler)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/estherzhang/.local/share/uv/python/cpython-3.14.7-macos-aarch64-none/lib/python3.14/socketserver.py:457: in __init__
+    self.server_bind()
+/Users/estherzhang/.local/share/uv/python/cpython-3.14.7-macos-aarch64-none/lib/python3.14/http/server.py:148: in server_bind
+    socketserver.TCPServer.server_bind(self)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <http.server.HTTPServer object at 0x117b87b10>
+
+    def server_bind(self):
+        """Called by constructor to bind the socket.
+    
+        May be overridden.
+    
+        """
+        if self.allow_reuse_address and hasattr(socket, "SO_REUSEADDR"):
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        # Since Linux 6.12.9, SO_REUSEPORT is not allowed
+        # on other address families than AF_INET/AF_INET6.
+        if (
+            self.allow_reuse_port and hasattr(socket, "SO_REUSEPORT")
+            and self.address_family in (socket.AF_INET, socket.AF_INET6)
+        ):
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+>       self.socket.bind(self.server_address)
+E       PermissionError: [Errno 1] Operation not permitted
+
+/Users/estherzhang/.local/share/uv/python/cpython-3.14.7-macos-aarch64-none/lib/python3.14/socketserver.py:478: PermissionError
+__________________ test_sync_post_blocks_loopback_by_default ___________________
+[gw1] darwin -- Python 3.14.7 /Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-c/.venv/bin/python
+
+    def test_sync_post_blocks_loopback_by_default():
+>       with _LocalServer() as server:
+             ^^^^^^^^^^^^^^
+
+tests/unit_tests/pkgs/safehttp/test_transport.py:199: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit_tests/pkgs/safehttp/test_transport.py:156: in __init__
+    self.server = http.server.HTTPServer(("127.0.0.1", 0), Handler)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/estherzhang/.local/share/uv/python/cpython-3.14.7-macos-aarch64-none/lib/python3.14/socketserver.py:457: in __init__
+    self.server_bind()
+/Users/estherzhang/.local/share/uv/python/cpython-3.14.7-macos-aarch64-none/lib/python3.14/http/server.py:148: in server_bind
+    socketserver.TCPServer.server_bind(self)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <http.server.HTTPServer object at 0x1134fd940>
+
+    def server_bind(self):
+        """Called by constructor to bind the socket.
+    
+        May be overridden.
+    
+        """
+        if self.allow_reuse_address and hasattr(socket, "SO_REUSEADDR"):
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        # Since Linux 6.12.9, SO_REUSEPORT is not allowed
+        # on other address families than AF_INET/AF_INET6.
+        if (
+            self.allow_reuse_port and hasattr(socket, "SO_REUSEPORT")
+            and self.address_family in (socket.AF_INET, socket.AF_INET6)
+        ):
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+>       self.socket.bind(self.server_address)
+E       PermissionError: [Errno 1] Operation not permitted
+
+/Users/estherzhang/.local/share/uv/python/cpython-3.14.7-macos-aarch64-none/lib/python3.14/socketserver.py:478: PermissionError
+____________________ test_sync_post_allows_configured_host _____________________
+[gw1] darwin -- Python 3.14.7 /Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-c/.venv/bin/python
+
+    def test_sync_post_allows_configured_host():
+>       with _LocalServer() as server:
+             ^^^^^^^^^^^^^^
+
+tests/unit_tests/pkgs/safehttp/test_transport.py:205: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit_tests/pkgs/safehttp/test_transport.py:156: in __init__
+    self.server = http.server.HTTPServer(("127.0.0.1", 0), Handler)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/estherzhang/.local/share/uv/python/cpython-3.14.7-macos-aarch64-none/lib/python3.14/socketserver.py:457: in __init__
+    self.server_bind()
+/Users/estherzhang/.local/share/uv/python/cpython-3.14.7-macos-aarch64-none/lib/python3.14/http/server.py:148: in server_bind
+    socketserver.TCPServer.server_bind(self)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <http.server.HTTPServer object at 0x117d77a80>
+
+    def server_bind(self):
+        """Called by constructor to bind the socket.
+    
+        May be overridden.
+    
+        """
+        if self.allow_reuse_address and hasattr(socket, "SO_REUSEADDR"):
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        # Since Linux 6.12.9, SO_REUSEPORT is not allowed
+        # on other address families than AF_INET/AF_INET6.
+        if (
+            self.allow_reuse_port and hasattr(socket, "SO_REUSEPORT")
+            and self.address_family in (socket.AF_INET, socket.AF_INET6)
+        ):
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+>       self.socket.bind(self.server_address)
+E       PermissionError: [Errno 1] Operation not permitted
+
+/Users/estherzhang/.local/share/uv/python/cpython-3.14.7-macos-aarch64-none/lib/python3.14/socketserver.py:478: PermissionError
+__________________________ test_database_restore_data __________________________
+[gw3] darwin -- Python 3.14.7 /Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-c/.venv/bin/python
+
+    def test_database_restore_data():
+        """
+        This tests real user backups to make sure the data is restored correctly. The data has been anonymized, but
+        relationships and data types should be preserved.
+    
+        This test should verify all migrations that do some sort of database manipulation (e.g. populating a new column).
+        If a new migration is added that does any sort of data manipulation, this test should be updated.
+        """
+    
+        backup_paths = [
+            test_data.backup_version_1d9a002d7234_1,
+            test_data.backup_version_44e8d670719d_1,
+            test_data.backup_version_44e8d670719d_2,
+            test_data.backup_version_44e8d670719d_3,
+            test_data.backup_version_44e8d670719d_4,
+            test_data.backup_version_ba1e4a6cfe99_1,
+            test_data.backup_version_bcfdad6b7355_1,
+            test_data.backup_version_09aba125b57a_1,
+            test_data.backup_version_86054b40fd06_1,
+        ]
+    
+        migration_funcs = [
+            _5ab195a474eb_add_normalized_search_properties,
+            _b04a08da2108_added_shopping_list_label_settings,
+            _04ac51cbe9a4_added_group_slug,
+            _0341b154f79a_added_normalized_unit_and_food_names,
+            _d7c6efd2de42_migrate_favorites_and_ratings_to_user_ratings,
+            _86054b40fd06_added_query_filter_string_to_cookbook_and_mealplan,
+            _b9e516e2d3b3_add_household_to_recipe_last_made_household_to_foods_and_tools,
+            _a39c7f1826e3_add_unit_standardization_fields,
+        ]
+    
+        settings = get_app_settings()
+        backup_v2 = BackupV2(settings.DB_URL)
+    
+        backup_v2.directories.BACKUP_DIR.mkdir(parents=True, exist_ok=True)
+        original_data_backup = run_async(backup_v2.backup())
+    
+        try:
+            for backup_path in backup_paths:
+                assert backup_path.exists()
+>               run_async(backup_v2.restore(prepare_legacy_backup(backup_path)))
+
+tests/unit_tests/services_tests/backup_v2_tests/test_backup_v2.py:265: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/utils/async_database.py:45: in run_async
+    return _portal.call(_await_result, awaitable)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.14/site-packages/anyio/from_thread.py:340: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/estherzhang/.local/share/uv/python/cpython-3.14.7-macos-aarch64-none/lib/python3.14/concurrent/futures/_base.py:454: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/Users/estherzhang/.local/share/uv/python/cpython-3.14.7-macos-aarch64-none/lib/python3.14/concurrent/futures/_base.py:396: in __get_result
+    raise self._exception
+.venv/lib/python3.14/site-packages/anyio/from_thread.py:265: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/utils/async_database.py:39: in _await_result
+    return await awaitable
+           ^^^^^^^^^^^^^^^
+mealie/services/backups_v2/backup_v2.py:118: in restore
+    await self.db_exporter.restore(database_json)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <mealie.services.backups_v2.tortoise_exporter.TortoiseExporter object at 0x117a17410>
+db_dump = {'alembic_version': [{'version_num': '09aba125b57a'}], 'groups': [{'created_at': '2024-04-07T16:54:57.742462', 'update...ate_at': '2024-04-07T17:00:08.631408', 'id': '19608a256e1d4829aac97eceb2deb920', 'full_name': 'orritldywi', ...}], ...}
+
+    async def restore(self, db_dump: dict[str, list[dict[str, Any]]]) -> None:
+        """Replace data atomically, preserving constraints and the migration schema."""
+        # A caller may explicitly have dropped a disposable database's tables.
+        # Normal restores never drop the schema or its currently applied version.
+        await init_db.prepare_database()
+        async with in_transaction("default") as connection:
+            all_tables = await self._tables(connection)
+            if self._postgres(connection):
+                # Serialize a database replacement with live application writes.
+                # SQLite already serializes writes on its transaction connection.
+                table_names = ", ".join(_quote(name) for name in sorted(all_tables))
+                await connection.execute_query(f"LOCK TABLE {table_names} IN ACCESS EXCLUSIVE MODE")
+            current_versions = await connection.execute_query_dict('SELECT "app", "version" FROM "aerich"')
+            if not self._versions(db_dump) or self._versions(db_dump) != self._versions({"aerich": current_versions}):
+>               raise BackupSchemaMismatch("Database backup schema version does not match current database")
+E               mealie.services.backups_v2.tortoise_exporter.BackupSchemaMismatch: Database backup schema version does not match current database
+
+mealie/services/backups_v2/tortoise_exporter.py:263: BackupSchemaMismatch
+----------------------------- Captured stdout call -----------------------------
+[INFO|migration|L205] 2026-10-12T00:26:51: Context impl SQLiteImpl.
+[INFO|migration|L208] 2026-10-12T00:26:51: Will assume non-transactional DDL.
+[INFO|migration|L611] 2026-10-12T00:26:51: Running upgrade  -> 6b0f5f32d602, Initial tables
+[INFO|migration|L611] 2026-10-12T00:26:51: Running upgrade 6b0f5f32d602 -> 263dd6707191, convert quantity from integer to float
+[INFO|migration|L611] 2026-10-12T00:26:51: Running upgrade 263dd6707191 -> f1a2dbee5fe9, Add original_text column to recipes_ingredients
+[INFO|migration|L611] 2026-10-12T00:26:51: Running upgrade f1a2dbee5fe9 -> 59eb59135381, add tags to cookbooks
+[INFO|migration|L611] 2026-10-12T00:26:51: Running upgrade 59eb59135381 -> 09dfc897ad62, add require_all for cookbook filters
+[INFO|migration|L611] 2026-10-12T00:26:51: Running upgrade 09dfc897ad62 -> ab0bae02578f, Add use_abbreviation column to ingredients
+[INFO|migration|L611] 2026-10-12T00:26:51: Running upgrade ab0bae02578f -> f30cf048c228, add new webhook fields
+[INFO|migration|L611] 2026-10-12T00:26:51: Running upgrade f30cf048c228 -> 188374910655, add login_attemps and locked_at field to user table
+[INFO|migration|L611] 2026-10-12T00:26:51: Running upgrade 188374910655 -> 089bfa50d0ed, Add is_ocr_recipe column to recipes
+[INFO|migration|L611] 2026-10-12T00:26:51: Running upgrade 089bfa50d0ed -> 44e8d670719d, add extras to shopping lists, list items, and ingredient foods
+[INFO|migration|L611] 2026-10-12T00:26:51: Running upgrade 44e8d670719d -> 2ea7a807915c, add recipe_timeline_events table
+[INFO|migration|L611] 2026-10-12T00:26:51: Running upgrade 2ea7a807915c -> 1923519381ad, added recipe last made timestamp
+[INFO|migration|L611] 2026-10-12T00:26:51: Running upgrade 1923519381ad -> 167eb69066ad, add recipe_scale to shopping list item ref
+[INFO|migration|L611] 2026-10-12T00:26:51: Running upgrade 167eb69066ad -> 165d943c64ee, add related user to mealplan
+[INFO|migration|L611] 2026-10-12T00:26:51: Running upgrade 165d943c64ee -> ff5f73b01a7a, add missing foreign key and order indices
+[INFO|migration|L611] 2026-10-12T00:26:51: Running upgrade ff5f73b01a7a -> 16160bf731a0, add more indices necessary for search
+[INFO|migration|L611] 2026-10-12T00:26:51: Running upgrade 16160bf731a0 -> 5ab195a474eb, add normalized search properties
+[INFO|migration|L611] 2026-10-12T00:26:51: Running upgrade 5ab195a474eb -> b04a08da2108, added shopping list label settings
+[INFO|migration|L611] 2026-10-12T00:26:51: Running upgrade b04a08da2108 -> 38514b39a824, add auth_method to user table
+[INFO|migration|L611] 2026-10-12T00:26:51: Running upgrade 38514b39a824 -> b3dbb554ba53, postgres fuzzy search
+[INFO|migration|L611] 2026-10-12T00:26:51: Running upgrade b3dbb554ba53 -> 04ac51cbe9a4, added group slug
+[INFO|migration|L611] 2026-10-12T00:26:51: Running upgrade 04ac51cbe9a4 -> 1825b5225403, added recipe note to shopping list recipe ref
+[INFO|migration|L611] 2026-10-12T00:26:51: Running upgrade 1825b5225403 -> bcfdad6b7355, remove tool name and slug unique contraints
+[INFO|migration|L611] 2026-10-12T00:26:51: Running upgrade bcfdad6b7355 -> 0341b154f79a, added normalized unit and food names
+[INFO|migration|L611] 2026-10-12T00:26:51: Running upgrade 0341b154f79a -> dded3119c1fe, added unique constraints
+[INFO|migration|L611] 2026-10-12T00:26:51: Running upgrade dded3119c1fe -> ba1e4a6cfe99, added plural names and alias tables for foods and units
+[INFO|migration|L611] 2026-10-12T00:26:51: Running upgrade ba1e4a6cfe99 -> 2298bb460ffd, added user to shopping list
+[INFO|migration|L611] 2026-10-12T00:26:51: Running upgrade 2298bb460ffd -> 09aba125b57a, add OIDC auth method
+[INFO|migration|L611] 2026-10-12T00:26:51: Running upgrade 09aba125b57a -> d7c6efd2de42, migrate favorites and ratings to user_ratings
+[INFO|migration|L611] 2026-10-12T00:26:51: Running upgrade d7c6efd2de42 -> 7788478a0338, add group recipe actions
+[INFO|migration|L611] 2026-10-12T00:26:51: Running upgrade 7788478a0338 -> 32d69327997b, Add staple flag to foods
+[INFO|migration|L611] 2026-10-12T00:26:51: Running upgrade 32d69327997b -> feecc8ffb956, add households
+[INFO|migration|L611] 2026-10-12T00:26:52: Running upgrade feecc8ffb956 -> be568e39ffdf, added household recipe lock setting and household management user permission
+[INFO|migration|L611] 2026-10-12T00:26:52: Running upgrade be568e39ffdf -> 1fe4bd37ccc8, add households filter to meal plans
+[INFO|migration|L611] 2026-10-12T00:26:52: Running upgrade 1fe4bd37ccc8 -> 602927e1013e, 'add the rest of the schema.org nutrition properties'
+[INFO|migration|L611] 2026-10-12T00:26:52: Running upgrade 602927e1013e -> 86054b40fd06, added query_filter_string to cookbook and mealplan
+[INFO|migration|L611] 2026-10-12T00:26:52: Running upgrade 86054b40fd06 -> 3897397b4631, 'Add summary to recipe instructions'
+[INFO|migration|L611] 2026-10-12T00:26:52: Running upgrade 3897397b4631 -> b1020f328e98, add recipe yield quantity
+[INFO|migration|L611] 2026-10-12T00:26:52: Running upgrade b1020f328e98 -> b9e516e2d3b3, add household to recipe last made, household to foods, and household to tools
+[INFO|2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_|L167] 2026-10-12T00:26:52: Running new model migration (migrate_recipe_last_made_to_household)
+[INFO|2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_|L167] 2026-10-12T00:26:52: Running new model migration (migrate_foods_on_hand_to_household)
+[INFO|2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_|L167] 2026-10-12T00:26:52: Running new model migration (migrate_tools_on_hand_to_household)
+[INFO|migration|L611] 2026-10-12T00:26:52: Running upgrade b9e516e2d3b3 -> 7cf3054cbbcc, remove instructions index
+[INFO|migration|L611] 2026-10-12T00:26:52: Running upgrade 7cf3054cbbcc -> d7b3ce6fa31a, empty migration to fix food flag data
+[INFO|migration|L611] 2026-10-12T00:26:52: Running upgrade d7b3ce6fa31a -> e6bb583aac2d, 'Add label notifier CRUD bools'
+[INFO|migration|L611] 2026-10-12T00:26:52: Running upgrade e6bb583aac2d -> 1d9a002d7234, 'Add referenced_recipe to ingredients'
+[INFO|migration|L205] 2026-10-12T00:26:52: Context impl SQLiteImpl.
+[INFO|migration|L208] 2026-10-12T00:26:52: Will assume non-transactional DDL.
+[INFO|migration|L611] 2026-10-12T00:26:52: Running upgrade 1d9a002d7234 -> a39c7f1826e3, add unit standardization fields
+[INFO|2026-02-21-17.59.01_a39c7f1826e3_add_unit_standardization_fields|L77] 2026-10-12T00:26:52: Found unit 'pint', which is standardized as '2 * cup'
+[INFO|migration|L611] 2026-10-12T00:26:52: Running upgrade a39c7f1826e3 -> cdc93edaf73d, 'Add mealplan updated and deleted to group notifier options'
+[INFO|migration|L611] 2026-10-12T00:26:52: Running upgrade cdc93edaf73d -> 4395a04f7784, add announcements
+[INFO|migration|L611] 2026-10-12T00:26:52: Running upgrade 4395a04f7784 -> c7427796f7b6, more aggresive normalization
+[INFO|migration|L611] 2026-10-12T00:26:52: Running upgrade c7427796f7b6 -> 2187537c52b8, add table for ai providers
+[WARNING|settings|L109] 2026-10-12T00:26:52: Secrets directory '/run/secrets' does not exist
+[INFO|2026-05-18-16.27.05_2187537c52b8_add_table_for_ai_providers|L114] 2026-10-12T00:26:52: Creating provider settings for group_id='44f521af32ba45b2a56d348175768ebc'
+[INFO|migration|L611] 2026-10-12T00:26:52: Running upgrade 2187537c52b8 -> 69e942bab3aa, add tokens valid after column to users
+[INFO|migration|L611] 2026-10-12T00:26:52: Running upgrade 69e942bab3aa -> b3f1c9a27d84, add external avatar hash to users
+[INFO|migration|L611] 2026-10-12T00:26:52: Running upgrade b3f1c9a27d84 -> f2191b69db2e, add ingredient substitutions
+[INFO|migration|L611] 2026-10-12T00:26:52: Running upgrade f2191b69db2e -> 4b91d3a7c0e2, backfill recipe image column from disk
+[INFO|2026-09-03-16.12.44_4b91d3a7c0e2_backfill_recipe_image_column|L96] 2026-10-12T00:26:52: Recipe image backfill checked 0 recipes: 0 image references restored, 0 cleared
+[INFO|migration|L611] 2026-10-12T00:26:52: Running upgrade 4b91d3a7c0e2 -> 3527efeeec34, 'add recipe_note_ref_link'
+[INFO|migration|L611] 2026-10-12T00:26:52: Running upgrade 3527efeeec34 -> 27621d27c7e1, add structured recipe times
+[INFO|2026-09-24-13.16.56_27621d27c7e1_add_structured_recipe_times|L196] 2026-10-12T00:26:52: Converted 0 recipe times to structured durations and cleared 0 empty ones across 0 recipes
+[INFO|legacy_backup_fixes|L203] 2026-10-12T00:26:52: Checking for migration data fixes
+[INFO|legacy_backup_fixes|L203] 2026-10-12T00:26:52: Checking for migration data fixes
+[INFO|backup_v2|L94] 2026-10-12T00:26:52: initializing backup restore
+[INFO|backup_v2|L117] 2026-10-12T00:26:52: importing database tables
+[INFO|backup_v2|L120] 2026-10-12T00:26:52: database tables imported successfully
+[INFO|backup_v2|L122] 2026-10-12T00:26:52: restoring data directory
+[INFO|backup_v2|L89] 2026-10-12T00:26:52: invalidating appsettings cache
+[WARNING|settings|L109] 2026-10-12T00:26:52: Secrets directory '/run/secrets' does not exist
+[INFO|backup_v2|L124] 2026-10-12T00:26:52: data directory restored successfully
+[INFO|backup_v2|L125] 2026-10-12T00:26:52: backup restore complete
+[INFO|migration|L205] 2026-10-12T00:26:52: Context impl SQLiteImpl.
+[INFO|migration|L208] 2026-10-12T00:26:52: Will assume non-transactional DDL.
+[INFO|migration|L611] 2026-10-12T00:26:52: Running upgrade  -> 6b0f5f32d602, Initial tables
+[INFO|migration|L611] 2026-10-12T00:26:52: Running upgrade 6b0f5f32d602 -> 263dd6707191, convert quantity from integer to float
+[INFO|migration|L611] 2026-10-12T00:26:52: Running upgrade 263dd6707191 -> f1a2dbee5fe9, Add original_text column to recipes_ingredients
+[INFO|migration|L611] 2026-10-12T00:26:52: Running upgrade f1a2dbee5fe9 -> 59eb59135381, add tags to cookbooks
+[INFO|migration|L611] 2026-10-12T00:26:52: Running upgrade 59eb59135381 -> 09dfc897ad62, add require_all for cookbook filters
+[INFO|migration|L611] 2026-10-12T00:26:52: Running upgrade 09dfc897ad62 -> ab0bae02578f, Add use_abbreviation column to ingredients
+[INFO|migration|L611] 2026-10-12T00:26:52: Running upgrade ab0bae02578f -> f30cf048c228, add new webhook fields
+[INFO|migration|L611] 2026-10-12T00:26:52: Running upgrade f30cf048c228 -> 188374910655, add login_attemps and locked_at field to user table
+[INFO|migration|L611] 2026-10-12T00:26:52: Running upgrade 188374910655 -> 089bfa50d0ed, Add is_ocr_recipe column to recipes
+[INFO|migration|L611] 2026-10-12T00:26:52: Running upgrade 089bfa50d0ed -> 44e8d670719d, add extras to shopping lists, list items, and ingredient foods
+[INFO|migration|L205] 2026-10-12T00:26:52: Context impl SQLiteImpl.
+[INFO|migration|L208] 2026-10-12T00:26:52: Will assume non-transactional DDL.
+[INFO|migration|L611] 2026-10-12T00:26:52: Running upgrade 44e8d670719d -> 2ea7a807915c, add recipe_timeline_events table
+[INFO|migration|L611] 2026-10-12T00:26:52: Running upgrade 2ea7a807915c -> 1923519381ad, added recipe last made timestamp
+[INFO|migration|L611] 2026-10-12T00:26:52: Running upgrade 1923519381ad -> 167eb69066ad, add recipe_scale to shopping list item ref
+[INFO|migration|L611] 2026-10-12T00:26:52: Running upgrade 167eb69066ad -> 165d943c64ee, add related user to mealplan
+[INFO|migration|L611] 2026-10-12T00:26:52: Running upgrade 165d943c64ee -> ff5f73b01a7a, add missing foreign key and order indices
+[INFO|migration|L611] 2026-10-12T00:26:52: Running upgrade ff5f73b01a7a -> 16160bf731a0, add more indices necessary for search
+[INFO|migration|L611] 2026-10-12T00:26:53: Running upgrade 16160bf731a0 -> 5ab195a474eb, add normalized search properties
+[INFO|migration|L611] 2026-10-12T00:26:53: Running upgrade 5ab195a474eb -> b04a08da2108, added shopping list label settings
+[INFO|migration|L611] 2026-10-12T00:26:53: Running upgrade b04a08da2108 -> 38514b39a824, add auth_method to user table
+[INFO|migration|L611] 2026-10-12T00:26:53: Running upgrade 38514b39a824 -> b3dbb554ba53, postgres fuzzy search
+[INFO|migration|L611] 2026-10-12T00:26:53: Running upgrade b3dbb554ba53 -> 04ac51cbe9a4, added group slug
+[INFO|migration|L611] 2026-10-12T00:26:53: Running upgrade 04ac51cbe9a4 -> 1825b5225403, added recipe note to shopping list recipe ref
+[INFO|migration|L611] 2026-10-12T00:26:53: Running upgrade 1825b5225403 -> bcfdad6b7355, remove tool name and slug unique contraints
+[INFO|migration|L611] 2026-10-12T00:26:53: Running upgrade bcfdad6b7355 -> 0341b154f79a, added normalized unit and food names
+[INFO|migration|L611] 2026-10-12T00:26:53: Running upgrade 0341b154f79a -> dded3119c1fe, added unique constraints
+[INFO|migration|L611] 2026-10-12T00:26:53: Running upgrade dded3119c1fe -> ba1e4a6cfe99, added plural names and alias tables for foods and units
+[INFO|migration|L611] 2026-10-12T00:26:53: Running upgrade ba1e4a6cfe99 -> 2298bb460ffd, added user to shopping list
+[INFO|migration|L611] 2026-10-12T00:26:53: Running upgrade 2298bb460ffd -> 09aba125b57a, add OIDC auth method
+[INFO|migration|L611] 2026-10-12T00:26:53: Running upgrade 09aba125b57a -> d7c6efd2de42, migrate favorites and ratings to user_ratings
+[INFO|migration|L611] 2026-10-12T00:26:53: Running upgrade d7c6efd2de42 -> 7788478a0338, add group recipe actions
+[INFO|migration|L611] 2026-10-12T00:26:53: Running upgrade 7788478a0338 -> 32d69327997b, Add staple flag to foods
+[INFO|migration|L611] 2026-10-12T00:26:53: Running upgrade 32d69327997b -> feecc8ffb956, add households
+[INFO|migration|L611] 2026-10-12T00:26:53: Running upgrade feecc8ffb956 -> be568e39ffdf, added household recipe lock setting and household management user permission
+[INFO|migration|L611] 2026-10-12T00:26:53: Running upgrade be568e39ffdf -> 1fe4bd37ccc8, add households filter to meal plans
+[INFO|migration|L611] 2026-10-12T00:26:53: Running upgrade 1fe4bd37ccc8 -> 602927e1013e, 'add the rest of the schema.org nutrition properties'
+[INFO|migration|L611] 2026-10-12T00:26:53: Running upgrade 602927e1013e -> 86054b40fd06, added query_filter_string to cookbook and mealplan
+[INFO|migration|L611] 2026-10-12T00:26:53: Running upgrade 86054b40fd06 -> 3897397b4631, 'Add summary to recipe instructions'
+[INFO|migration|L611] 2026-10-12T00:26:53: Running upgrade 3897397b4631 -> b1020f328e98, add recipe yield quantity
+[INFO|migration|L611] 2026-10-12T00:26:53: Running upgrade b1020f328e98 -> b9e516e2d3b3, add household to recipe last made, household to foods, and household to tools
+[INFO|2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_|L167] 2026-10-12T00:26:53: Running new model migration (migrate_recipe_last_made_to_household)
+[INFO|2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_|L167] 2026-10-12T00:26:53: Running new model migration (migrate_foods_on_hand_to_household)
+[INFO|2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_|L167] 2026-10-12T00:26:53: Running new model migration (migrate_tools_on_hand_to_household)
+[INFO|migration|L611] 2026-10-12T00:26:53: Running upgrade b9e516e2d3b3 -> 7cf3054cbbcc, remove instructions index
+[INFO|migration|L611] 2026-10-12T00:26:53: Running upgrade 7cf3054cbbcc -> d7b3ce6fa31a, empty migration to fix food flag data
+[INFO|migration|L611] 2026-10-12T00:26:53: Running upgrade d7b3ce6fa31a -> e6bb583aac2d, 'Add label notifier CRUD bools'
+[INFO|migration|L611] 2026-10-12T00:26:53: Running upgrade e6bb583aac2d -> 1d9a002d7234, 'Add referenced_recipe to ingredients'
+[INFO|migration|L611] 2026-10-12T00:26:54: Running upgrade 1d9a002d7234 -> a39c7f1826e3, add unit standardization fields
+[INFO|migration|L611] 2026-10-12T00:26:54: Running upgrade a39c7f1826e3 -> cdc93edaf73d, 'Add mealplan updated and deleted to group notifier options'
+[INFO|migration|L611] 2026-10-12T00:26:54: Running upgrade cdc93edaf73d -> 4395a04f7784, add announcements
+[INFO|migration|L611] 2026-10-12T00:26:54: Running upgrade 4395a04f7784 -> c7427796f7b6, more aggresive normalization
+[INFO|migration|L611] 2026-10-12T00:26:54: Running upgrade c7427796f7b6 -> 2187537c52b8, add table for ai providers
+[WARNING|settings|L109] 2026-10-12T00:26:54: Secrets directory '/run/secrets' does not exist
+[INFO|2026-05-18-16.27.05_2187537c52b8_add_table_for_ai_providers|L114] 2026-10-12T00:26:54: Creating provider settings for group_id='5dc8165115db41899a727fd00ca62752'
+[INFO|2026-05-18-16.27.05_2187537c52b8_add_table_for_ai_providers|L114] 2026-10-12T00:26:54: Creating provider settings for group_id='784b99c0e85e402d927e85b3f6966d75'
+[INFO|2026-05-18-16.27.05_2187537c52b8_add_table_for_ai_providers|L114] 2026-10-12T00:26:54: Creating provider settings for group_id='dd31c46a67f94f6cb99e0a1110c658d6'
+[INFO|migration|L611] 2026-10-12T00:26:54: Running upgrade 2187537c52b8 -> 69e942bab3aa, add tokens valid after column to users
+[INFO|migration|L611] 2026-10-12T00:26:54: Running upgrade 69e942bab3aa -> b3f1c9a27d84, add external avatar hash to users
+[INFO|migration|L611] 2026-10-12T00:26:54: Running upgrade b3f1c9a27d84 -> f2191b69db2e, add ingredient substitutions
+[INFO|migration|L611] 2026-10-12T00:26:54: Running upgrade f2191b69db2e -> 4b91d3a7c0e2, backfill recipe image column from disk
+[WARNING|2026-09-03-16.12.44_4b91d3a7c0e2_backfill_recipe_image_column|L72] 2026-10-12T00:26:54: Skipping the clearing half of the recipe image backfill: 349 recipes reference an image but no image files were found under /Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-c/tests/.temp/gw3/recipes. If the recipe data volume was not mounted, nothing was cleared.
+[INFO|2026-09-03-16.12.44_4b91d3a7c0e2_backfill_recipe_image_column|L96] 2026-10-12T00:26:54: Recipe image backfill checked 349 recipes: 0 image references restored, 0 cleared
+[INFO|migration|L611] 2026-10-12T00:26:54: Running upgrade 4b91d3a7c0e2 -> 3527efeeec34, 'add recipe_note_ref_link'
+[INFO|migration|L611] 2026-10-12T00:26:54: Running upgrade 3527efeeec34 -> 27621d27c7e1, add structured recipe times
+[INFO|2026-09-24-13.16.56_27621d27c7e1_add_structured_recipe_times|L196] 2026-10-12T00:26:54: Converted 0 recipe times to structured durations and cleared 0 empty ones across 349 recipes
+[INFO|legacy_backup_fixes|L203] 2026-10-12T00:26:54: Checking for migration data fixes
+[INFO|legacy_backup_fixes|L203] 2026-10-12T00:26:54: Checking for migration data fixes
+[INFO|backup_v2|L94] 2026-10-12T00:26:55: initializing backup restore
+[INFO|backup_v2|L117] 2026-10-12T00:26:55: importing database tables
+[INFO|backup_v2|L120] 2026-10-12T00:26:56: database tables imported successfully
+[INFO|backup_v2|L122] 2026-10-12T00:26:56: restoring data directory
+[INFO|backup_v2|L89] 2026-10-12T00:26:56: invalidating appsettings cache
+[WARNING|settings|L109] 2026-10-12T00:26:56: Secrets directory '/run/secrets' does not exist
+[INFO|backup_v2|L124] 2026-10-12T00:26:56: data directory restored successfully
+[INFO|backup_v2|L125] 2026-10-12T00:26:56: backup restore complete
+[INFO|migration|L205] 2026-10-12T00:26:56: Context impl SQLiteImpl.
+[INFO|migration|L208] 2026-10-12T00:26:56: Will assume non-transactional DDL.
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade  -> 6b0f5f32d602, Initial tables
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade 6b0f5f32d602 -> 263dd6707191, convert quantity from integer to float
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade 263dd6707191 -> f1a2dbee5fe9, Add original_text column to recipes_ingredients
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade f1a2dbee5fe9 -> 59eb59135381, add tags to cookbooks
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade 59eb59135381 -> 09dfc897ad62, add require_all for cookbook filters
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade 09dfc897ad62 -> ab0bae02578f, Add use_abbreviation column to ingredients
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade ab0bae02578f -> f30cf048c228, add new webhook fields
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade f30cf048c228 -> 188374910655, add login_attemps and locked_at field to user table
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade 188374910655 -> 089bfa50d0ed, Add is_ocr_recipe column to recipes
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade 089bfa50d0ed -> 44e8d670719d, add extras to shopping lists, list items, and ingredient foods
+[INFO|migration|L205] 2026-10-12T00:26:56: Context impl SQLiteImpl.
+[INFO|migration|L208] 2026-10-12T00:26:56: Will assume non-transactional DDL.
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade 44e8d670719d -> 2ea7a807915c, add recipe_timeline_events table
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade 2ea7a807915c -> 1923519381ad, added recipe last made timestamp
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade 1923519381ad -> 167eb69066ad, add recipe_scale to shopping list item ref
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade 167eb69066ad -> 165d943c64ee, add related user to mealplan
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade 165d943c64ee -> ff5f73b01a7a, add missing foreign key and order indices
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade ff5f73b01a7a -> 16160bf731a0, add more indices necessary for search
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade 16160bf731a0 -> 5ab195a474eb, add normalized search properties
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade 5ab195a474eb -> b04a08da2108, added shopping list label settings
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade b04a08da2108 -> 38514b39a824, add auth_method to user table
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade 38514b39a824 -> b3dbb554ba53, postgres fuzzy search
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade b3dbb554ba53 -> 04ac51cbe9a4, added group slug
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade 04ac51cbe9a4 -> 1825b5225403, added recipe note to shopping list recipe ref
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade 1825b5225403 -> bcfdad6b7355, remove tool name and slug unique contraints
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade bcfdad6b7355 -> 0341b154f79a, added normalized unit and food names
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade 0341b154f79a -> dded3119c1fe, added unique constraints
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade dded3119c1fe -> ba1e4a6cfe99, added plural names and alias tables for foods and units
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade ba1e4a6cfe99 -> 2298bb460ffd, added user to shopping list
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade 2298bb460ffd -> 09aba125b57a, add OIDC auth method
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade 09aba125b57a -> d7c6efd2de42, migrate favorites and ratings to user_ratings
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade d7c6efd2de42 -> 7788478a0338, add group recipe actions
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade 7788478a0338 -> 32d69327997b, Add staple flag to foods
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade 32d69327997b -> feecc8ffb956, add households
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade feecc8ffb956 -> be568e39ffdf, added household recipe lock setting and household management user permission
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade be568e39ffdf -> 1fe4bd37ccc8, add households filter to meal plans
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade 1fe4bd37ccc8 -> 602927e1013e, 'add the rest of the schema.org nutrition properties'
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade 602927e1013e -> 86054b40fd06, added query_filter_string to cookbook and mealplan
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade 86054b40fd06 -> 3897397b4631, 'Add summary to recipe instructions'
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade 3897397b4631 -> b1020f328e98, add recipe yield quantity
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade b1020f328e98 -> b9e516e2d3b3, add household to recipe last made, household to foods, and household to tools
+[INFO|2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_|L167] 2026-10-12T00:26:56: Running new model migration (migrate_recipe_last_made_to_household)
+[INFO|2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_|L167] 2026-10-12T00:26:56: Running new model migration (migrate_foods_on_hand_to_household)
+[INFO|2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_|L167] 2026-10-12T00:26:56: Running new model migration (migrate_tools_on_hand_to_household)
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade b9e516e2d3b3 -> 7cf3054cbbcc, remove instructions index
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade 7cf3054cbbcc -> d7b3ce6fa31a, empty migration to fix food flag data
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade d7b3ce6fa31a -> e6bb583aac2d, 'Add label notifier CRUD bools'
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade e6bb583aac2d -> 1d9a002d7234, 'Add referenced_recipe to ingredients'
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade 1d9a002d7234 -> a39c7f1826e3, add unit standardization fields
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade a39c7f1826e3 -> cdc93edaf73d, 'Add mealplan updated and deleted to group notifier options'
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade cdc93edaf73d -> 4395a04f7784, add announcements
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade 4395a04f7784 -> c7427796f7b6, more aggresive normalization
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade c7427796f7b6 -> 2187537c52b8, add table for ai providers
+[WARNING|settings|L109] 2026-10-12T00:26:56: Secrets directory '/run/secrets' does not exist
+[INFO|2026-05-18-16.27.05_2187537c52b8_add_table_for_ai_providers|L114] 2026-10-12T00:26:56: Creating provider settings for group_id='24bacf4eec034b35a81395ee0ba22048'
+[INFO|2026-05-18-16.27.05_2187537c52b8_add_table_for_ai_providers|L114] 2026-10-12T00:26:56: Creating provider settings for group_id='996076aaef1d4cf3bbf68f524aee4373'
+[INFO|2026-05-18-16.27.05_2187537c52b8_add_table_for_ai_providers|L114] 2026-10-12T00:26:56: Creating provider settings for group_id='cd0c4d8934e8405fba9367e5adbef93e'
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade 2187537c52b8 -> 69e942bab3aa, add tokens valid after column to users
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade 69e942bab3aa -> b3f1c9a27d84, add external avatar hash to users
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade b3f1c9a27d84 -> f2191b69db2e, add ingredient substitutions
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade f2191b69db2e -> 4b91d3a7c0e2, backfill recipe image column from disk
+[WARNING|2026-09-03-16.12.44_4b91d3a7c0e2_backfill_recipe_image_column|L72] 2026-10-12T00:26:56: Skipping the clearing half of the recipe image backfill: 83 recipes reference an image but no image files were found under /Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-c/tests/.temp/gw3/recipes. If the recipe data volume was not mounted, nothing was cleared.
+[INFO|2026-09-03-16.12.44_4b91d3a7c0e2_backfill_recipe_image_column|L96] 2026-10-12T00:26:56: Recipe image backfill checked 88 recipes: 0 image references restored, 0 cleared
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade 4b91d3a7c0e2 -> 3527efeeec34, 'add recipe_note_ref_link'
+[INFO|migration|L611] 2026-10-12T00:26:56: Running upgrade 3527efeeec34 -> 27621d27c7e1, add structured recipe times
+[INFO|2026-09-24-13.16.56_27621d27c7e1_add_structured_recipe_times|L196] 2026-10-12T00:26:56: Converted 0 recipe times to structured durations and cleared 0 empty ones across 88 recipes
+[INFO|legacy_backup_fixes|L203] 2026-10-12T00:26:56: Checking for migration data fixes
+[INFO|legacy_backup_fixes|L203] 2026-10-12T00:26:57: Checking for migration data fixes
+[INFO|backup_v2|L94] 2026-10-12T00:26:57: initializing backup restore
+[INFO|backup_v2|L117] 2026-10-12T00:26:57: importing database tables
+[INFO|backup_v2|L120] 2026-10-12T00:26:57: database tables imported successfully
+[INFO|backup_v2|L122] 2026-10-12T00:26:57: restoring data directory
+[INFO|backup_v2|L89] 2026-10-12T00:26:57: invalidating appsettings cache
+[WARNING|settings|L109] 2026-10-12T00:26:57: Secrets directory '/run/secrets' does not exist
+[INFO|backup_v2|L124] 2026-10-12T00:26:57: data directory restored successfully
+[INFO|backup_v2|L125] 2026-10-12T00:26:57: backup restore complete
+[INFO|migration|L205] 2026-10-12T00:26:57: Context impl SQLiteImpl.
+[INFO|migration|L208] 2026-10-12T00:26:57: Will assume non-transactional DDL.
+[INFO|migration|L611] 2026-10-12T00:26:57: Running upgrade  -> 6b0f5f32d602, Initial tables
+[INFO|migration|L611] 2026-10-12T00:26:57: Running upgrade 6b0f5f32d602 -> 263dd6707191, convert quantity from integer to float
+[INFO|migration|L611] 2026-10-12T00:26:57: Running upgrade 263dd6707191 -> f1a2dbee5fe9, Add original_text column to recipes_ingredients
+[INFO|migration|L611] 2026-10-12T00:26:57: Running upgrade f1a2dbee5fe9 -> 59eb59135381, add tags to cookbooks
+[INFO|migration|L611] 2026-10-12T00:26:57: Running upgrade 59eb59135381 -> 09dfc897ad62, add require_all for cookbook filters
+[INFO|migration|L611] 2026-10-12T00:26:57: Running upgrade 09dfc897ad62 -> ab0bae02578f, Add use_abbreviation column to ingredients
+[INFO|migration|L611] 2026-10-12T00:26:57: Running upgrade ab0bae02578f -> f30cf048c228, add new webhook fields
+[INFO|migration|L611] 2026-10-12T00:26:57: Running upgrade f30cf048c228 -> 188374910655, add login_attemps and locked_at field to user table
+[INFO|migration|L611] 2026-10-12T00:26:57: Running upgrade 188374910655 -> 089bfa50d0ed, Add is_ocr_recipe column to recipes
+[INFO|migration|L611] 2026-10-12T00:26:57: Running upgrade 089bfa50d0ed -> 44e8d670719d, add extras to shopping lists, list items, and ingredient foods
+[WARNING|legacy_backup|L160] 2026-10-12T00:26:57: Removing row from table recipe_nutrition because of invalid foreign key recipe_id: e1346ad90ed344d39935462b362c99d1
+[WARNING|legacy_backup|L163] 2026-10-12T00:26:57: Row: {'created_at': datetime.datetime(2023, 2, 26, 22, 2, 25, 760405), 'update_at': datetime.datetime(2023, 2, 26, 22, 2, 25, 760410), 'id': 135, 'recipe_id': 'e1346ad90ed344d39935462b362c99d1', 'calories': None, 'fat_content': None, 'fiber_content': None, 'protein_content': None, 'carbohydrate_content': None, 'sodium_content': None, 'sugar_content': None}
+[WARNING|legacy_backup|L160] 2026-10-12T00:26:57: Removing row from table recipe_settings because of invalid foreign key recipe_id: e1346ad90ed344d39935462b362c99d1
+[WARNING|legacy_backup|L163] 2026-10-12T00:26:57: Row: {'created_at': datetime.datetime(2023, 2, 26, 22, 2, 25, 760689), 'update_at': datetime.datetime(2023, 2, 26, 22, 2, 25, 760693), 'id': 135, 'recipe_id': 'e1346ad90ed344d39935462b362c99d1', 'public': True, 'show_nutrition': False, 'show_assets': False, 'landscape_view': False, 'disable_amount': True, 'disable_comments': False, 'locked': False}
+[INFO|migration|L205] 2026-10-12T00:26:57: Context impl SQLiteImpl.
+[INFO|migration|L208] 2026-10-12T00:26:57: Will assume non-transactional DDL.
+[INFO|migration|L611] 2026-10-12T00:26:57: Running upgrade 44e8d670719d -> 2ea7a807915c, add recipe_timeline_events table
+[INFO|migration|L611] 2026-10-12T00:26:57: Running upgrade 2ea7a807915c -> 1923519381ad, added recipe last made timestamp
+[INFO|migration|L611] 2026-10-12T00:26:57: Running upgrade 1923519381ad -> 167eb69066ad, add recipe_scale to shopping list item ref
+[INFO|migration|L611] 2026-10-12T00:26:57: Running upgrade 167eb69066ad -> 165d943c64ee, add related user to mealplan
+[INFO|migration|L611] 2026-10-12T00:26:57: Running upgrade 165d943c64ee -> ff5f73b01a7a, add missing foreign key and order indices
+[INFO|migration|L611] 2026-10-12T00:26:57: Running upgrade ff5f73b01a7a -> 16160bf731a0, add more indices necessary for search
+[INFO|migration|L611] 2026-10-12T00:26:57: Running upgrade 16160bf731a0 -> 5ab195a474eb, add normalized search properties
+[INFO|migration|L611] 2026-10-12T00:26:58: Running upgrade 5ab195a474eb -> b04a08da2108, added shopping list label settings
+[INFO|migration|L611] 2026-10-12T00:26:58: Running upgrade b04a08da2108 -> 38514b39a824, add auth_method to user table
+[INFO|migration|L611] 2026-10-12T00:26:58: Running upgrade 38514b39a824 -> b3dbb554ba53, postgres fuzzy search
+[INFO|migration|L611] 2026-10-12T00:26:58: Running upgrade b3dbb554ba53 -> 04ac51cbe9a4, added group slug
+[INFO|migration|L611] 2026-10-12T00:26:58: Running upgrade 04ac51cbe9a4 -> 1825b5225403, added recipe note to shopping list recipe ref
+[INFO|migration|L611] 2026-10-12T00:26:58: Running upgrade 1825b5225403 -> bcfdad6b7355, remove tool name and slug unique contraints
+[INFO|migration|L611] 2026-10-12T00:26:58: Running upgrade bcfdad6b7355 -> 0341b154f79a, added normalized unit and food names
+[INFO|migration|L611] 2026-10-12T00:26:58: Running upgrade 0341b154f79a -> dded3119c1fe, added unique constraints
+[INFO|migration|L611] 2026-10-12T00:26:58: Running upgrade dded3119c1fe -> ba1e4a6cfe99, added plural names and alias tables for foods and units
+[INFO|migration|L611] 2026-10-12T00:26:58: Running upgrade ba1e4a6cfe99 -> 2298bb460ffd, added user to shopping list
+[INFO|migration|L611] 2026-10-12T00:26:58: Running upgrade 2298bb460ffd -> 09aba125b57a, add OIDC auth method
+[INFO|migration|L611] 2026-10-12T00:26:58: Running upgrade 09aba125b57a -> d7c6efd2de42, migrate favorites and ratings to user_ratings
+[INFO|migration|L611] 2026-10-12T00:26:58: Running upgrade d7c6efd2de42 -> 7788478a0338, add group recipe actions
+[INFO|migration|L611] 2026-10-12T00:26:58: Running upgrade 7788478a0338 -> 32d69327997b, Add staple flag to foods
+[INFO|migration|L611] 2026-10-12T00:26:58: Running upgrade 32d69327997b -> feecc8ffb956, add households
+[INFO|migration|L611] 2026-10-12T00:26:58: Running upgrade feecc8ffb956 -> be568e39ffdf, added household recipe lock setting and household management user permission
+[INFO|migration|L611] 2026-10-12T00:26:58: Running upgrade be568e39ffdf -> 1fe4bd37ccc8, add households filter to meal plans
+[INFO|migration|L611] 2026-10-12T00:26:58: Running upgrade 1fe4bd37ccc8 -> 602927e1013e, 'add the rest of the schema.org nutrition properties'
+[INFO|migration|L611] 2026-10-12T00:26:58: Running upgrade 602927e1013e -> 86054b40fd06, added query_filter_string to cookbook and mealplan
+[INFO|migration|L611] 2026-10-12T00:26:58: Running upgrade 86054b40fd06 -> 3897397b4631, 'Add summary to recipe instructions'
+[INFO|migration|L611] 2026-10-12T00:26:58: Running upgrade 3897397b4631 -> b1020f328e98, add recipe yield quantity
+[INFO|migration|L611] 2026-10-12T00:26:58: Running upgrade b1020f328e98 -> b9e516e2d3b3, add household to recipe last made, household to foods, and household to tools
+[INFO|2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_|L167] 2026-10-12T00:26:58: Running new model migration (migrate_recipe_last_made_to_household)
+[INFO|2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_|L167] 2026-10-12T00:26:58: Running new model migration (migrate_foods_on_hand_to_household)
+[INFO|2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_|L167] 2026-10-12T00:26:58: Running new model migration (migrate_tools_on_hand_to_household)
+[INFO|migration|L611] 2026-10-12T00:26:58: Running upgrade b9e516e2d3b3 -> 7cf3054cbbcc, remove instructions index
+[INFO|migration|L611] 2026-10-12T00:26:58: Running upgrade 7cf3054cbbcc -> d7b3ce6fa31a, empty migration to fix food flag data
+[INFO|migration|L611] 2026-10-12T00:26:58: Running upgrade d7b3ce6fa31a -> e6bb583aac2d, 'Add label notifier CRUD bools'
+[INFO|migration|L611] 2026-10-12T00:26:58: Running upgrade e6bb583aac2d -> 1d9a002d7234, 'Add referenced_recipe to ingredients'
+[INFO|migration|L611] 2026-10-12T00:26:58: Running upgrade 1d9a002d7234 -> a39c7f1826e3, add unit standardization fields
+[INFO|migration|L611] 2026-10-12T00:26:58: Running upgrade a39c7f1826e3 -> cdc93edaf73d, 'Add mealplan updated and deleted to group notifier options'
+[INFO|migration|L611] 2026-10-12T00:26:58: Running upgrade cdc93edaf73d -> 4395a04f7784, add announcements
+[INFO|migration|L611] 2026-10-12T00:26:58: Running upgrade 4395a04f7784 -> c7427796f7b6, more aggresive normalization
+[INFO|migration|L611] 2026-10-12T00:26:58: Running upgrade c7427796f7b6 -> 2187537c52b8, add table for ai providers
+[WARNING|settings|L109] 2026-10-12T00:26:58: Secrets directory '/run/secrets' does not exist
+[INFO|2026-05-18-16.27.05_2187537c52b8_add_table_for_ai_providers|L114] 2026-10-12T00:26:58: Creating provider settings for group_id='c5c396ef193e42ea8252d5b5446ff84f'
+[INFO|migration|L611] 2026-10-12T00:26:58: Running upgrade 2187537c52b8 -> 69e942bab3aa, add tokens valid after column to users
+[INFO|migration|L611] 2026-10-12T00:26:58: Running upgrade 69e942bab3aa -> b3f1c9a27d84, add external avatar hash to users
+[INFO|migration|L611] 2026-10-12T00:26:58: Running upgrade b3f1c9a27d84 -> f2191b69db2e, add ingredient substitutions
+[INFO|migration|L611] 2026-10-12T00:26:58: Running upgrade f2191b69db2e -> 4b91d3a7c0e2, backfill recipe image column from disk
+[WARNING|2026-09-03-16.12.44_4b91d3a7c0e2_backfill_recipe_image_column|L72] 2026-10-12T00:26:58: Skipping the clearing half of the recipe image backfill: 62 recipes reference an image but no image files were found under /Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-c/tests/.temp/gw3/recipes. If the recipe data volume was not mounted, nothing was cleared.
+[INFO|2026-09-03-16.12.44_4b91d3a7c0e2_backfill_recipe_image_column|L96] 2026-10-12T00:26:58: Recipe image backfill checked 69 recipes: 0 image references restored, 0 cleared
+[INFO|migration|L611] 2026-10-12T00:26:58: Running upgrade 4b91d3a7c0e2 -> 3527efeeec34, 'add recipe_note_ref_link'
+[INFO|migration|L611] 2026-10-12T00:26:58: Running upgrade 3527efeeec34 -> 27621d27c7e1, add structured recipe times
+[INFO|2026-09-24-13.16.56_27621d27c7e1_add_structured_recipe_times|L196] 2026-10-12T00:26:58: Converted 0 recipe times to structured durations and cleared 0 empty ones across 69 recipes
+[INFO|legacy_backup_fixes|L203] 2026-10-12T00:26:58: Checking for migration data fixes
+[INFO|legacy_backup_fixes|L203] 2026-10-12T00:26:58: Checking for migration data fixes
+[INFO|backup_v2|L94] 2026-10-12T00:26:59: initializing backup restore
+[INFO|backup_v2|L117] 2026-10-12T00:26:59: importing database tables
+[INFO|backup_v2|L120] 2026-10-12T00:26:59: database tables imported successfully
+[INFO|backup_v2|L122] 2026-10-12T00:26:59: restoring data directory
+[INFO|backup_v2|L89] 2026-10-12T00:26:59: invalidating appsettings cache
+[WARNING|settings|L109] 2026-10-12T00:26:59: Secrets directory '/run/secrets' does not exist
+[INFO|backup_v2|L124] 2026-10-12T00:26:59: data directory restored successfully
+[INFO|backup_v2|L125] 2026-10-12T00:26:59: backup restore complete
+[INFO|migration|L205] 2026-10-12T00:26:59: Context impl SQLiteImpl.
+[INFO|migration|L208] 2026-10-12T00:26:59: Will assume non-transactional DDL.
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade  -> 6b0f5f32d602, Initial tables
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade 6b0f5f32d602 -> 263dd6707191, convert quantity from integer to float
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade 263dd6707191 -> f1a2dbee5fe9, Add original_text column to recipes_ingredients
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade f1a2dbee5fe9 -> 59eb59135381, add tags to cookbooks
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade 59eb59135381 -> 09dfc897ad62, add require_all for cookbook filters
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade 09dfc897ad62 -> ab0bae02578f, Add use_abbreviation column to ingredients
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade ab0bae02578f -> f30cf048c228, add new webhook fields
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade f30cf048c228 -> 188374910655, add login_attemps and locked_at field to user table
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade 188374910655 -> 089bfa50d0ed, Add is_ocr_recipe column to recipes
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade 089bfa50d0ed -> 44e8d670719d, add extras to shopping lists, list items, and ingredient foods
+[INFO|migration|L205] 2026-10-12T00:26:59: Context impl SQLiteImpl.
+[INFO|migration|L208] 2026-10-12T00:26:59: Will assume non-transactional DDL.
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade 44e8d670719d -> 2ea7a807915c, add recipe_timeline_events table
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade 2ea7a807915c -> 1923519381ad, added recipe last made timestamp
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade 1923519381ad -> 167eb69066ad, add recipe_scale to shopping list item ref
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade 167eb69066ad -> 165d943c64ee, add related user to mealplan
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade 165d943c64ee -> ff5f73b01a7a, add missing foreign key and order indices
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade ff5f73b01a7a -> 16160bf731a0, add more indices necessary for search
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade 16160bf731a0 -> 5ab195a474eb, add normalized search properties
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade 5ab195a474eb -> b04a08da2108, added shopping list label settings
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade b04a08da2108 -> 38514b39a824, add auth_method to user table
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade 38514b39a824 -> b3dbb554ba53, postgres fuzzy search
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade b3dbb554ba53 -> 04ac51cbe9a4, added group slug
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade 04ac51cbe9a4 -> 1825b5225403, added recipe note to shopping list recipe ref
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade 1825b5225403 -> bcfdad6b7355, remove tool name and slug unique contraints
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade bcfdad6b7355 -> 0341b154f79a, added normalized unit and food names
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade 0341b154f79a -> dded3119c1fe, added unique constraints
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade dded3119c1fe -> ba1e4a6cfe99, added plural names and alias tables for foods and units
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade ba1e4a6cfe99 -> 2298bb460ffd, added user to shopping list
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade 2298bb460ffd -> 09aba125b57a, add OIDC auth method
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade 09aba125b57a -> d7c6efd2de42, migrate favorites and ratings to user_ratings
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade d7c6efd2de42 -> 7788478a0338, add group recipe actions
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade 7788478a0338 -> 32d69327997b, Add staple flag to foods
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade 32d69327997b -> feecc8ffb956, add households
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade feecc8ffb956 -> be568e39ffdf, added household recipe lock setting and household management user permission
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade be568e39ffdf -> 1fe4bd37ccc8, add households filter to meal plans
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade 1fe4bd37ccc8 -> 602927e1013e, 'add the rest of the schema.org nutrition properties'
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade 602927e1013e -> 86054b40fd06, added query_filter_string to cookbook and mealplan
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade 86054b40fd06 -> 3897397b4631, 'Add summary to recipe instructions'
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade 3897397b4631 -> b1020f328e98, add recipe yield quantity
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade b1020f328e98 -> b9e516e2d3b3, add household to recipe last made, household to foods, and household to tools
+[INFO|2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_|L167] 2026-10-12T00:26:59: Running new model migration (migrate_recipe_last_made_to_household)
+[INFO|2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_|L167] 2026-10-12T00:26:59: Running new model migration (migrate_foods_on_hand_to_household)
+[INFO|2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_|L167] 2026-10-12T00:26:59: Running new model migration (migrate_tools_on_hand_to_household)
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade b9e516e2d3b3 -> 7cf3054cbbcc, remove instructions index
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade 7cf3054cbbcc -> d7b3ce6fa31a, empty migration to fix food flag data
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade d7b3ce6fa31a -> e6bb583aac2d, 'Add label notifier CRUD bools'
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade e6bb583aac2d -> 1d9a002d7234, 'Add referenced_recipe to ingredients'
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade 1d9a002d7234 -> a39c7f1826e3, add unit standardization fields
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade a39c7f1826e3 -> cdc93edaf73d, 'Add mealplan updated and deleted to group notifier options'
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade cdc93edaf73d -> 4395a04f7784, add announcements
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade 4395a04f7784 -> c7427796f7b6, more aggresive normalization
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade c7427796f7b6 -> 2187537c52b8, add table for ai providers
+[WARNING|settings|L109] 2026-10-12T00:26:59: Secrets directory '/run/secrets' does not exist
+[INFO|2026-05-18-16.27.05_2187537c52b8_add_table_for_ai_providers|L114] 2026-10-12T00:26:59: Creating provider settings for group_id='21b6f76273294fb09b07e10b59244036'
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade 2187537c52b8 -> 69e942bab3aa, add tokens valid after column to users
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade 69e942bab3aa -> b3f1c9a27d84, add external avatar hash to users
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade b3f1c9a27d84 -> f2191b69db2e, add ingredient substitutions
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade f2191b69db2e -> 4b91d3a7c0e2, backfill recipe image column from disk
+[WARNING|2026-09-03-16.12.44_4b91d3a7c0e2_backfill_recipe_image_column|L72] 2026-10-12T00:26:59: Skipping the clearing half of the recipe image backfill: 36 recipes reference an image but no image files were found under /Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-c/tests/.temp/gw3/recipes. If the recipe data volume was not mounted, nothing was cleared.
+[INFO|2026-09-03-16.12.44_4b91d3a7c0e2_backfill_recipe_image_column|L96] 2026-10-12T00:26:59: Recipe image backfill checked 44 recipes: 0 image references restored, 0 cleared
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade 4b91d3a7c0e2 -> 3527efeeec34, 'add recipe_note_ref_link'
+[INFO|migration|L611] 2026-10-12T00:26:59: Running upgrade 3527efeeec34 -> 27621d27c7e1, add structured recipe times
+[INFO|2026-09-24-13.16.56_27621d27c7e1_add_structured_recipe_times|L196] 2026-10-12T00:26:59: Converted 0 recipe times to structured durations and cleared 0 empty ones across 44 recipes
+[INFO|legacy_backup_fixes|L203] 2026-10-12T00:26:59: Checking for migration data fixes
+[INFO|legacy_backup_fixes|L203] 2026-10-12T00:27:00: Checking for migration data fixes
+[INFO|backup_v2|L94] 2026-10-12T00:27:00: initializing backup restore
+[INFO|backup_v2|L117] 2026-10-12T00:27:00: importing database tables
+[INFO|backup_v2|L120] 2026-10-12T00:27:00: database tables imported successfully
+[INFO|backup_v2|L122] 2026-10-12T00:27:00: restoring data directory
+[INFO|backup_v2|L89] 2026-10-12T00:27:00: invalidating appsettings cache
+[WARNING|settings|L109] 2026-10-12T00:27:00: Secrets directory '/run/secrets' does not exist
+[INFO|backup_v2|L124] 2026-10-12T00:27:00: data directory restored successfully
+[INFO|backup_v2|L125] 2026-10-12T00:27:00: backup restore complete
+[INFO|migration|L205] 2026-10-12T00:27:00: Context impl SQLiteImpl.
+[INFO|migration|L208] 2026-10-12T00:27:00: Will assume non-transactional DDL.
+[INFO|migration|L611] 2026-10-12T00:27:00: Running upgrade  -> 6b0f5f32d602, Initial tables
+[INFO|migration|L611] 2026-10-12T00:27:00: Running upgrade 6b0f5f32d602 -> 263dd6707191, convert quantity from integer to float
+[INFO|migration|L611] 2026-10-12T00:27:00: Running upgrade 263dd6707191 -> f1a2dbee5fe9, Add original_text column to recipes_ingredients
+[INFO|migration|L611] 2026-10-12T00:27:00: Running upgrade f1a2dbee5fe9 -> 59eb59135381, add tags to cookbooks
+[INFO|migration|L611] 2026-10-12T00:27:00: Running upgrade 59eb59135381 -> 09dfc897ad62, add require_all for cookbook filters
+[INFO|migration|L611] 2026-10-12T00:27:00: Running upgrade 09dfc897ad62 -> ab0bae02578f, Add use_abbreviation column to ingredients
+[INFO|migration|L611] 2026-10-12T00:27:00: Running upgrade ab0bae02578f -> f30cf048c228, add new webhook fields
+[INFO|migration|L611] 2026-10-12T00:27:00: Running upgrade f30cf048c228 -> 188374910655, add login_attemps and locked_at field to user table
+[INFO|migration|L611] 2026-10-12T00:27:00: Running upgrade 188374910655 -> 089bfa50d0ed, Add is_ocr_recipe column to recipes
+[INFO|migration|L611] 2026-10-12T00:27:00: Running upgrade 089bfa50d0ed -> 44e8d670719d, add extras to shopping lists, list items, and ingredient foods
+[INFO|migration|L611] 2026-10-12T00:27:00: Running upgrade 44e8d670719d -> 2ea7a807915c, add recipe_timeline_events table
+[INFO|migration|L611] 2026-10-12T00:27:00: Running upgrade 2ea7a807915c -> 1923519381ad, added recipe last made timestamp
+[INFO|migration|L611] 2026-10-12T00:27:00: Running upgrade 1923519381ad -> 167eb69066ad, add recipe_scale to shopping list item ref
+[INFO|migration|L611] 2026-10-12T00:27:00: Running upgrade 167eb69066ad -> 165d943c64ee, add related user to mealplan
+[INFO|migration|L611] 2026-10-12T00:27:00: Running upgrade 165d943c64ee -> ff5f73b01a7a, add missing foreign key and order indices
+[INFO|migration|L611] 2026-10-12T00:27:00: Running upgrade ff5f73b01a7a -> 16160bf731a0, add more indices necessary for search
+[INFO|migration|L611] 2026-10-12T00:27:00: Running upgrade 16160bf731a0 -> 5ab195a474eb, add normalized search properties
+[INFO|migration|L611] 2026-10-12T00:27:00: Running upgrade 5ab195a474eb -> b04a08da2108, added shopping list label settings
+[INFO|migration|L611] 2026-10-12T00:27:00: Running upgrade b04a08da2108 -> 38514b39a824, add auth_method to user table
+[INFO|migration|L611] 2026-10-12T00:27:00: Running upgrade 38514b39a824 -> b3dbb554ba53, postgres fuzzy search
+[INFO|migration|L611] 2026-10-12T00:27:00: Running upgrade b3dbb554ba53 -> 04ac51cbe9a4, added group slug
+[INFO|migration|L611] 2026-10-12T00:27:00: Running upgrade 04ac51cbe9a4 -> 1825b5225403, added recipe note to shopping list recipe ref
+[INFO|migration|L611] 2026-10-12T00:27:00: Running upgrade 1825b5225403 -> bcfdad6b7355, remove tool name and slug unique contraints
+[INFO|migration|L611] 2026-10-12T00:27:00: Running upgrade bcfdad6b7355 -> 0341b154f79a, added normalized unit and food names
+[INFO|migration|L611] 2026-10-12T00:27:00: Running upgrade 0341b154f79a -> dded3119c1fe, added unique constraints
+[INFO|migration|L611] 2026-10-12T00:27:00: Running upgrade dded3119c1fe -> ba1e4a6cfe99, added plural names and alias tables for foods and units
+[INFO|migration|L205] 2026-10-12T00:27:01: Context impl SQLiteImpl.
+[INFO|migration|L208] 2026-10-12T00:27:01: Will assume non-transactional DDL.
+[INFO|migration|L611] 2026-10-12T00:27:01: Running upgrade ba1e4a6cfe99 -> 2298bb460ffd, added user to shopping list
+[INFO|migration|L611] 2026-10-12T00:27:01: Running upgrade 2298bb460ffd -> 09aba125b57a, add OIDC auth method
+[INFO|migration|L611] 2026-10-12T00:27:01: Running upgrade 09aba125b57a -> d7c6efd2de42, migrate favorites and ratings to user_ratings
+[INFO|migration|L611] 2026-10-12T00:27:01: Running upgrade d7c6efd2de42 -> 7788478a0338, add group recipe actions
+[INFO|migration|L611] 2026-10-12T00:27:01: Running upgrade 7788478a0338 -> 32d69327997b, Add staple flag to foods
+[INFO|migration|L611] 2026-10-12T00:27:01: Running upgrade 32d69327997b -> feecc8ffb956, add households
+[INFO|migration|L611] 2026-10-12T00:27:01: Running upgrade feecc8ffb956 -> be568e39ffdf, added household recipe lock setting and household management user permission
+[INFO|migration|L611] 2026-10-12T00:27:01: Running upgrade be568e39ffdf -> 1fe4bd37ccc8, add households filter to meal plans
+[INFO|migration|L611] 2026-10-12T00:27:01: Running upgrade 1fe4bd37ccc8 -> 602927e1013e, 'add the rest of the schema.org nutrition properties'
+[INFO|migration|L611] 2026-10-12T00:27:01: Running upgrade 602927e1013e -> 86054b40fd06, added query_filter_string to cookbook and mealplan
+[INFO|migration|L611] 2026-10-12T00:27:01: Running upgrade 86054b40fd06 -> 3897397b4631, 'Add summary to recipe instructions'
+[INFO|migration|L611] 2026-10-12T00:27:01: Running upgrade 3897397b4631 -> b1020f328e98, add recipe yield quantity
+[INFO|migration|L611] 2026-10-12T00:27:01: Running upgrade b1020f328e98 -> b9e516e2d3b3, add household to recipe last made, household to foods, and household to tools
+[INFO|2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_|L167] 2026-10-12T00:27:01: Running new model migration (migrate_recipe_last_made_to_household)
+[INFO|2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_|L167] 2026-10-12T00:27:01: Running new model migration (migrate_foods_on_hand_to_household)
+[INFO|2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_|L167] 2026-10-12T00:27:01: Running new model migration (migrate_tools_on_hand_to_household)
+[INFO|migration|L611] 2026-10-12T00:27:01: Running upgrade b9e516e2d3b3 -> 7cf3054cbbcc, remove instructions index
+[INFO|migration|L611] 2026-10-12T00:27:01: Running upgrade 7cf3054cbbcc -> d7b3ce6fa31a, empty migration to fix food flag data
+[INFO|migration|L611] 2026-10-12T00:27:01: Running upgrade d7b3ce6fa31a -> e6bb583aac2d, 'Add label notifier CRUD bools'
+[INFO|migration|L611] 2026-10-12T00:27:01: Running upgrade e6bb583aac2d -> 1d9a002d7234, 'Add referenced_recipe to ingredients'
+[INFO|migration|L611] 2026-10-12T00:27:01: Running upgrade 1d9a002d7234 -> a39c7f1826e3, add unit standardization fields
+[INFO|migration|L611] 2026-10-12T00:27:01: Running upgrade a39c7f1826e3 -> cdc93edaf73d, 'Add mealplan updated and deleted to group notifier options'
+[INFO|migration|L611] 2026-10-12T00:27:01: Running upgrade cdc93edaf73d -> 4395a04f7784, add announcements
+[INFO|migration|L611] 2026-10-12T00:27:01: Running upgrade 4395a04f7784 -> c7427796f7b6, more aggresive normalization
+[INFO|migration|L611] 2026-10-12T00:27:01: Running upgrade c7427796f7b6 -> 2187537c52b8, add table for ai providers
+[WARNING|settings|L109] 2026-10-12T00:27:01: Secrets directory '/run/secrets' does not exist
+[INFO|2026-05-18-16.27.05_2187537c52b8_add_table_for_ai_providers|L114] 2026-10-12T00:27:01: Creating provider settings for group_id='65bf5b14b4e845ad894a65cf975155ad'
+[INFO|2026-05-18-16.27.05_2187537c52b8_add_table_for_ai_providers|L114] 2026-10-12T00:27:01: Creating provider settings for group_id='faa95304b2cb46d88afbe5b0b6f38541'
+[INFO|migration|L611] 2026-10-12T00:27:01: Running upgrade 2187537c52b8 -> 69e942bab3aa, add tokens valid after column to users
+[INFO|migration|L611] 2026-10-12T00:27:01: Running upgrade 69e942bab3aa -> b3f1c9a27d84, add external avatar hash to users
+[INFO|migration|L611] 2026-10-12T00:27:01: Running upgrade b3f1c9a27d84 -> f2191b69db2e, add ingredient substitutions
+[INFO|migration|L611] 2026-10-12T00:27:01: Running upgrade f2191b69db2e -> 4b91d3a7c0e2, backfill recipe image column from disk
+[WARNING|2026-09-03-16.12.44_4b91d3a7c0e2_backfill_recipe_image_column|L72] 2026-10-12T00:27:01: Skipping the clearing half of the recipe image backfill: 213 recipes reference an image but no image files were found under /Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-c/tests/.temp/gw3/recipes. If the recipe data volume was not mounted, nothing was cleared.
+[INFO|2026-09-03-16.12.44_4b91d3a7c0e2_backfill_recipe_image_column|L96] 2026-10-12T00:27:01: Recipe image backfill checked 218 recipes: 0 image references restored, 0 cleared
+[INFO|migration|L611] 2026-10-12T00:27:01: Running upgrade 4b91d3a7c0e2 -> 3527efeeec34, 'add recipe_note_ref_link'
+[INFO|migration|L611] 2026-10-12T00:27:01: Running upgrade 3527efeeec34 -> 27621d27c7e1, add structured recipe times
+[INFO|2026-09-24-13.16.56_27621d27c7e1_add_structured_recipe_times|L196] 2026-10-12T00:27:01: Converted 0 recipe times to structured durations and cleared 0 empty ones across 218 recipes
+[INFO|legacy_backup_fixes|L203] 2026-10-12T00:27:01: Checking for migration data fixes
+[INFO|legacy_backup_fixes|L132] 2026-10-12T00:27:01: Fixing shopping list label settings
+[INFO|legacy_backup_fixes|L203] 2026-10-12T00:27:01: Checking for migration data fixes
+[INFO|backup_v2|L94] 2026-10-12T00:27:02: initializing backup restore
+[INFO|backup_v2|L117] 2026-10-12T00:27:02: importing database tables
+[INFO|backup_v2|L120] 2026-10-12T00:27:03: database tables imported successfully
+[INFO|backup_v2|L122] 2026-10-12T00:27:03: restoring data directory
+[INFO|backup_v2|L89] 2026-10-12T00:27:03: invalidating appsettings cache
+[WARNING|settings|L109] 2026-10-12T00:27:03: Secrets directory '/run/secrets' does not exist
+[INFO|backup_v2|L124] 2026-10-12T00:27:03: data directory restored successfully
+[INFO|backup_v2|L125] 2026-10-12T00:27:03: backup restore complete
+[INFO|migration|L205] 2026-10-12T00:27:03: Context impl SQLiteImpl.
+[INFO|migration|L208] 2026-10-12T00:27:03: Will assume non-transactional DDL.
+[INFO|migration|L611] 2026-10-12T00:27:03: Running upgrade  -> 6b0f5f32d602, Initial tables
+[INFO|migration|L611] 2026-10-12T00:27:03: Running upgrade 6b0f5f32d602 -> 263dd6707191, convert quantity from integer to float
+[INFO|migration|L611] 2026-10-12T00:27:03: Running upgrade 263dd6707191 -> f1a2dbee5fe9, Add original_text column to recipes_ingredients
+[INFO|migration|L611] 2026-10-12T00:27:03: Running upgrade f1a2dbee5fe9 -> 59eb59135381, add tags to cookbooks
+[INFO|migration|L611] 2026-10-12T00:27:03: Running upgrade 59eb59135381 -> 09dfc897ad62, add require_all for cookbook filters
+[INFO|migration|L611] 2026-10-12T00:27:03: Running upgrade 09dfc897ad62 -> ab0bae02578f, Add use_abbreviation column to ingredients
+[INFO|migration|L611] 2026-10-12T00:27:03: Running upgrade ab0bae02578f -> f30cf048c228, add new webhook fields
+[INFO|migration|L611] 2026-10-12T00:27:03: Running upgrade f30cf048c228 -> 188374910655, add login_attemps and locked_at field to user table
+[INFO|migration|L611] 2026-10-12T00:27:03: Running upgrade 188374910655 -> 089bfa50d0ed, Add is_ocr_recipe column to recipes
+[INFO|migration|L611] 2026-10-12T00:27:03: Running upgrade 089bfa50d0ed -> 44e8d670719d, add extras to shopping lists, list items, and ingredient foods
+[INFO|migration|L611] 2026-10-12T00:27:03: Running upgrade 44e8d670719d -> 2ea7a807915c, add recipe_timeline_events table
+[INFO|migration|L611] 2026-10-12T00:27:03: Running upgrade 2ea7a807915c -> 1923519381ad, added recipe last made timestamp
+[INFO|migration|L611] 2026-10-12T00:27:03: Running upgrade 1923519381ad -> 167eb69066ad, add recipe_scale to shopping list item ref
+[INFO|migration|L611] 2026-10-12T00:27:03: Running upgrade 167eb69066ad -> 165d943c64ee, add related user to mealplan
+[INFO|migration|L611] 2026-10-12T00:27:03: Running upgrade 165d943c64ee -> ff5f73b01a7a, add missing foreign key and order indices
+[INFO|migration|L611] 2026-10-12T00:27:03: Running upgrade ff5f73b01a7a -> 16160bf731a0, add more indices necessary for search
+[INFO|migration|L611] 2026-10-12T00:27:03: Running upgrade 16160bf731a0 -> 5ab195a474eb, add normalized search properties
+[INFO|migration|L611] 2026-10-12T00:27:03: Running upgrade 5ab195a474eb -> b04a08da2108, added shopping list label settings
+[INFO|migration|L611] 2026-10-12T00:27:03: Running upgrade b04a08da2108 -> 38514b39a824, add auth_method to user table
+[INFO|migration|L611] 2026-10-12T00:27:03: Running upgrade 38514b39a824 -> b3dbb554ba53, postgres fuzzy search
+[INFO|migration|L611] 2026-10-12T00:27:03: Running upgrade b3dbb554ba53 -> 04ac51cbe9a4, added group slug
+[INFO|migration|L611] 2026-10-12T00:27:03: Running upgrade 04ac51cbe9a4 -> 1825b5225403, added recipe note to shopping list recipe ref
+[INFO|migration|L611] 2026-10-12T00:27:03: Running upgrade 1825b5225403 -> bcfdad6b7355, remove tool name and slug unique contraints
+[INFO|migration|L205] 2026-10-12T00:27:03: Context impl SQLiteImpl.
+[INFO|migration|L208] 2026-10-12T00:27:03: Will assume non-transactional DDL.
+[INFO|migration|L611] 2026-10-12T00:27:03: Running upgrade bcfdad6b7355 -> 0341b154f79a, added normalized unit and food names
+[INFO|migration|L611] 2026-10-12T00:27:03: Running upgrade 0341b154f79a -> dded3119c1fe, added unique constraints
+[INFO|migration|L611] 2026-10-12T00:27:03: Running upgrade dded3119c1fe -> ba1e4a6cfe99, added plural names and alias tables for foods and units
+[INFO|migration|L611] 2026-10-12T00:27:03: Running upgrade ba1e4a6cfe99 -> 2298bb460ffd, added user to shopping list
+[INFO|migration|L611] 2026-10-12T00:27:03: Running upgrade 2298bb460ffd -> 09aba125b57a, add OIDC auth method
+[INFO|migration|L611] 2026-10-12T00:27:03: Running upgrade 09aba125b57a -> d7c6efd2de42, migrate favorites and ratings to user_ratings
+[INFO|migration|L611] 2026-10-12T00:27:03: Running upgrade d7c6efd2de42 -> 7788478a0338, add group recipe actions
+[INFO|migration|L611] 2026-10-12T00:27:03: Running upgrade 7788478a0338 -> 32d69327997b, Add staple flag to foods
+[INFO|migration|L611] 2026-10-12T00:27:03: Running upgrade 32d69327997b -> feecc8ffb956, add households
+[INFO|migration|L611] 2026-10-12T00:27:03: Running upgrade feecc8ffb956 -> be568e39ffdf, added household recipe lock setting and household management user permission
+[INFO|migration|L611] 2026-10-12T00:27:03: Running upgrade be568e39ffdf -> 1fe4bd37ccc8, add households filter to meal plans
+[INFO|migration|L611] 2026-10-12T00:27:03: Running upgrade 1fe4bd37ccc8 -> 602927e1013e, 'add the rest of the schema.org nutrition properties'
+[INFO|migration|L611] 2026-10-12T00:27:03: Running upgrade 602927e1013e -> 86054b40fd06, added query_filter_string to cookbook and mealplan
+[INFO|migration|L611] 2026-10-12T00:27:03: Running upgrade 86054b40fd06 -> 3897397b4631, 'Add summary to recipe instructions'
+[INFO|migration|L611] 2026-10-12T00:27:03: Running upgrade 3897397b4631 -> b1020f328e98, add recipe yield quantity
+[INFO|migration|L611] 2026-10-12T00:27:03: Running upgrade b1020f328e98 -> b9e516e2d3b3, add household to recipe last made, household to foods, and household to tools
+[INFO|2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_|L167] 2026-10-12T00:27:03: Running new model migration (migrate_recipe_last_made_to_household)
+[INFO|2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_|L167] 2026-10-12T00:27:03: Running new model migration (migrate_foods_on_hand_to_household)
+[INFO|2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_|L167] 2026-10-12T00:27:03: Running new model migration (migrate_tools_on_hand_to_household)
+[INFO|migration|L611] 2026-10-12T00:27:03: Running upgrade b9e516e2d3b3 -> 7cf3054cbbcc, remove instructions index
+[INFO|migration|L611] 2026-10-12T00:27:04: Running upgrade 7cf3054cbbcc -> d7b3ce6fa31a, empty migration to fix food flag data
+[INFO|migration|L611] 2026-10-12T00:27:04: Running upgrade d7b3ce6fa31a -> e6bb583aac2d, 'Add label notifier CRUD bools'
+[INFO|migration|L611] 2026-10-12T00:27:04: Running upgrade e6bb583aac2d -> 1d9a002d7234, 'Add referenced_recipe to ingredients'
+[INFO|migration|L611] 2026-10-12T00:27:04: Running upgrade 1d9a002d7234 -> a39c7f1826e3, add unit standardization fields
+[INFO|migration|L611] 2026-10-12T00:27:04: Running upgrade a39c7f1826e3 -> cdc93edaf73d, 'Add mealplan updated and deleted to group notifier options'
+[INFO|migration|L611] 2026-10-12T00:27:04: Running upgrade cdc93edaf73d -> 4395a04f7784, add announcements
+[INFO|migration|L611] 2026-10-12T00:27:04: Running upgrade 4395a04f7784 -> c7427796f7b6, more aggresive normalization
+[INFO|migration|L611] 2026-10-12T00:27:04: Running upgrade c7427796f7b6 -> 2187537c52b8, add table for ai providers
+[WARNING|settings|L109] 2026-10-12T00:27:04: Secrets directory '/run/secrets' does not exist
+[INFO|2026-05-18-16.27.05_2187537c52b8_add_table_for_ai_providers|L114] 2026-10-12T00:27:04: Creating provider settings for group_id='7581e99e39ed4a82ba2d658d4c212640'
+[INFO|2026-05-18-16.27.05_2187537c52b8_add_table_for_ai_providers|L114] 2026-10-12T00:27:04: Creating provider settings for group_id='ac84a0c6e2304fecab32e03ef84e843c'
+[INFO|migration|L611] 2026-10-12T00:27:04: Running upgrade 2187537c52b8 -> 69e942bab3aa, add tokens valid after column to users
+[INFO|migration|L611] 2026-10-12T00:27:04: Running upgrade 69e942bab3aa -> b3f1c9a27d84, add external avatar hash to users
+[INFO|migration|L611] 2026-10-12T00:27:04: Running upgrade b3f1c9a27d84 -> f2191b69db2e, add ingredient substitutions
+[INFO|migration|L611] 2026-10-12T00:27:04: Running upgrade f2191b69db2e -> 4b91d3a7c0e2, backfill recipe image column from disk
+[WARNING|2026-09-03-16.12.44_4b91d3a7c0e2_backfill_recipe_image_column|L72] 2026-10-12T00:27:04: Skipping the clearing half of the recipe image backfill: 45 recipes reference an image but no image files were found under /Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-c/tests/.temp/gw3/recipes. If the recipe data volume was not mounted, nothing was cleared.
+[INFO|2026-09-03-16.12.44_4b91d3a7c0e2_backfill_recipe_image_column|L96] 2026-10-12T00:27:04: Recipe image backfill checked 46 recipes: 0 image references restored, 0 cleared
+[INFO|migration|L611] 2026-10-12T00:27:04: Running upgrade 4b91d3a7c0e2 -> 3527efeeec34, 'add recipe_note_ref_link'
+[INFO|migration|L611] 2026-10-12T00:27:04: Running upgrade 3527efeeec34 -> 27621d27c7e1, add structured recipe times
+[INFO|2026-09-24-13.16.56_27621d27c7e1_add_structured_recipe_times|L196] 2026-10-12T00:27:04: Converted 0 recipe times to structured durations and cleared 0 empty ones across 46 recipes
+[INFO|legacy_backup_fixes|L203] 2026-10-12T00:27:04: Checking for migration data fixes
+[INFO|legacy_backup_fixes|L203] 2026-10-12T00:27:04: Checking for migration data fixes
+[INFO|backup_v2|L94] 2026-10-12T00:27:04: initializing backup restore
+[INFO|backup_v2|L117] 2026-10-12T00:27:04: importing database tables
+[INFO|backup_v2|L120] 2026-10-12T00:27:04: database tables imported successfully
+[INFO|backup_v2|L122] 2026-10-12T00:27:04: restoring data directory
+[INFO|backup_v2|L89] 2026-10-12T00:27:04: invalidating appsettings cache
+[WARNING|settings|L109] 2026-10-12T00:27:04: Secrets directory '/run/secrets' does not exist
+[INFO|backup_v2|L124] 2026-10-12T00:27:04: data directory restored successfully
+[INFO|backup_v2|L125] 2026-10-12T00:27:04: backup restore complete
+[INFO|migration|L205] 2026-10-12T00:27:04: Context impl SQLiteImpl.
+[INFO|migration|L208] 2026-10-12T00:27:04: Will assume non-transactional DDL.
+[INFO|migration|L611] 2026-10-12T00:27:04: Running upgrade  -> 6b0f5f32d602, Initial tables
+[INFO|migration|L611] 2026-10-12T00:27:04: Running upgrade 6b0f5f32d602 -> 263dd6707191, convert quantity from integer to float
+[INFO|migration|L611] 2026-10-12T00:27:04: Running upgrade 263dd6707191 -> f1a2dbee5fe9, Add original_text column to recipes_ingredients
+[INFO|migration|L611] 2026-10-12T00:27:04: Running upgrade f1a2dbee5fe9 -> 59eb59135381, add tags to cookbooks
+[INFO|migration|L611] 2026-10-12T00:27:04: Running upgrade 59eb59135381 -> 09dfc897ad62, add require_all for cookbook filters
+[INFO|migration|L611] 2026-10-12T00:27:04: Running upgrade 09dfc897ad62 -> ab0bae02578f, Add use_abbreviation column to ingredients
+[INFO|migration|L611] 2026-10-12T00:27:04: Running upgrade ab0bae02578f -> f30cf048c228, add new webhook fields
+[INFO|migration|L611] 2026-10-12T00:27:04: Running upgrade f30cf048c228 -> 188374910655, add login_attemps and locked_at field to user table
+[INFO|migration|L611] 2026-10-12T00:27:04: Running upgrade 188374910655 -> 089bfa50d0ed, Add is_ocr_recipe column to recipes
+[INFO|migration|L611] 2026-10-12T00:27:04: Running upgrade 089bfa50d0ed -> 44e8d670719d, add extras to shopping lists, list items, and ingredient foods
+[INFO|migration|L611] 2026-10-12T00:27:04: Running upgrade 44e8d670719d -> 2ea7a807915c, add recipe_timeline_events table
+[INFO|migration|L611] 2026-10-12T00:27:04: Running upgrade 2ea7a807915c -> 1923519381ad, added recipe last made timestamp
+[INFO|migration|L611] 2026-10-12T00:27:04: Running upgrade 1923519381ad -> 167eb69066ad, add recipe_scale to shopping list item ref
+[INFO|migration|L611] 2026-10-12T00:27:04: Running upgrade 167eb69066ad -> 165d943c64ee, add related user to mealplan
+[INFO|migration|L611] 2026-10-12T00:27:04: Running upgrade 165d943c64ee -> ff5f73b01a7a, add missing foreign key and order indices
+[INFO|migration|L611] 2026-10-12T00:27:04: Running upgrade ff5f73b01a7a -> 16160bf731a0, add more indices necessary for search
+[INFO|migration|L611] 2026-10-12T00:27:04: Running upgrade 16160bf731a0 -> 5ab195a474eb, add normalized search properties
+[INFO|migration|L611] 2026-10-12T00:27:04: Running upgrade 5ab195a474eb -> b04a08da2108, added shopping list label settings
+[INFO|migration|L611] 2026-10-12T00:27:04: Running upgrade b04a08da2108 -> 38514b39a824, add auth_method to user table
+[INFO|migration|L611] 2026-10-12T00:27:04: Running upgrade 38514b39a824 -> b3dbb554ba53, postgres fuzzy search
+[INFO|migration|L611] 2026-10-12T00:27:04: Running upgrade b3dbb554ba53 -> 04ac51cbe9a4, added group slug
+[INFO|migration|L611] 2026-10-12T00:27:04: Running upgrade 04ac51cbe9a4 -> 1825b5225403, added recipe note to shopping list recipe ref
+[INFO|migration|L611] 2026-10-12T00:27:04: Running upgrade 1825b5225403 -> bcfdad6b7355, remove tool name and slug unique contraints
+[INFO|migration|L611] 2026-10-12T00:27:04: Running upgrade bcfdad6b7355 -> 0341b154f79a, added normalized unit and food names
+[INFO|migration|L611] 2026-10-12T00:27:04: Running upgrade 0341b154f79a -> dded3119c1fe, added unique constraints
+[INFO|migration|L611] 2026-10-12T00:27:04: Running upgrade dded3119c1fe -> ba1e4a6cfe99, added plural names and alias tables for foods and units
+[INFO|migration|L611] 2026-10-12T00:27:04: Running upgrade ba1e4a6cfe99 -> 2298bb460ffd, added user to shopping list
+[INFO|migration|L611] 2026-10-12T00:27:04: Running upgrade 2298bb460ffd -> 09aba125b57a, add OIDC auth method
+[INFO|migration|L205] 2026-10-12T00:27:05: Context impl SQLiteImpl.
+[INFO|migration|L208] 2026-10-12T00:27:05: Will assume non-transactional DDL.
+[INFO|migration|L611] 2026-10-12T00:27:05: Running upgrade 09aba125b57a -> d7c6efd2de42, migrate favorites and ratings to user_ratings
+[INFO|migration|L611] 2026-10-12T00:27:05: Running upgrade d7c6efd2de42 -> 7788478a0338, add group recipe actions
+[INFO|migration|L611] 2026-10-12T00:27:05: Running upgrade 7788478a0338 -> 32d69327997b, Add staple flag to foods
+[INFO|migration|L611] 2026-10-12T00:27:05: Running upgrade 32d69327997b -> feecc8ffb956, add households
+[INFO|migration|L611] 2026-10-12T00:27:05: Running upgrade feecc8ffb956 -> be568e39ffdf, added household recipe lock setting and household management user permission
+[INFO|migration|L611] 2026-10-12T00:27:05: Running upgrade be568e39ffdf -> 1fe4bd37ccc8, add households filter to meal plans
+[INFO|migration|L611] 2026-10-12T00:27:05: Running upgrade 1fe4bd37ccc8 -> 602927e1013e, 'add the rest of the schema.org nutrition properties'
+[INFO|migration|L611] 2026-10-12T00:27:05: Running upgrade 602927e1013e -> 86054b40fd06, added query_filter_string to cookbook and mealplan
+[INFO|migration|L611] 2026-10-12T00:27:05: Running upgrade 86054b40fd06 -> 3897397b4631, 'Add summary to recipe instructions'
+[INFO|migration|L611] 2026-10-12T00:27:05: Running upgrade 3897397b4631 -> b1020f328e98, add recipe yield quantity
+[INFO|migration|L611] 2026-10-12T00:27:05: Running upgrade b1020f328e98 -> b9e516e2d3b3, add household to recipe last made, household to foods, and household to tools
+[INFO|2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_|L167] 2026-10-12T00:27:05: Running new model migration (migrate_recipe_last_made_to_household)
+[INFO|2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_|L167] 2026-10-12T00:27:05: Running new model migration (migrate_foods_on_hand_to_household)
+[INFO|2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_|L167] 2026-10-12T00:27:05: Running new model migration (migrate_tools_on_hand_to_household)
+[INFO|migration|L611] 2026-10-12T00:27:05: Running upgrade b9e516e2d3b3 -> 7cf3054cbbcc, remove instructions index
+[INFO|migration|L611] 2026-10-12T00:27:05: Running upgrade 7cf3054cbbcc -> d7b3ce6fa31a, empty migration to fix food flag data
+[INFO|migration|L611] 2026-10-12T00:27:05: Running upgrade d7b3ce6fa31a -> e6bb583aac2d, 'Add label notifier CRUD bools'
+[INFO|migration|L611] 2026-10-12T00:27:05: Running upgrade e6bb583aac2d -> 1d9a002d7234, 'Add referenced_recipe to ingredients'
+[INFO|migration|L611] 2026-10-12T00:27:05: Running upgrade 1d9a002d7234 -> a39c7f1826e3, add unit standardization fields
+[INFO|migration|L611] 2026-10-12T00:27:05: Running upgrade a39c7f1826e3 -> cdc93edaf73d, 'Add mealplan updated and deleted to group notifier options'
+[INFO|migration|L611] 2026-10-12T00:27:05: Running upgrade cdc93edaf73d -> 4395a04f7784, add announcements
+[INFO|migration|L611] 2026-10-12T00:27:05: Running upgrade 4395a04f7784 -> c7427796f7b6, more aggresive normalization
+[INFO|migration|L611] 2026-10-12T00:27:05: Running upgrade c7427796f7b6 -> 2187537c52b8, add table for ai providers
+[WARNING|settings|L109] 2026-10-12T00:27:05: Secrets directory '/run/secrets' does not exist
+[INFO|2026-05-18-16.27.05_2187537c52b8_add_table_for_ai_providers|L114] 2026-10-12T00:27:05: Creating provider settings for group_id='42c4431a30cb4c91bd5c09555f1aff35'
+[INFO|migration|L611] 2026-10-12T00:27:05: Running upgrade 2187537c52b8 -> 69e942bab3aa, add tokens valid after column to users
+[INFO|migration|L611] 2026-10-12T00:27:05: Running upgrade 69e942bab3aa -> b3f1c9a27d84, add external avatar hash to users
+[INFO|migration|L611] 2026-10-12T00:27:05: Running upgrade b3f1c9a27d84 -> f2191b69db2e, add ingredient substitutions
+[INFO|migration|L611] 2026-10-12T00:27:05: Running upgrade f2191b69db2e -> 4b91d3a7c0e2, backfill recipe image column from disk
+[WARNING|2026-09-03-16.12.44_4b91d3a7c0e2_backfill_recipe_image_column|L72] 2026-10-12T00:27:05: Skipping the clearing half of the recipe image backfill: 42 recipes reference an image but no image files were found under /Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-c/tests/.temp/gw3/recipes. If the recipe data volume was not mounted, nothing was cleared.
+[INFO|2026-09-03-16.12.44_4b91d3a7c0e2_backfill_recipe_image_column|L96] 2026-10-12T00:27:05: Recipe image backfill checked 42 recipes: 0 image references restored, 0 cleared
+[INFO|migration|L611] 2026-10-12T00:27:05: Running upgrade 4b91d3a7c0e2 -> 3527efeeec34, 'add recipe_note_ref_link'
+[INFO|migration|L611] 2026-10-12T00:27:05: Running upgrade 3527efeeec34 -> 27621d27c7e1, add structured recipe times
+[INFO|2026-09-24-13.16.56_27621d27c7e1_add_structured_recipe_times|L196] 2026-10-12T00:27:05: Converted 0 recipe times to structured durations and cleared 0 empty ones across 42 recipes
+[INFO|legacy_backup_fixes|L203] 2026-10-12T00:27:05: Checking for migration data fixes
+[INFO|legacy_backup_fixes|L203] 2026-10-12T00:27:05: Checking for migration data fixes
+[INFO|backup_v2|L94] 2026-10-12T00:27:05: initializing backup restore
+[INFO|backup_v2|L117] 2026-10-12T00:27:05: importing database tables
+[INFO|backup_v2|L94] 2026-10-12T00:27:05: initializing backup restore
+[INFO|backup_v2|L117] 2026-10-12T00:27:05: importing database tables
+[INFO|backup_v2|L120] 2026-10-12T00:27:05: database tables imported successfully
+[INFO|backup_v2|L122] 2026-10-12T00:27:05: restoring data directory
+[INFO|backup_v2|L89] 2026-10-12T00:27:05: invalidating appsettings cache
+[WARNING|settings|L109] 2026-10-12T00:27:05: Secrets directory '/run/secrets' does not exist
+[INFO|backup_v2|L124] 2026-10-12T00:27:05: data directory restored successfully
+[INFO|backup_v2|L125] 2026-10-12T00:27:05: backup restore complete
+------------------------------ Captured log call -------------------------------
+[WARNING|settings|L109] 2026-10-12T00:26:16: Secrets directory '/run/secrets' does not exist
+INFO     alembic.runtime.migration:migration.py:205 Context impl SQLiteImpl.
+INFO     alembic.runtime.migration:migration.py:208 Will assume non-transactional DDL.
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade  -> 6b0f5f32d602, Initial tables
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 6b0f5f32d602 -> 263dd6707191, convert quantity from integer to float
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 263dd6707191 -> f1a2dbee5fe9, Add original_text column to recipes_ingredients
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade f1a2dbee5fe9 -> 59eb59135381, add tags to cookbooks
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 59eb59135381 -> 09dfc897ad62, add require_all for cookbook filters
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 09dfc897ad62 -> ab0bae02578f, Add use_abbreviation column to ingredients
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade ab0bae02578f -> f30cf048c228, add new webhook fields
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade f30cf048c228 -> 188374910655, add login_attemps and locked_at field to user table
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 188374910655 -> 089bfa50d0ed, Add is_ocr_recipe column to recipes
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 089bfa50d0ed -> 44e8d670719d, add extras to shopping lists, list items, and ingredient foods
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 44e8d670719d -> 2ea7a807915c, add recipe_timeline_events table
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 2ea7a807915c -> 1923519381ad, added recipe last made timestamp
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 1923519381ad -> 167eb69066ad, add recipe_scale to shopping list item ref
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 167eb69066ad -> 165d943c64ee, add related user to mealplan
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 165d943c64ee -> ff5f73b01a7a, add missing foreign key and order indices
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade ff5f73b01a7a -> 16160bf731a0, add more indices necessary for search
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 16160bf731a0 -> 5ab195a474eb, add normalized search properties
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 5ab195a474eb -> b04a08da2108, added shopping list label settings
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade b04a08da2108 -> 38514b39a824, add auth_method to user table
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 38514b39a824 -> b3dbb554ba53, postgres fuzzy search
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade b3dbb554ba53 -> 04ac51cbe9a4, added group slug
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 04ac51cbe9a4 -> 1825b5225403, added recipe note to shopping list recipe ref
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 1825b5225403 -> bcfdad6b7355, remove tool name and slug unique contraints
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade bcfdad6b7355 -> 0341b154f79a, added normalized unit and food names
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 0341b154f79a -> dded3119c1fe, added unique constraints
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade dded3119c1fe -> ba1e4a6cfe99, added plural names and alias tables for foods and units
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade ba1e4a6cfe99 -> 2298bb460ffd, added user to shopping list
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 2298bb460ffd -> 09aba125b57a, add OIDC auth method
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 09aba125b57a -> d7c6efd2de42, migrate favorites and ratings to user_ratings
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade d7c6efd2de42 -> 7788478a0338, add group recipe actions
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 7788478a0338 -> 32d69327997b, Add staple flag to foods
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 32d69327997b -> feecc8ffb956, add households
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade feecc8ffb956 -> be568e39ffdf, added household recipe lock setting and household management user permission
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade be568e39ffdf -> 1fe4bd37ccc8, add households filter to meal plans
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 1fe4bd37ccc8 -> 602927e1013e, 'add the rest of the schema.org nutrition properties'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 602927e1013e -> 86054b40fd06, added query_filter_string to cookbook and mealplan
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 86054b40fd06 -> 3897397b4631, 'Add summary to recipe instructions'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 3897397b4631 -> b1020f328e98, add recipe yield quantity
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade b1020f328e98 -> b9e516e2d3b3, add household to recipe last made, household to foods, and household to tools
+INFO     root:2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_.py:167 Running new model migration (migrate_recipe_last_made_to_household)
+INFO     root:2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_.py:167 Running new model migration (migrate_foods_on_hand_to_household)
+INFO     root:2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_.py:167 Running new model migration (migrate_tools_on_hand_to_household)
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade b9e516e2d3b3 -> 7cf3054cbbcc, remove instructions index
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 7cf3054cbbcc -> d7b3ce6fa31a, empty migration to fix food flag data
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade d7b3ce6fa31a -> e6bb583aac2d, 'Add label notifier CRUD bools'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade e6bb583aac2d -> 1d9a002d7234, 'Add referenced_recipe to ingredients'
+INFO     alembic.runtime.migration:migration.py:205 Context impl SQLiteImpl.
+INFO     alembic.runtime.migration:migration.py:208 Will assume non-transactional DDL.
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 1d9a002d7234 -> a39c7f1826e3, add unit standardization fields
+INFO     root:2026-02-21-17.59.01_a39c7f1826e3_add_unit_standardization_fields.py:77 Found unit 'pint', which is standardized as '2 * cup'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade a39c7f1826e3 -> cdc93edaf73d, 'Add mealplan updated and deleted to group notifier options'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade cdc93edaf73d -> 4395a04f7784, add announcements
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 4395a04f7784 -> c7427796f7b6, more aggresive normalization
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade c7427796f7b6 -> 2187537c52b8, add table for ai providers
+WARNING  root:settings.py:109 Secrets directory '/run/secrets' does not exist
+INFO     root:2026-05-18-16.27.05_2187537c52b8_add_table_for_ai_providers.py:114 Creating provider settings for group_id='44f521af32ba45b2a56d348175768ebc'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 2187537c52b8 -> 69e942bab3aa, add tokens valid after column to users
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 69e942bab3aa -> b3f1c9a27d84, add external avatar hash to users
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade b3f1c9a27d84 -> f2191b69db2e, add ingredient substitutions
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade f2191b69db2e -> 4b91d3a7c0e2, backfill recipe image column from disk
+INFO     root:2026-09-03-16.12.44_4b91d3a7c0e2_backfill_recipe_image_column.py:96 Recipe image backfill checked 0 recipes: 0 image references restored, 0 cleared
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 4b91d3a7c0e2 -> 3527efeeec34, 'add recipe_note_ref_link'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 3527efeeec34 -> 27621d27c7e1, add structured recipe times
+INFO     root:2026-09-24-13.16.56_27621d27c7e1_add_structured_recipe_times.py:196 Converted 0 recipe times to structured durations and cleared 0 empty ones across 0 recipes
+INFO     init_db:legacy_backup_fixes.py:203 Checking for migration data fixes
+INFO     init_db:legacy_backup_fixes.py:203 Checking for migration data fixes
+INFO     root:backup_v2.py:94 initializing backup restore
+INFO     root:backup_v2.py:117 importing database tables
+INFO     root:backup_v2.py:120 database tables imported successfully
+INFO     root:backup_v2.py:122 restoring data directory
+INFO     root:backup_v2.py:89 invalidating appsettings cache
+WARNING  root:settings.py:109 Secrets directory '/run/secrets' does not exist
+INFO     root:backup_v2.py:124 data directory restored successfully
+INFO     root:backup_v2.py:125 backup restore complete
+INFO     alembic.runtime.migration:migration.py:205 Context impl SQLiteImpl.
+INFO     alembic.runtime.migration:migration.py:208 Will assume non-transactional DDL.
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade  -> 6b0f5f32d602, Initial tables
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 6b0f5f32d602 -> 263dd6707191, convert quantity from integer to float
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 263dd6707191 -> f1a2dbee5fe9, Add original_text column to recipes_ingredients
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade f1a2dbee5fe9 -> 59eb59135381, add tags to cookbooks
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 59eb59135381 -> 09dfc897ad62, add require_all for cookbook filters
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 09dfc897ad62 -> ab0bae02578f, Add use_abbreviation column to ingredients
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade ab0bae02578f -> f30cf048c228, add new webhook fields
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade f30cf048c228 -> 188374910655, add login_attemps and locked_at field to user table
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 188374910655 -> 089bfa50d0ed, Add is_ocr_recipe column to recipes
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 089bfa50d0ed -> 44e8d670719d, add extras to shopping lists, list items, and ingredient foods
+INFO     alembic.runtime.migration:migration.py:205 Context impl SQLiteImpl.
+INFO     alembic.runtime.migration:migration.py:208 Will assume non-transactional DDL.
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 44e8d670719d -> 2ea7a807915c, add recipe_timeline_events table
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 2ea7a807915c -> 1923519381ad, added recipe last made timestamp
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 1923519381ad -> 167eb69066ad, add recipe_scale to shopping list item ref
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 167eb69066ad -> 165d943c64ee, add related user to mealplan
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 165d943c64ee -> ff5f73b01a7a, add missing foreign key and order indices
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade ff5f73b01a7a -> 16160bf731a0, add more indices necessary for search
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 16160bf731a0 -> 5ab195a474eb, add normalized search properties
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 5ab195a474eb -> b04a08da2108, added shopping list label settings
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade b04a08da2108 -> 38514b39a824, add auth_method to user table
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 38514b39a824 -> b3dbb554ba53, postgres fuzzy search
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade b3dbb554ba53 -> 04ac51cbe9a4, added group slug
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 04ac51cbe9a4 -> 1825b5225403, added recipe note to shopping list recipe ref
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 1825b5225403 -> bcfdad6b7355, remove tool name and slug unique contraints
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade bcfdad6b7355 -> 0341b154f79a, added normalized unit and food names
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 0341b154f79a -> dded3119c1fe, added unique constraints
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade dded3119c1fe -> ba1e4a6cfe99, added plural names and alias tables for foods and units
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade ba1e4a6cfe99 -> 2298bb460ffd, added user to shopping list
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 2298bb460ffd -> 09aba125b57a, add OIDC auth method
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 09aba125b57a -> d7c6efd2de42, migrate favorites and ratings to user_ratings
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade d7c6efd2de42 -> 7788478a0338, add group recipe actions
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 7788478a0338 -> 32d69327997b, Add staple flag to foods
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 32d69327997b -> feecc8ffb956, add households
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade feecc8ffb956 -> be568e39ffdf, added household recipe lock setting and household management user permission
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade be568e39ffdf -> 1fe4bd37ccc8, add households filter to meal plans
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 1fe4bd37ccc8 -> 602927e1013e, 'add the rest of the schema.org nutrition properties'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 602927e1013e -> 86054b40fd06, added query_filter_string to cookbook and mealplan
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 86054b40fd06 -> 3897397b4631, 'Add summary to recipe instructions'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 3897397b4631 -> b1020f328e98, add recipe yield quantity
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade b1020f328e98 -> b9e516e2d3b3, add household to recipe last made, household to foods, and household to tools
+INFO     root:2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_.py:167 Running new model migration (migrate_recipe_last_made_to_household)
+INFO     root:2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_.py:167 Running new model migration (migrate_foods_on_hand_to_household)
+INFO     root:2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_.py:167 Running new model migration (migrate_tools_on_hand_to_household)
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade b9e516e2d3b3 -> 7cf3054cbbcc, remove instructions index
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 7cf3054cbbcc -> d7b3ce6fa31a, empty migration to fix food flag data
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade d7b3ce6fa31a -> e6bb583aac2d, 'Add label notifier CRUD bools'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade e6bb583aac2d -> 1d9a002d7234, 'Add referenced_recipe to ingredients'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 1d9a002d7234 -> a39c7f1826e3, add unit standardization fields
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade a39c7f1826e3 -> cdc93edaf73d, 'Add mealplan updated and deleted to group notifier options'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade cdc93edaf73d -> 4395a04f7784, add announcements
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 4395a04f7784 -> c7427796f7b6, more aggresive normalization
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade c7427796f7b6 -> 2187537c52b8, add table for ai providers
+WARNING  root:settings.py:109 Secrets directory '/run/secrets' does not exist
+INFO     root:2026-05-18-16.27.05_2187537c52b8_add_table_for_ai_providers.py:114 Creating provider settings for group_id='5dc8165115db41899a727fd00ca62752'
+INFO     root:2026-05-18-16.27.05_2187537c52b8_add_table_for_ai_providers.py:114 Creating provider settings for group_id='784b99c0e85e402d927e85b3f6966d75'
+INFO     root:2026-05-18-16.27.05_2187537c52b8_add_table_for_ai_providers.py:114 Creating provider settings for group_id='dd31c46a67f94f6cb99e0a1110c658d6'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 2187537c52b8 -> 69e942bab3aa, add tokens valid after column to users
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 69e942bab3aa -> b3f1c9a27d84, add external avatar hash to users
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade b3f1c9a27d84 -> f2191b69db2e, add ingredient substitutions
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade f2191b69db2e -> 4b91d3a7c0e2, backfill recipe image column from disk
+WARNING  root:2026-09-03-16.12.44_4b91d3a7c0e2_backfill_recipe_image_column.py:72 Skipping the clearing half of the recipe image backfill: 349 recipes reference an image but no image files were found under /Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-c/tests/.temp/gw3/recipes. If the recipe data volume was not mounted, nothing was cleared.
+INFO     root:2026-09-03-16.12.44_4b91d3a7c0e2_backfill_recipe_image_column.py:96 Recipe image backfill checked 349 recipes: 0 image references restored, 0 cleared
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 4b91d3a7c0e2 -> 3527efeeec34, 'add recipe_note_ref_link'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 3527efeeec34 -> 27621d27c7e1, add structured recipe times
+INFO     root:2026-09-24-13.16.56_27621d27c7e1_add_structured_recipe_times.py:196 Converted 0 recipe times to structured durations and cleared 0 empty ones across 349 recipes
+INFO     init_db:legacy_backup_fixes.py:203 Checking for migration data fixes
+INFO     init_db:legacy_backup_fixes.py:203 Checking for migration data fixes
+INFO     root:backup_v2.py:94 initializing backup restore
+INFO     root:backup_v2.py:117 importing database tables
+INFO     root:backup_v2.py:120 database tables imported successfully
+INFO     root:backup_v2.py:122 restoring data directory
+INFO     root:backup_v2.py:89 invalidating appsettings cache
+WARNING  root:settings.py:109 Secrets directory '/run/secrets' does not exist
+INFO     root:backup_v2.py:124 data directory restored successfully
+INFO     root:backup_v2.py:125 backup restore complete
+INFO     alembic.runtime.migration:migration.py:205 Context impl SQLiteImpl.
+INFO     alembic.runtime.migration:migration.py:208 Will assume non-transactional DDL.
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade  -> 6b0f5f32d602, Initial tables
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 6b0f5f32d602 -> 263dd6707191, convert quantity from integer to float
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 263dd6707191 -> f1a2dbee5fe9, Add original_text column to recipes_ingredients
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade f1a2dbee5fe9 -> 59eb59135381, add tags to cookbooks
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 59eb59135381 -> 09dfc897ad62, add require_all for cookbook filters
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 09dfc897ad62 -> ab0bae02578f, Add use_abbreviation column to ingredients
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade ab0bae02578f -> f30cf048c228, add new webhook fields
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade f30cf048c228 -> 188374910655, add login_attemps and locked_at field to user table
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 188374910655 -> 089bfa50d0ed, Add is_ocr_recipe column to recipes
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 089bfa50d0ed -> 44e8d670719d, add extras to shopping lists, list items, and ingredient foods
+INFO     alembic.runtime.migration:migration.py:205 Context impl SQLiteImpl.
+INFO     alembic.runtime.migration:migration.py:208 Will assume non-transactional DDL.
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 44e8d670719d -> 2ea7a807915c, add recipe_timeline_events table
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 2ea7a807915c -> 1923519381ad, added recipe last made timestamp
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 1923519381ad -> 167eb69066ad, add recipe_scale to shopping list item ref
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 167eb69066ad -> 165d943c64ee, add related user to mealplan
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 165d943c64ee -> ff5f73b01a7a, add missing foreign key and order indices
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade ff5f73b01a7a -> 16160bf731a0, add more indices necessary for search
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 16160bf731a0 -> 5ab195a474eb, add normalized search properties
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 5ab195a474eb -> b04a08da2108, added shopping list label settings
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade b04a08da2108 -> 38514b39a824, add auth_method to user table
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 38514b39a824 -> b3dbb554ba53, postgres fuzzy search
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade b3dbb554ba53 -> 04ac51cbe9a4, added group slug
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 04ac51cbe9a4 -> 1825b5225403, added recipe note to shopping list recipe ref
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 1825b5225403 -> bcfdad6b7355, remove tool name and slug unique contraints
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade bcfdad6b7355 -> 0341b154f79a, added normalized unit and food names
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 0341b154f79a -> dded3119c1fe, added unique constraints
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade dded3119c1fe -> ba1e4a6cfe99, added plural names and alias tables for foods and units
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade ba1e4a6cfe99 -> 2298bb460ffd, added user to shopping list
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 2298bb460ffd -> 09aba125b57a, add OIDC auth method
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 09aba125b57a -> d7c6efd2de42, migrate favorites and ratings to user_ratings
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade d7c6efd2de42 -> 7788478a0338, add group recipe actions
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 7788478a0338 -> 32d69327997b, Add staple flag to foods
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 32d69327997b -> feecc8ffb956, add households
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade feecc8ffb956 -> be568e39ffdf, added household recipe lock setting and household management user permission
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade be568e39ffdf -> 1fe4bd37ccc8, add households filter to meal plans
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 1fe4bd37ccc8 -> 602927e1013e, 'add the rest of the schema.org nutrition properties'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 602927e1013e -> 86054b40fd06, added query_filter_string to cookbook and mealplan
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 86054b40fd06 -> 3897397b4631, 'Add summary to recipe instructions'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 3897397b4631 -> b1020f328e98, add recipe yield quantity
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade b1020f328e98 -> b9e516e2d3b3, add household to recipe last made, household to foods, and household to tools
+INFO     root:2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_.py:167 Running new model migration (migrate_recipe_last_made_to_household)
+INFO     root:2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_.py:167 Running new model migration (migrate_foods_on_hand_to_household)
+INFO     root:2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_.py:167 Running new model migration (migrate_tools_on_hand_to_household)
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade b9e516e2d3b3 -> 7cf3054cbbcc, remove instructions index
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 7cf3054cbbcc -> d7b3ce6fa31a, empty migration to fix food flag data
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade d7b3ce6fa31a -> e6bb583aac2d, 'Add label notifier CRUD bools'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade e6bb583aac2d -> 1d9a002d7234, 'Add referenced_recipe to ingredients'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 1d9a002d7234 -> a39c7f1826e3, add unit standardization fields
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade a39c7f1826e3 -> cdc93edaf73d, 'Add mealplan updated and deleted to group notifier options'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade cdc93edaf73d -> 4395a04f7784, add announcements
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 4395a04f7784 -> c7427796f7b6, more aggresive normalization
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade c7427796f7b6 -> 2187537c52b8, add table for ai providers
+WARNING  root:settings.py:109 Secrets directory '/run/secrets' does not exist
+INFO     root:2026-05-18-16.27.05_2187537c52b8_add_table_for_ai_providers.py:114 Creating provider settings for group_id='24bacf4eec034b35a81395ee0ba22048'
+INFO     root:2026-05-18-16.27.05_2187537c52b8_add_table_for_ai_providers.py:114 Creating provider settings for group_id='996076aaef1d4cf3bbf68f524aee4373'
+INFO     root:2026-05-18-16.27.05_2187537c52b8_add_table_for_ai_providers.py:114 Creating provider settings for group_id='cd0c4d8934e8405fba9367e5adbef93e'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 2187537c52b8 -> 69e942bab3aa, add tokens valid after column to users
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 69e942bab3aa -> b3f1c9a27d84, add external avatar hash to users
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade b3f1c9a27d84 -> f2191b69db2e, add ingredient substitutions
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade f2191b69db2e -> 4b91d3a7c0e2, backfill recipe image column from disk
+WARNING  root:2026-09-03-16.12.44_4b91d3a7c0e2_backfill_recipe_image_column.py:72 Skipping the clearing half of the recipe image backfill: 83 recipes reference an image but no image files were found under /Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-c/tests/.temp/gw3/recipes. If the recipe data volume was not mounted, nothing was cleared.
+INFO     root:2026-09-03-16.12.44_4b91d3a7c0e2_backfill_recipe_image_column.py:96 Recipe image backfill checked 88 recipes: 0 image references restored, 0 cleared
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 4b91d3a7c0e2 -> 3527efeeec34, 'add recipe_note_ref_link'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 3527efeeec34 -> 27621d27c7e1, add structured recipe times
+INFO     root:2026-09-24-13.16.56_27621d27c7e1_add_structured_recipe_times.py:196 Converted 0 recipe times to structured durations and cleared 0 empty ones across 88 recipes
+INFO     init_db:legacy_backup_fixes.py:203 Checking for migration data fixes
+INFO     init_db:legacy_backup_fixes.py:203 Checking for migration data fixes
+INFO     root:backup_v2.py:94 initializing backup restore
+INFO     root:backup_v2.py:117 importing database tables
+INFO     root:backup_v2.py:120 database tables imported successfully
+INFO     root:backup_v2.py:122 restoring data directory
+INFO     root:backup_v2.py:89 invalidating appsettings cache
+WARNING  root:settings.py:109 Secrets directory '/run/secrets' does not exist
+INFO     root:backup_v2.py:124 data directory restored successfully
+INFO     root:backup_v2.py:125 backup restore complete
+INFO     alembic.runtime.migration:migration.py:205 Context impl SQLiteImpl.
+INFO     alembic.runtime.migration:migration.py:208 Will assume non-transactional DDL.
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade  -> 6b0f5f32d602, Initial tables
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 6b0f5f32d602 -> 263dd6707191, convert quantity from integer to float
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 263dd6707191 -> f1a2dbee5fe9, Add original_text column to recipes_ingredients
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade f1a2dbee5fe9 -> 59eb59135381, add tags to cookbooks
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 59eb59135381 -> 09dfc897ad62, add require_all for cookbook filters
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 09dfc897ad62 -> ab0bae02578f, Add use_abbreviation column to ingredients
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade ab0bae02578f -> f30cf048c228, add new webhook fields
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade f30cf048c228 -> 188374910655, add login_attemps and locked_at field to user table
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 188374910655 -> 089bfa50d0ed, Add is_ocr_recipe column to recipes
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 089bfa50d0ed -> 44e8d670719d, add extras to shopping lists, list items, and ingredient foods
+WARNING  root:legacy_backup.py:160 Removing row from table recipe_nutrition because of invalid foreign key recipe_id: e1346ad90ed344d39935462b362c99d1
+WARNING  root:legacy_backup.py:163 Row: {'created_at': datetime.datetime(2023, 2, 26, 22, 2, 25, 760405), 'update_at': datetime.datetime(2023, 2, 26, 22, 2, 25, 760410), 'id': 135, 'recipe_id': 'e1346ad90ed344d39935462b362c99d1', 'calories': None, 'fat_content': None, 'fiber_content': None, 'protein_content': None, 'carbohydrate_content': None, 'sodium_content': None, 'sugar_content': None}
+WARNING  root:legacy_backup.py:160 Removing row from table recipe_settings because of invalid foreign key recipe_id: e1346ad90ed344d39935462b362c99d1
+WARNING  root:legacy_backup.py:163 Row: {'created_at': datetime.datetime(2023, 2, 26, 22, 2, 25, 760689), 'update_at': datetime.datetime(2023, 2, 26, 22, 2, 25, 760693), 'id': 135, 'recipe_id': 'e1346ad90ed344d39935462b362c99d1', 'public': True, 'show_nutrition': False, 'show_assets': False, 'landscape_view': False, 'disable_amount': True, 'disable_comments': False, 'locked': False}
+INFO     alembic.runtime.migration:migration.py:205 Context impl SQLiteImpl.
+INFO     alembic.runtime.migration:migration.py:208 Will assume non-transactional DDL.
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 44e8d670719d -> 2ea7a807915c, add recipe_timeline_events table
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 2ea7a807915c -> 1923519381ad, added recipe last made timestamp
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 1923519381ad -> 167eb69066ad, add recipe_scale to shopping list item ref
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 167eb69066ad -> 165d943c64ee, add related user to mealplan
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 165d943c64ee -> ff5f73b01a7a, add missing foreign key and order indices
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade ff5f73b01a7a -> 16160bf731a0, add more indices necessary for search
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 16160bf731a0 -> 5ab195a474eb, add normalized search properties
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 5ab195a474eb -> b04a08da2108, added shopping list label settings
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade b04a08da2108 -> 38514b39a824, add auth_method to user table
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 38514b39a824 -> b3dbb554ba53, postgres fuzzy search
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade b3dbb554ba53 -> 04ac51cbe9a4, added group slug
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 04ac51cbe9a4 -> 1825b5225403, added recipe note to shopping list recipe ref
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 1825b5225403 -> bcfdad6b7355, remove tool name and slug unique contraints
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade bcfdad6b7355 -> 0341b154f79a, added normalized unit and food names
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 0341b154f79a -> dded3119c1fe, added unique constraints
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade dded3119c1fe -> ba1e4a6cfe99, added plural names and alias tables for foods and units
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade ba1e4a6cfe99 -> 2298bb460ffd, added user to shopping list
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 2298bb460ffd -> 09aba125b57a, add OIDC auth method
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 09aba125b57a -> d7c6efd2de42, migrate favorites and ratings to user_ratings
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade d7c6efd2de42 -> 7788478a0338, add group recipe actions
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 7788478a0338 -> 32d69327997b, Add staple flag to foods
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 32d69327997b -> feecc8ffb956, add households
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade feecc8ffb956 -> be568e39ffdf, added household recipe lock setting and household management user permission
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade be568e39ffdf -> 1fe4bd37ccc8, add households filter to meal plans
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 1fe4bd37ccc8 -> 602927e1013e, 'add the rest of the schema.org nutrition properties'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 602927e1013e -> 86054b40fd06, added query_filter_string to cookbook and mealplan
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 86054b40fd06 -> 3897397b4631, 'Add summary to recipe instructions'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 3897397b4631 -> b1020f328e98, add recipe yield quantity
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade b1020f328e98 -> b9e516e2d3b3, add household to recipe last made, household to foods, and household to tools
+INFO     root:2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_.py:167 Running new model migration (migrate_recipe_last_made_to_household)
+INFO     root:2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_.py:167 Running new model migration (migrate_foods_on_hand_to_household)
+INFO     root:2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_.py:167 Running new model migration (migrate_tools_on_hand_to_household)
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade b9e516e2d3b3 -> 7cf3054cbbcc, remove instructions index
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 7cf3054cbbcc -> d7b3ce6fa31a, empty migration to fix food flag data
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade d7b3ce6fa31a -> e6bb583aac2d, 'Add label notifier CRUD bools'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade e6bb583aac2d -> 1d9a002d7234, 'Add referenced_recipe to ingredients'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 1d9a002d7234 -> a39c7f1826e3, add unit standardization fields
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade a39c7f1826e3 -> cdc93edaf73d, 'Add mealplan updated and deleted to group notifier options'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade cdc93edaf73d -> 4395a04f7784, add announcements
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 4395a04f7784 -> c7427796f7b6, more aggresive normalization
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade c7427796f7b6 -> 2187537c52b8, add table for ai providers
+WARNING  root:settings.py:109 Secrets directory '/run/secrets' does not exist
+INFO     root:2026-05-18-16.27.05_2187537c52b8_add_table_for_ai_providers.py:114 Creating provider settings for group_id='c5c396ef193e42ea8252d5b5446ff84f'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 2187537c52b8 -> 69e942bab3aa, add tokens valid after column to users
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 69e942bab3aa -> b3f1c9a27d84, add external avatar hash to users
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade b3f1c9a27d84 -> f2191b69db2e, add ingredient substitutions
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade f2191b69db2e -> 4b91d3a7c0e2, backfill recipe image column from disk
+WARNING  root:2026-09-03-16.12.44_4b91d3a7c0e2_backfill_recipe_image_column.py:72 Skipping the clearing half of the recipe image backfill: 62 recipes reference an image but no image files were found under /Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-c/tests/.temp/gw3/recipes. If the recipe data volume was not mounted, nothing was cleared.
+INFO     root:2026-09-03-16.12.44_4b91d3a7c0e2_backfill_recipe_image_column.py:96 Recipe image backfill checked 69 recipes: 0 image references restored, 0 cleared
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 4b91d3a7c0e2 -> 3527efeeec34, 'add recipe_note_ref_link'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 3527efeeec34 -> 27621d27c7e1, add structured recipe times
+INFO     root:2026-09-24-13.16.56_27621d27c7e1_add_structured_recipe_times.py:196 Converted 0 recipe times to structured durations and cleared 0 empty ones across 69 recipes
+INFO     init_db:legacy_backup_fixes.py:203 Checking for migration data fixes
+INFO     init_db:legacy_backup_fixes.py:203 Checking for migration data fixes
+INFO     root:backup_v2.py:94 initializing backup restore
+INFO     root:backup_v2.py:117 importing database tables
+INFO     root:backup_v2.py:120 database tables imported successfully
+INFO     root:backup_v2.py:122 restoring data directory
+INFO     root:backup_v2.py:89 invalidating appsettings cache
+WARNING  root:settings.py:109 Secrets directory '/run/secrets' does not exist
+INFO     root:backup_v2.py:124 data directory restored successfully
+INFO     root:backup_v2.py:125 backup restore complete
+INFO     alembic.runtime.migration:migration.py:205 Context impl SQLiteImpl.
+INFO     alembic.runtime.migration:migration.py:208 Will assume non-transactional DDL.
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade  -> 6b0f5f32d602, Initial tables
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 6b0f5f32d602 -> 263dd6707191, convert quantity from integer to float
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 263dd6707191 -> f1a2dbee5fe9, Add original_text column to recipes_ingredients
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade f1a2dbee5fe9 -> 59eb59135381, add tags to cookbooks
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 59eb59135381 -> 09dfc897ad62, add require_all for cookbook filters
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 09dfc897ad62 -> ab0bae02578f, Add use_abbreviation column to ingredients
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade ab0bae02578f -> f30cf048c228, add new webhook fields
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade f30cf048c228 -> 188374910655, add login_attemps and locked_at field to user table
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 188374910655 -> 089bfa50d0ed, Add is_ocr_recipe column to recipes
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 089bfa50d0ed -> 44e8d670719d, add extras to shopping lists, list items, and ingredient foods
+INFO     alembic.runtime.migration:migration.py:205 Context impl SQLiteImpl.
+INFO     alembic.runtime.migration:migration.py:208 Will assume non-transactional DDL.
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 44e8d670719d -> 2ea7a807915c, add recipe_timeline_events table
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 2ea7a807915c -> 1923519381ad, added recipe last made timestamp
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 1923519381ad -> 167eb69066ad, add recipe_scale to shopping list item ref
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 167eb69066ad -> 165d943c64ee, add related user to mealplan
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 165d943c64ee -> ff5f73b01a7a, add missing foreign key and order indices
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade ff5f73b01a7a -> 16160bf731a0, add more indices necessary for search
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 16160bf731a0 -> 5ab195a474eb, add normalized search properties
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 5ab195a474eb -> b04a08da2108, added shopping list label settings
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade b04a08da2108 -> 38514b39a824, add auth_method to user table
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 38514b39a824 -> b3dbb554ba53, postgres fuzzy search
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade b3dbb554ba53 -> 04ac51cbe9a4, added group slug
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 04ac51cbe9a4 -> 1825b5225403, added recipe note to shopping list recipe ref
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 1825b5225403 -> bcfdad6b7355, remove tool name and slug unique contraints
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade bcfdad6b7355 -> 0341b154f79a, added normalized unit and food names
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 0341b154f79a -> dded3119c1fe, added unique constraints
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade dded3119c1fe -> ba1e4a6cfe99, added plural names and alias tables for foods and units
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade ba1e4a6cfe99 -> 2298bb460ffd, added user to shopping list
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 2298bb460ffd -> 09aba125b57a, add OIDC auth method
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 09aba125b57a -> d7c6efd2de42, migrate favorites and ratings to user_ratings
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade d7c6efd2de42 -> 7788478a0338, add group recipe actions
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 7788478a0338 -> 32d69327997b, Add staple flag to foods
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 32d69327997b -> feecc8ffb956, add households
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade feecc8ffb956 -> be568e39ffdf, added household recipe lock setting and household management user permission
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade be568e39ffdf -> 1fe4bd37ccc8, add households filter to meal plans
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 1fe4bd37ccc8 -> 602927e1013e, 'add the rest of the schema.org nutrition properties'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 602927e1013e -> 86054b40fd06, added query_filter_string to cookbook and mealplan
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 86054b40fd06 -> 3897397b4631, 'Add summary to recipe instructions'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 3897397b4631 -> b1020f328e98, add recipe yield quantity
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade b1020f328e98 -> b9e516e2d3b3, add household to recipe last made, household to foods, and household to tools
+INFO     root:2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_.py:167 Running new model migration (migrate_recipe_last_made_to_household)
+INFO     root:2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_.py:167 Running new model migration (migrate_foods_on_hand_to_household)
+INFO     root:2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_.py:167 Running new model migration (migrate_tools_on_hand_to_household)
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade b9e516e2d3b3 -> 7cf3054cbbcc, remove instructions index
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 7cf3054cbbcc -> d7b3ce6fa31a, empty migration to fix food flag data
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade d7b3ce6fa31a -> e6bb583aac2d, 'Add label notifier CRUD bools'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade e6bb583aac2d -> 1d9a002d7234, 'Add referenced_recipe to ingredients'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 1d9a002d7234 -> a39c7f1826e3, add unit standardization fields
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade a39c7f1826e3 -> cdc93edaf73d, 'Add mealplan updated and deleted to group notifier options'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade cdc93edaf73d -> 4395a04f7784, add announcements
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 4395a04f7784 -> c7427796f7b6, more aggresive normalization
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade c7427796f7b6 -> 2187537c52b8, add table for ai providers
+WARNING  root:settings.py:109 Secrets directory '/run/secrets' does not exist
+INFO     root:2026-05-18-16.27.05_2187537c52b8_add_table_for_ai_providers.py:114 Creating provider settings for group_id='21b6f76273294fb09b07e10b59244036'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 2187537c52b8 -> 69e942bab3aa, add tokens valid after column to users
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 69e942bab3aa -> b3f1c9a27d84, add external avatar hash to users
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade b3f1c9a27d84 -> f2191b69db2e, add ingredient substitutions
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade f2191b69db2e -> 4b91d3a7c0e2, backfill recipe image column from disk
+WARNING  root:2026-09-03-16.12.44_4b91d3a7c0e2_backfill_recipe_image_column.py:72 Skipping the clearing half of the recipe image backfill: 36 recipes reference an image but no image files were found under /Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-c/tests/.temp/gw3/recipes. If the recipe data volume was not mounted, nothing was cleared.
+INFO     root:2026-09-03-16.12.44_4b91d3a7c0e2_backfill_recipe_image_column.py:96 Recipe image backfill checked 44 recipes: 0 image references restored, 0 cleared
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 4b91d3a7c0e2 -> 3527efeeec34, 'add recipe_note_ref_link'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 3527efeeec34 -> 27621d27c7e1, add structured recipe times
+INFO     root:2026-09-24-13.16.56_27621d27c7e1_add_structured_recipe_times.py:196 Converted 0 recipe times to structured durations and cleared 0 empty ones across 44 recipes
+INFO     init_db:legacy_backup_fixes.py:203 Checking for migration data fixes
+INFO     init_db:legacy_backup_fixes.py:203 Checking for migration data fixes
+INFO     root:backup_v2.py:94 initializing backup restore
+INFO     root:backup_v2.py:117 importing database tables
+INFO     root:backup_v2.py:120 database tables imported successfully
+INFO     root:backup_v2.py:122 restoring data directory
+INFO     root:backup_v2.py:89 invalidating appsettings cache
+WARNING  root:settings.py:109 Secrets directory '/run/secrets' does not exist
+INFO     root:backup_v2.py:124 data directory restored successfully
+INFO     root:backup_v2.py:125 backup restore complete
+INFO     alembic.runtime.migration:migration.py:205 Context impl SQLiteImpl.
+INFO     alembic.runtime.migration:migration.py:208 Will assume non-transactional DDL.
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade  -> 6b0f5f32d602, Initial tables
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 6b0f5f32d602 -> 263dd6707191, convert quantity from integer to float
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 263dd6707191 -> f1a2dbee5fe9, Add original_text column to recipes_ingredients
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade f1a2dbee5fe9 -> 59eb59135381, add tags to cookbooks
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 59eb59135381 -> 09dfc897ad62, add require_all for cookbook filters
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 09dfc897ad62 -> ab0bae02578f, Add use_abbreviation column to ingredients
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade ab0bae02578f -> f30cf048c228, add new webhook fields
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade f30cf048c228 -> 188374910655, add login_attemps and locked_at field to user table
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 188374910655 -> 089bfa50d0ed, Add is_ocr_recipe column to recipes
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 089bfa50d0ed -> 44e8d670719d, add extras to shopping lists, list items, and ingredient foods
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 44e8d670719d -> 2ea7a807915c, add recipe_timeline_events table
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 2ea7a807915c -> 1923519381ad, added recipe last made timestamp
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 1923519381ad -> 167eb69066ad, add recipe_scale to shopping list item ref
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 167eb69066ad -> 165d943c64ee, add related user to mealplan
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 165d943c64ee -> ff5f73b01a7a, add missing foreign key and order indices
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade ff5f73b01a7a -> 16160bf731a0, add more indices necessary for search
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 16160bf731a0 -> 5ab195a474eb, add normalized search properties
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 5ab195a474eb -> b04a08da2108, added shopping list label settings
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade b04a08da2108 -> 38514b39a824, add auth_method to user table
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 38514b39a824 -> b3dbb554ba53, postgres fuzzy search
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade b3dbb554ba53 -> 04ac51cbe9a4, added group slug
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 04ac51cbe9a4 -> 1825b5225403, added recipe note to shopping list recipe ref
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 1825b5225403 -> bcfdad6b7355, remove tool name and slug unique contraints
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade bcfdad6b7355 -> 0341b154f79a, added normalized unit and food names
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 0341b154f79a -> dded3119c1fe, added unique constraints
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade dded3119c1fe -> ba1e4a6cfe99, added plural names and alias tables for foods and units
+INFO     alembic.runtime.migration:migration.py:205 Context impl SQLiteImpl.
+INFO     alembic.runtime.migration:migration.py:208 Will assume non-transactional DDL.
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade ba1e4a6cfe99 -> 2298bb460ffd, added user to shopping list
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 2298bb460ffd -> 09aba125b57a, add OIDC auth method
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 09aba125b57a -> d7c6efd2de42, migrate favorites and ratings to user_ratings
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade d7c6efd2de42 -> 7788478a0338, add group recipe actions
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 7788478a0338 -> 32d69327997b, Add staple flag to foods
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 32d69327997b -> feecc8ffb956, add households
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade feecc8ffb956 -> be568e39ffdf, added household recipe lock setting and household management user permission
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade be568e39ffdf -> 1fe4bd37ccc8, add households filter to meal plans
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 1fe4bd37ccc8 -> 602927e1013e, 'add the rest of the schema.org nutrition properties'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 602927e1013e -> 86054b40fd06, added query_filter_string to cookbook and mealplan
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 86054b40fd06 -> 3897397b4631, 'Add summary to recipe instructions'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 3897397b4631 -> b1020f328e98, add recipe yield quantity
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade b1020f328e98 -> b9e516e2d3b3, add household to recipe last made, household to foods, and household to tools
+INFO     root:2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_.py:167 Running new model migration (migrate_recipe_last_made_to_household)
+INFO     root:2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_.py:167 Running new model migration (migrate_foods_on_hand_to_household)
+INFO     root:2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_.py:167 Running new model migration (migrate_tools_on_hand_to_household)
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade b9e516e2d3b3 -> 7cf3054cbbcc, remove instructions index
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 7cf3054cbbcc -> d7b3ce6fa31a, empty migration to fix food flag data
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade d7b3ce6fa31a -> e6bb583aac2d, 'Add label notifier CRUD bools'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade e6bb583aac2d -> 1d9a002d7234, 'Add referenced_recipe to ingredients'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 1d9a002d7234 -> a39c7f1826e3, add unit standardization fields
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade a39c7f1826e3 -> cdc93edaf73d, 'Add mealplan updated and deleted to group notifier options'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade cdc93edaf73d -> 4395a04f7784, add announcements
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 4395a04f7784 -> c7427796f7b6, more aggresive normalization
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade c7427796f7b6 -> 2187537c52b8, add table for ai providers
+WARNING  root:settings.py:109 Secrets directory '/run/secrets' does not exist
+INFO     root:2026-05-18-16.27.05_2187537c52b8_add_table_for_ai_providers.py:114 Creating provider settings for group_id='65bf5b14b4e845ad894a65cf975155ad'
+INFO     root:2026-05-18-16.27.05_2187537c52b8_add_table_for_ai_providers.py:114 Creating provider settings for group_id='faa95304b2cb46d88afbe5b0b6f38541'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 2187537c52b8 -> 69e942bab3aa, add tokens valid after column to users
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 69e942bab3aa -> b3f1c9a27d84, add external avatar hash to users
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade b3f1c9a27d84 -> f2191b69db2e, add ingredient substitutions
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade f2191b69db2e -> 4b91d3a7c0e2, backfill recipe image column from disk
+WARNING  root:2026-09-03-16.12.44_4b91d3a7c0e2_backfill_recipe_image_column.py:72 Skipping the clearing half of the recipe image backfill: 213 recipes reference an image but no image files were found under /Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-c/tests/.temp/gw3/recipes. If the recipe data volume was not mounted, nothing was cleared.
+INFO     root:2026-09-03-16.12.44_4b91d3a7c0e2_backfill_recipe_image_column.py:96 Recipe image backfill checked 218 recipes: 0 image references restored, 0 cleared
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 4b91d3a7c0e2 -> 3527efeeec34, 'add recipe_note_ref_link'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 3527efeeec34 -> 27621d27c7e1, add structured recipe times
+INFO     root:2026-09-24-13.16.56_27621d27c7e1_add_structured_recipe_times.py:196 Converted 0 recipe times to structured durations and cleared 0 empty ones across 218 recipes
+INFO     init_db:legacy_backup_fixes.py:203 Checking for migration data fixes
+INFO     init_db:legacy_backup_fixes.py:132 Fixing shopping list label settings
+INFO     init_db:legacy_backup_fixes.py:203 Checking for migration data fixes
+INFO     root:backup_v2.py:94 initializing backup restore
+INFO     root:backup_v2.py:117 importing database tables
+INFO     root:backup_v2.py:120 database tables imported successfully
+INFO     root:backup_v2.py:122 restoring data directory
+INFO     root:backup_v2.py:89 invalidating appsettings cache
+WARNING  root:settings.py:109 Secrets directory '/run/secrets' does not exist
+INFO     root:backup_v2.py:124 data directory restored successfully
+INFO     root:backup_v2.py:125 backup restore complete
+INFO     alembic.runtime.migration:migration.py:205 Context impl SQLiteImpl.
+INFO     alembic.runtime.migration:migration.py:208 Will assume non-transactional DDL.
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade  -> 6b0f5f32d602, Initial tables
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 6b0f5f32d602 -> 263dd6707191, convert quantity from integer to float
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 263dd6707191 -> f1a2dbee5fe9, Add original_text column to recipes_ingredients
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade f1a2dbee5fe9 -> 59eb59135381, add tags to cookbooks
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 59eb59135381 -> 09dfc897ad62, add require_all for cookbook filters
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 09dfc897ad62 -> ab0bae02578f, Add use_abbreviation column to ingredients
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade ab0bae02578f -> f30cf048c228, add new webhook fields
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade f30cf048c228 -> 188374910655, add login_attemps and locked_at field to user table
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 188374910655 -> 089bfa50d0ed, Add is_ocr_recipe column to recipes
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 089bfa50d0ed -> 44e8d670719d, add extras to shopping lists, list items, and ingredient foods
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 44e8d670719d -> 2ea7a807915c, add recipe_timeline_events table
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 2ea7a807915c -> 1923519381ad, added recipe last made timestamp
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 1923519381ad -> 167eb69066ad, add recipe_scale to shopping list item ref
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 167eb69066ad -> 165d943c64ee, add related user to mealplan
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 165d943c64ee -> ff5f73b01a7a, add missing foreign key and order indices
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade ff5f73b01a7a -> 16160bf731a0, add more indices necessary for search
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 16160bf731a0 -> 5ab195a474eb, add normalized search properties
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 5ab195a474eb -> b04a08da2108, added shopping list label settings
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade b04a08da2108 -> 38514b39a824, add auth_method to user table
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 38514b39a824 -> b3dbb554ba53, postgres fuzzy search
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade b3dbb554ba53 -> 04ac51cbe9a4, added group slug
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 04ac51cbe9a4 -> 1825b5225403, added recipe note to shopping list recipe ref
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 1825b5225403 -> bcfdad6b7355, remove tool name and slug unique contraints
+INFO     alembic.runtime.migration:migration.py:205 Context impl SQLiteImpl.
+INFO     alembic.runtime.migration:migration.py:208 Will assume non-transactional DDL.
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade bcfdad6b7355 -> 0341b154f79a, added normalized unit and food names
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 0341b154f79a -> dded3119c1fe, added unique constraints
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade dded3119c1fe -> ba1e4a6cfe99, added plural names and alias tables for foods and units
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade ba1e4a6cfe99 -> 2298bb460ffd, added user to shopping list
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 2298bb460ffd -> 09aba125b57a, add OIDC auth method
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 09aba125b57a -> d7c6efd2de42, migrate favorites and ratings to user_ratings
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade d7c6efd2de42 -> 7788478a0338, add group recipe actions
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 7788478a0338 -> 32d69327997b, Add staple flag to foods
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 32d69327997b -> feecc8ffb956, add households
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade feecc8ffb956 -> be568e39ffdf, added household recipe lock setting and household management user permission
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade be568e39ffdf -> 1fe4bd37ccc8, add households filter to meal plans
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 1fe4bd37ccc8 -> 602927e1013e, 'add the rest of the schema.org nutrition properties'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 602927e1013e -> 86054b40fd06, added query_filter_string to cookbook and mealplan
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 86054b40fd06 -> 3897397b4631, 'Add summary to recipe instructions'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 3897397b4631 -> b1020f328e98, add recipe yield quantity
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade b1020f328e98 -> b9e516e2d3b3, add household to recipe last made, household to foods, and household to tools
+INFO     root:2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_.py:167 Running new model migration (migrate_recipe_last_made_to_household)
+INFO     root:2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_.py:167 Running new model migration (migrate_foods_on_hand_to_household)
+INFO     root:2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_.py:167 Running new model migration (migrate_tools_on_hand_to_household)
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade b9e516e2d3b3 -> 7cf3054cbbcc, remove instructions index
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 7cf3054cbbcc -> d7b3ce6fa31a, empty migration to fix food flag data
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade d7b3ce6fa31a -> e6bb583aac2d, 'Add label notifier CRUD bools'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade e6bb583aac2d -> 1d9a002d7234, 'Add referenced_recipe to ingredients'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 1d9a002d7234 -> a39c7f1826e3, add unit standardization fields
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade a39c7f1826e3 -> cdc93edaf73d, 'Add mealplan updated and deleted to group notifier options'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade cdc93edaf73d -> 4395a04f7784, add announcements
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 4395a04f7784 -> c7427796f7b6, more aggresive normalization
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade c7427796f7b6 -> 2187537c52b8, add table for ai providers
+WARNING  root:settings.py:109 Secrets directory '/run/secrets' does not exist
+INFO     root:2026-05-18-16.27.05_2187537c52b8_add_table_for_ai_providers.py:114 Creating provider settings for group_id='7581e99e39ed4a82ba2d658d4c212640'
+INFO     root:2026-05-18-16.27.05_2187537c52b8_add_table_for_ai_providers.py:114 Creating provider settings for group_id='ac84a0c6e2304fecab32e03ef84e843c'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 2187537c52b8 -> 69e942bab3aa, add tokens valid after column to users
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 69e942bab3aa -> b3f1c9a27d84, add external avatar hash to users
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade b3f1c9a27d84 -> f2191b69db2e, add ingredient substitutions
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade f2191b69db2e -> 4b91d3a7c0e2, backfill recipe image column from disk
+WARNING  root:2026-09-03-16.12.44_4b91d3a7c0e2_backfill_recipe_image_column.py:72 Skipping the clearing half of the recipe image backfill: 45 recipes reference an image but no image files were found under /Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-c/tests/.temp/gw3/recipes. If the recipe data volume was not mounted, nothing was cleared.
+INFO     root:2026-09-03-16.12.44_4b91d3a7c0e2_backfill_recipe_image_column.py:96 Recipe image backfill checked 46 recipes: 0 image references restored, 0 cleared
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 4b91d3a7c0e2 -> 3527efeeec34, 'add recipe_note_ref_link'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 3527efeeec34 -> 27621d27c7e1, add structured recipe times
+INFO     root:2026-09-24-13.16.56_27621d27c7e1_add_structured_recipe_times.py:196 Converted 0 recipe times to structured durations and cleared 0 empty ones across 46 recipes
+INFO     init_db:legacy_backup_fixes.py:203 Checking for migration data fixes
+INFO     init_db:legacy_backup_fixes.py:203 Checking for migration data fixes
+INFO     root:backup_v2.py:94 initializing backup restore
+INFO     root:backup_v2.py:117 importing database tables
+INFO     root:backup_v2.py:120 database tables imported successfully
+INFO     root:backup_v2.py:122 restoring data directory
+INFO     root:backup_v2.py:89 invalidating appsettings cache
+WARNING  root:settings.py:109 Secrets directory '/run/secrets' does not exist
+INFO     root:backup_v2.py:124 data directory restored successfully
+INFO     root:backup_v2.py:125 backup restore complete
+INFO     alembic.runtime.migration:migration.py:205 Context impl SQLiteImpl.
+INFO     alembic.runtime.migration:migration.py:208 Will assume non-transactional DDL.
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade  -> 6b0f5f32d602, Initial tables
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 6b0f5f32d602 -> 263dd6707191, convert quantity from integer to float
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 263dd6707191 -> f1a2dbee5fe9, Add original_text column to recipes_ingredients
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade f1a2dbee5fe9 -> 59eb59135381, add tags to cookbooks
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 59eb59135381 -> 09dfc897ad62, add require_all for cookbook filters
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 09dfc897ad62 -> ab0bae02578f, Add use_abbreviation column to ingredients
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade ab0bae02578f -> f30cf048c228, add new webhook fields
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade f30cf048c228 -> 188374910655, add login_attemps and locked_at field to user table
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 188374910655 -> 089bfa50d0ed, Add is_ocr_recipe column to recipes
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 089bfa50d0ed -> 44e8d670719d, add extras to shopping lists, list items, and ingredient foods
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 44e8d670719d -> 2ea7a807915c, add recipe_timeline_events table
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 2ea7a807915c -> 1923519381ad, added recipe last made timestamp
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 1923519381ad -> 167eb69066ad, add recipe_scale to shopping list item ref
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 167eb69066ad -> 165d943c64ee, add related user to mealplan
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 165d943c64ee -> ff5f73b01a7a, add missing foreign key and order indices
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade ff5f73b01a7a -> 16160bf731a0, add more indices necessary for search
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 16160bf731a0 -> 5ab195a474eb, add normalized search properties
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 5ab195a474eb -> b04a08da2108, added shopping list label settings
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade b04a08da2108 -> 38514b39a824, add auth_method to user table
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 38514b39a824 -> b3dbb554ba53, postgres fuzzy search
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade b3dbb554ba53 -> 04ac51cbe9a4, added group slug
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 04ac51cbe9a4 -> 1825b5225403, added recipe note to shopping list recipe ref
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 1825b5225403 -> bcfdad6b7355, remove tool name and slug unique contraints
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade bcfdad6b7355 -> 0341b154f79a, added normalized unit and food names
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 0341b154f79a -> dded3119c1fe, added unique constraints
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade dded3119c1fe -> ba1e4a6cfe99, added plural names and alias tables for foods and units
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade ba1e4a6cfe99 -> 2298bb460ffd, added user to shopping list
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 2298bb460ffd -> 09aba125b57a, add OIDC auth method
+INFO     alembic.runtime.migration:migration.py:205 Context impl SQLiteImpl.
+INFO     alembic.runtime.migration:migration.py:208 Will assume non-transactional DDL.
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 09aba125b57a -> d7c6efd2de42, migrate favorites and ratings to user_ratings
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade d7c6efd2de42 -> 7788478a0338, add group recipe actions
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 7788478a0338 -> 32d69327997b, Add staple flag to foods
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 32d69327997b -> feecc8ffb956, add households
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade feecc8ffb956 -> be568e39ffdf, added household recipe lock setting and household management user permission
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade be568e39ffdf -> 1fe4bd37ccc8, add households filter to meal plans
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 1fe4bd37ccc8 -> 602927e1013e, 'add the rest of the schema.org nutrition properties'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 602927e1013e -> 86054b40fd06, added query_filter_string to cookbook and mealplan
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 86054b40fd06 -> 3897397b4631, 'Add summary to recipe instructions'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 3897397b4631 -> b1020f328e98, add recipe yield quantity
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade b1020f328e98 -> b9e516e2d3b3, add household to recipe last made, household to foods, and household to tools
+INFO     root:2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_.py:167 Running new model migration (migrate_recipe_last_made_to_household)
+INFO     root:2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_.py:167 Running new model migration (migrate_foods_on_hand_to_household)
+INFO     root:2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_.py:167 Running new model migration (migrate_tools_on_hand_to_household)
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade b9e516e2d3b3 -> 7cf3054cbbcc, remove instructions index
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 7cf3054cbbcc -> d7b3ce6fa31a, empty migration to fix food flag data
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade d7b3ce6fa31a -> e6bb583aac2d, 'Add label notifier CRUD bools'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade e6bb583aac2d -> 1d9a002d7234, 'Add referenced_recipe to ingredients'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 1d9a002d7234 -> a39c7f1826e3, add unit standardization fields
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade a39c7f1826e3 -> cdc93edaf73d, 'Add mealplan updated and deleted to group notifier options'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade cdc93edaf73d -> 4395a04f7784, add announcements
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 4395a04f7784 -> c7427796f7b6, more aggresive normalization
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade c7427796f7b6 -> 2187537c52b8, add table for ai providers
+WARNING  root:settings.py:109 Secrets directory '/run/secrets' does not exist
+INFO     root:2026-05-18-16.27.05_2187537c52b8_add_table_for_ai_providers.py:114 Creating provider settings for group_id='42c4431a30cb4c91bd5c09555f1aff35'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 2187537c52b8 -> 69e942bab3aa, add tokens valid after column to users
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 69e942bab3aa -> b3f1c9a27d84, add external avatar hash to users
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade b3f1c9a27d84 -> f2191b69db2e, add ingredient substitutions
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade f2191b69db2e -> 4b91d3a7c0e2, backfill recipe image column from disk
+WARNING  root:2026-09-03-16.12.44_4b91d3a7c0e2_backfill_recipe_image_column.py:72 Skipping the clearing half of the recipe image backfill: 42 recipes reference an image but no image files were found under /Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-c/tests/.temp/gw3/recipes. If the recipe data volume was not mounted, nothing was cleared.
+INFO     root:2026-09-03-16.12.44_4b91d3a7c0e2_backfill_recipe_image_column.py:96 Recipe image backfill checked 42 recipes: 0 image references restored, 0 cleared
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 4b91d3a7c0e2 -> 3527efeeec34, 'add recipe_note_ref_link'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 3527efeeec34 -> 27621d27c7e1, add structured recipe times
+INFO     root:2026-09-24-13.16.56_27621d27c7e1_add_structured_recipe_times.py:196 Converted 0 recipe times to structured durations and cleared 0 empty ones across 42 recipes
+INFO     init_db:legacy_backup_fixes.py:203 Checking for migration data fixes
+INFO     init_db:legacy_backup_fixes.py:203 Checking for migration data fixes
+INFO     root:backup_v2.py:94 initializing backup restore
+INFO     root:backup_v2.py:117 importing database tables
+INFO     root:backup_v2.py:94 initializing backup restore
+INFO     root:backup_v2.py:117 importing database tables
+INFO     root:backup_v2.py:120 database tables imported successfully
+INFO     root:backup_v2.py:122 restoring data directory
+INFO     root:backup_v2.py:89 invalidating appsettings cache
+WARNING  root:settings.py:109 Secrets directory '/run/secrets' does not exist
+INFO     root:backup_v2.py:124 data directory restored successfully
+INFO     root:backup_v2.py:125 backup restore complete
+=========================== short test summary info ============================
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:264: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:285: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:293: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:314: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:322: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:348: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:375: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:401: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:427: requires ldap service in github actions
+SKIPPED [6] tests/unit_tests/test_recipe_parser.py:18: Long Running API Test - manually run when updating the parser
+SKIPPED [2] tests/utils/routes/test_mixins.py:12: psycopg2 is only installed with the pgsql extra
+SKIPPED [1] tests/integration_tests/user_recipe_tests/test_recipe_bulk_import.py:8: Long Running Scraper
+FAILED tests/unit_tests/pkgs/safehttp/test_transport.py::test_async_transport_pins_connection_to_validated_ip
+FAILED tests/unit_tests/pkgs/safehttp/test_transport.py::test_async_transport_falls_back_to_a_reachable_address[ips0]
+FAILED tests/unit_tests/pkgs/safehttp/test_transport.py::test_async_transport_falls_back_to_a_reachable_address[ips1]
+FAILED tests/unit_tests/pkgs/safehttp/test_transport.py::test_sync_post_blocks_loopback_by_default
+FAILED tests/unit_tests/pkgs/safehttp/test_transport.py::test_sync_post_allows_configured_host
+FAILED tests/unit_tests/services_tests/backup_v2_tests/test_backup_v2.py::test_database_restore_data
+6 failed, 3277 passed, 18 skipped in 50.26s

@@ -1,0 +1,1143 @@
+diff --git a/mealie/schema/_mealie/mealie_model.py b/mealie/schema/_mealie/mealie_model.py
+index 28909527f..caf2979f9 100644
+--- a/mealie/schema/_mealie/mealie_model.py
++++ b/mealie/schema/_mealie/mealie_model.py
+@@ -4,15 +4,14 @@ import re
+ from collections.abc import Sequence
+ from datetime import UTC, datetime
+ from enum import Enum
+-from typing import ClassVar, Protocol, Self
++from typing import Any, ClassVar, Protocol, Self, cast
+ 
+ from humps.main import camelize
+ from pydantic import UUID4, AliasChoices, BaseModel, ConfigDict, Field, model_validator
+-from sqlalchemy import Select, desc, func, or_, text
+-from sqlalchemy.orm import InstrumentedAttribute, Session
+-from sqlalchemy.orm.interfaces import LoaderOption
+-
+-from mealie.db.models._model_base import SqlAlchemyBase
++from tortoise.backends.base.client import BaseDBAsyncClient
++from tortoise.expressions import Case, Q, When
++from tortoise.models import Model
++from tortoise.queryset import QuerySet
+ 
+ HOUR_ONLY_TZ_PATTERN = re.compile(r"[+-]\d{2}$")
+ 
+@@ -132,19 +131,19 @@ class MealieModel(BaseModel):
+                 setattr(self, field, val)
+ 
+     @classmethod
+-    def loader_options(cls) -> list[LoaderOption]:
++    def loader_options(cls) -> list[str]:
+         return []
+ 
+     @classmethod
+     def filter_search_query(
+         cls,
+-        db_model: type[SqlAlchemyBase],
+-        query: Select,
+-        session: Session,
++        db_model: type[Model],
++        query: QuerySet,
++        session: BaseDBAsyncClient,
+         search_type: SearchType,
+         search: str,
+         search_list: list[str],
+-    ) -> Select:
++    ) -> QuerySet:
+         """
+         Filters a search query based on model attributes
+ 
+@@ -154,20 +153,32 @@ class MealieModel(BaseModel):
+         if not cls._searchable_properties:
+             raise AttributeError("Not Implemented")
+ 
+-        model_properties: list[InstrumentedAttribute] = [getattr(db_model, prop) for prop in cls._searchable_properties]
++        properties = cls._searchable_properties
+         if search_type is SearchType.fuzzy:
+-            session.execute(text(f"set pg_trgm.word_similarity_threshold = {cls._fuzzy_similarity_threshold};"))
+-            filters = [prop.op("%>")(search) for prop in model_properties]
+-
+-            # trigram ordering by the first searchable property
+-            return query.filter(or_(*filters)).order_by(func.least(model_properties[0].op("<->>")(search)))
+-        else:
+-            filters = []
+-            for prop in model_properties:
+-                filters.extend([prop.like(f"%{s}%") for s in search_list])
+-
+-            # order by how close the result is to the first searchable property
+-            return query.filter(or_(*filters)).order_by(desc(model_properties[0].like(f"%{search}%")))
++            from mealie.services.query_filter.expressions import WordSimilarity
++
++            annotations = {
++                f"_search_similarity_{index}": WordSimilarity(prop, search) for index, prop in enumerate(properties)
++            }
++            query = query.annotate(**annotations)
++            matches = Q()
++            for key in annotations:
++                condition: dict[str, Any] = {key + "__gte": cls._fuzzy_similarity_threshold}
++                matches |= Q(**condition)
++            return query.filter(matches).order_by("-_search_similarity_0")
++        matches = Q()
++        for prop in properties:
++            for token in search_list:
++                matches |= Q(**{prop + "__icontains": token})
++        return (
++            query.filter(matches)
++            .annotate(
++                _search_rank=Case(
++                    When(Q(**{properties[0] + "__icontains": search}), then=cast(Any, 1)), default=cast(Any, 0)
++                )
++            )
++            .order_by("-_search_rank")
++        )
+ 
+ 
+ class HasUUID(Protocol):
+diff --git a/mealie/schema/cookbook/cookbook.py b/mealie/schema/cookbook/cookbook.py
+index 29b543d76..606c2b2c5 100644
+--- a/mealie/schema/cookbook/cookbook.py
++++ b/mealie/schema/cookbook/cookbook.py
+@@ -1,13 +1,9 @@
+ from typing import Annotated
+ 
+-import sqlalchemy as sa
+ from pydantic import UUID4, ConfigDict, Field, ValidationInfo, field_validator
+ from slugify import slugify
+-from sqlalchemy.orm import joinedload
+-from sqlalchemy.orm.interfaces import LoaderOption
+ 
+ from mealie.core.root_logger import get_logger
+-from mealie.db.models.household.cookbook import CookBook
+ from mealie.db.models.recipe import RecipeModel
+ from mealie.schema._mealie import MealieModel
+ from mealie.schema.response.pagination import PaginationBase
+@@ -53,7 +49,7 @@ class CreateCookBook(MealieModel):
+         builder = QueryFilterBuilder(value)
+ 
+         try:
+-            builder.filter_query(sa.select(RecipeModel), RecipeModel)
++            builder.filter_query(RecipeModel.all(), RecipeModel)
+         except Exception as e:
+             raise ValueError("Invalid query filter string") from e
+ 
+@@ -91,8 +87,8 @@ class ReadCookBook(UpdateCookBook):
+             return QueryFilterJSON()
+ 
+     @classmethod
+-    def loader_options(cls) -> list[LoaderOption]:
+-        return [joinedload(CookBook.household)]
++    def loader_options(cls) -> list[str]:
++        return ["household"]
+ 
+ 
+ class CookBookPagination(PaginationBase):
+diff --git a/mealie/schema/group/ai_providers.py b/mealie/schema/group/ai_providers.py
+index fb4570f89..fa9c1fc45 100644
+--- a/mealie/schema/group/ai_providers.py
++++ b/mealie/schema/group/ai_providers.py
+@@ -1,10 +1,7 @@
+ from typing import Any, Self
+ 
+ from pydantic import UUID4, ConfigDict, Field, ValidationInfo, computed_field, field_validator, model_validator
+-from sqlalchemy.orm import joinedload, selectinload
+-from sqlalchemy.orm.interfaces import LoaderOption
+ 
+-from mealie.db.models.group.ai_providers import AIProvider, AIProviderSettings
+ from mealie.schema._mealie import MealieModel
+ 
+ 
+@@ -57,11 +54,8 @@ class AIProviderOut(AIProviderCreate):
+         return {x.key_name: x.value for x in v} if v else {}
+ 
+     @classmethod
+-    def loader_options(cls) -> list[LoaderOption]:
+-        return [
+-            selectinload(AIProvider.request_headers),
+-            selectinload(AIProvider.request_params),
+-        ]
++    def loader_options(cls) -> list[str]:
++        return ["request_headers", "request_params"]
+ 
+ 
+ class AIProviderTestResult(MealieModel):
+@@ -78,7 +72,7 @@ class AIProviderSummary(MealieModel):
+     model_config = ConfigDict(from_attributes=True)
+ 
+     @classmethod
+-    def loader_options(cls) -> list[LoaderOption]:
++    def loader_options(cls) -> list[str]:
+         return []
+ 
+ 
+@@ -96,12 +90,8 @@ class AIProviderSettingsUpdate(MealieModel):
+         return val or None
+ 
+     @classmethod
+-    def loader_options(cls) -> list[LoaderOption]:
+-        return [
+-            joinedload(AIProviderSettings.default_provider),
+-            joinedload(AIProviderSettings.audio_provider),
+-            joinedload(AIProviderSettings.image_provider),
+-        ]
++    def loader_options(cls) -> list[str]:
++        return ["default_provider", "audio_provider", "image_provider"]
+ 
+ 
+ class AIProviderSettingsOut(AIProviderSettingsUpdate):
+@@ -137,10 +127,5 @@ class AIProviderSettingsOut(AIProviderSettingsUpdate):
+         return self.ai_enabled and self.image_provider_id is not None
+ 
+     @classmethod
+-    def loader_options(cls) -> list[LoaderOption]:
+-        return [
+-            selectinload(AIProviderSettings.providers),
+-            joinedload(AIProviderSettings.default_provider),
+-            joinedload(AIProviderSettings.audio_provider),
+-            joinedload(AIProviderSettings.image_provider),
+-        ]
++    def loader_options(cls) -> list[str]:
++        return ["providers", "default_provider", "audio_provider", "image_provider"]
+diff --git a/mealie/schema/household/group_events.py b/mealie/schema/household/group_events.py
+index fa4f2237a..d133b1deb 100644
+--- a/mealie/schema/household/group_events.py
++++ b/mealie/schema/household/group_events.py
+@@ -1,8 +1,5 @@
+ from pydantic import UUID4, ConfigDict
+-from sqlalchemy.orm import joinedload
+-from sqlalchemy.orm.interfaces import LoaderOption
+ 
+-from mealie.db.models.household import GroupEventNotifierModel
+ from mealie.schema._mealie import MealieModel
+ from mealie.schema.response.pagination import PaginationBase
+ 
+@@ -94,8 +91,8 @@ class GroupEventNotifierOut(MealieModel):
+     model_config = ConfigDict(from_attributes=True)
+ 
+     @classmethod
+-    def loader_options(cls) -> list[LoaderOption]:
+-        return [joinedload(GroupEventNotifierModel.options)]
++    def loader_options(cls) -> list[str]:
++        return ["options"]
+ 
+ 
+ class GroupEventPagination(PaginationBase):
+diff --git a/mealie/schema/household/group_shopping_list.py b/mealie/schema/household/group_shopping_list.py
+index 594fe46ee..d68189563 100644
+--- a/mealie/schema/household/group_shopping_list.py
++++ b/mealie/schema/household/group_shopping_list.py
+@@ -4,17 +4,7 @@ from datetime import datetime
+ from uuid import UUID
+ 
+ from pydantic import UUID4, ConfigDict, field_validator, model_validator
+-from sqlalchemy.orm import joinedload, selectinload
+-from sqlalchemy.orm.interfaces import LoaderOption
+-
+-from mealie.db.models.household import (
+-    ShoppingList,
+-    ShoppingListItem,
+-    ShoppingListMultiPurposeLabel,
+-    ShoppingListRecipeReference,
+-)
+-from mealie.db.models.recipe import IngredientFoodModel, IngredientFoodSubstitutionModel, RecipeModel
+-from mealie.db.models.users.users import User
++
+ from mealie.schema._mealie import MealieModel
+ from mealie.schema._mealie.mealie_model import UpdatedAtField
+ from mealie.schema._mealie.types import NoneFloat
+@@ -129,20 +119,16 @@ class ShoppingListItemOut(ShoppingListItemBase):
+     model_config = ConfigDict(from_attributes=True)
+ 
+     @classmethod
+-    def loader_options(cls) -> list[LoaderOption]:
++    def loader_options(cls) -> list[str]:
+         return [
+-            selectinload(ShoppingListItem.extras),
+-            selectinload(ShoppingListItem.food).joinedload(IngredientFoodModel.extras),
+-            selectinload(ShoppingListItem.food).joinedload(IngredientFoodModel.label),
+-            selectinload(ShoppingListItem.food)
+-            .selectinload(IngredientFoodModel.substitutions)
+-            .joinedload(IngredientFoodSubstitutionModel.substitute_food),
+-            joinedload(ShoppingListItem.label),
+-            joinedload(ShoppingListItem.unit),
+-            selectinload(ShoppingListItem.recipe_references),
+-            joinedload(ShoppingListItem.shopping_list)
+-            .joinedload(ShoppingList.user)
+-            .load_only(User.household_id, User.group_id),
++            "extras",
++            "food__extras",
++            "food__label",
++            "food__substitutions__substitute_food",
++            "label",
++            "unit",
++            "recipe_references",
++            "shopping_list__user",
+         ]
+ 
+ 
+@@ -169,8 +155,8 @@ class ShoppingListMultiPurposeLabelOut(ShoppingListMultiPurposeLabelUpdate):
+     model_config = ConfigDict(from_attributes=True)
+ 
+     @classmethod
+-    def loader_options(cls) -> list[LoaderOption]:
+-        return [joinedload(ShoppingListMultiPurposeLabel.label)]
++    def loader_options(cls) -> list[str]:
++        return ["label"]
+ 
+ 
+ class ShoppingListItemPagination(PaginationBase):
+@@ -203,12 +189,8 @@ class ShoppingListRecipeRefOut(MealieModel):
+     model_config = ConfigDict(from_attributes=True)
+ 
+     @classmethod
+-    def loader_options(cls) -> list[LoaderOption]:
+-        return [
+-            selectinload(ShoppingListRecipeReference.recipe).joinedload(RecipeModel.recipe_category),
+-            selectinload(ShoppingListRecipeReference.recipe).joinedload(RecipeModel.tags),
+-            selectinload(ShoppingListRecipeReference.recipe).joinedload(RecipeModel.tools),
+-        ]
++    def loader_options(cls) -> list[str]:
++        return ["recipe__recipe_category", "recipe__tags", "recipe__tools"]
+ 
+ 
+ class ShoppingListSave(ShoppingListCreate):
+@@ -224,20 +206,14 @@ class ShoppingListSummary(ShoppingListSave):
+     model_config = ConfigDict(from_attributes=True)
+ 
+     @classmethod
+-    def loader_options(cls) -> list[LoaderOption]:
++    def loader_options(cls) -> list[str]:
+         return [
+-            selectinload(ShoppingList.extras),
+-            selectinload(ShoppingList.recipe_references)
+-            .joinedload(ShoppingListRecipeReference.recipe)
+-            .joinedload(RecipeModel.recipe_category),
+-            selectinload(ShoppingList.recipe_references)
+-            .joinedload(ShoppingListRecipeReference.recipe)
+-            .joinedload(RecipeModel.tags),
+-            selectinload(ShoppingList.recipe_references)
+-            .joinedload(ShoppingListRecipeReference.recipe)
+-            .joinedload(RecipeModel.tools),
+-            selectinload(ShoppingList.label_settings).joinedload(ShoppingListMultiPurposeLabel.label),
+-            joinedload(ShoppingList.user).load_only(User.household_id, User.group_id),
++            "extras",
++            "recipe_references__recipe__recipe_category",
++            "recipe_references__recipe__tags",
++            "recipe_references__recipe__tools",
++            "label_settings__label",
++            "user",
+         ]
+ 
+ 
+@@ -261,34 +237,21 @@ class ShoppingListOut(ShoppingListUpdate):
+         return v or []
+ 
+     @classmethod
+-    def loader_options(cls) -> list[LoaderOption]:
++    def loader_options(cls) -> list[str]:
+         return [
+-            selectinload(ShoppingList.extras),
+-            selectinload(ShoppingList.list_items).joinedload(ShoppingListItem.extras),
+-            selectinload(ShoppingList.list_items)
+-            .joinedload(ShoppingListItem.food)
+-            .joinedload(IngredientFoodModel.extras),
+-            selectinload(ShoppingList.list_items)
+-            .joinedload(ShoppingListItem.food)
+-            .joinedload(IngredientFoodModel.label),
+-            selectinload(ShoppingList.list_items)
+-            .joinedload(ShoppingListItem.food)
+-            .selectinload(IngredientFoodModel.substitutions)
+-            .joinedload(IngredientFoodSubstitutionModel.substitute_food),
+-            selectinload(ShoppingList.list_items).joinedload(ShoppingListItem.label),
+-            selectinload(ShoppingList.list_items).joinedload(ShoppingListItem.unit),
+-            selectinload(ShoppingList.list_items).joinedload(ShoppingListItem.recipe_references),
+-            selectinload(ShoppingList.recipe_references)
+-            .joinedload(ShoppingListRecipeReference.recipe)
+-            .joinedload(RecipeModel.recipe_category),
+-            selectinload(ShoppingList.recipe_references)
+-            .joinedload(ShoppingListRecipeReference.recipe)
+-            .joinedload(RecipeModel.tags),
+-            selectinload(ShoppingList.recipe_references)
+-            .joinedload(ShoppingListRecipeReference.recipe)
+-            .joinedload(RecipeModel.tools),
+-            selectinload(ShoppingList.label_settings).joinedload(ShoppingListMultiPurposeLabel.label),
+-            joinedload(ShoppingList.user).load_only(User.household_id, User.group_id),
++            "extras",
++            "list_items__extras",
++            "list_items__food__extras",
++            "list_items__food__label",
++            "list_items__food__substitutions__substitute_food",
++            "list_items__label",
++            "list_items__unit",
++            "list_items__recipe_references",
++            "recipe_references__recipe__recipe_category",
++            "recipe_references__recipe__tags",
++            "recipe_references__recipe__tools",
++            "label_settings__label",
++            "user",
+         ]
+ 
+ 
+diff --git a/mealie/schema/household/household.py b/mealie/schema/household/household.py
+index 37f1cc04b..c58af4115 100644
+--- a/mealie/schema/household/household.py
++++ b/mealie/schema/household/household.py
+@@ -2,11 +2,7 @@ from datetime import datetime
+ from typing import Annotated
+ 
+ from pydantic import UUID4, ConfigDict, StringConstraints, field_validator
+-from sqlalchemy.orm import joinedload, selectinload
+-from sqlalchemy.orm.interfaces import LoaderOption
+ 
+-from mealie.db.models.household import Household, HouseholdToRecipe
+-from mealie.db.models.users.users import User
+ from mealie.schema._mealie.mealie_model import MealieModel
+ from mealie.schema.household.webhook import ReadWebhook
+ from mealie.schema.response.pagination import PaginationBase
+@@ -36,10 +32,8 @@ class HouseholdRecipeOut(HouseholdRecipeCreate):
+     model_config = ConfigDict(from_attributes=True)
+ 
+     @classmethod
+-    def loader_options(cls) -> list[LoaderOption]:
+-        return [
+-            joinedload(HouseholdToRecipe.household),
+-        ]
++    def loader_options(cls) -> list[str]:
++        return ["household"]
+ 
+ 
+ class HouseholdCreate(MealieModel):
+@@ -80,14 +74,8 @@ class HouseholdInDB(HouseholdSummary):
+     model_config = ConfigDict(from_attributes=True)
+ 
+     @classmethod
+-    def loader_options(cls) -> list[LoaderOption]:
+-        return [
+-            joinedload(Household.group),
+-            joinedload(Household.webhooks),
+-            joinedload(Household.preferences),
+-            selectinload(Household.users).joinedload(User.group),
+-            selectinload(Household.users).joinedload(User.tokens),
+-        ]
++    def loader_options(cls) -> list[str]:
++        return ["group", "webhooks", "preferences", "users__group", "users__tokens"]
+ 
+     @field_validator("group", mode="before")
+     def convert_group_to_name(cls, v):
+diff --git a/mealie/schema/household/household_preferences.py b/mealie/schema/household/household_preferences.py
+index 83841fa0e..b28c22b72 100644
+--- a/mealie/schema/household/household_preferences.py
++++ b/mealie/schema/household/household_preferences.py
+@@ -1,9 +1,5 @@
+ from pydantic import UUID4, ConfigDict
+-from sqlalchemy.orm import joinedload
+-from sqlalchemy.orm.interfaces import LoaderOption
+ 
+-from mealie.db.models.household.household import Household
+-from mealie.db.models.household.preferences import HouseholdPreferencesModel
+ from mealie.schema._mealie import MealieModel
+ 
+ 
+@@ -34,7 +30,5 @@ class ReadHouseholdPreferences(CreateHouseholdPreferences):
+     model_config = ConfigDict(from_attributes=True)
+ 
+     @classmethod
+-    def loader_options(cls) -> list[LoaderOption]:
+-        return [
+-            joinedload(HouseholdPreferencesModel.household).load_only(Household.group_id),
+-        ]
++    def loader_options(cls) -> list[str]:
++        return ["household"]
+diff --git a/mealie/schema/meal_plan/new_meal.py b/mealie/schema/meal_plan/new_meal.py
+index 82f94ff67..e978a09b0 100644
+--- a/mealie/schema/meal_plan/new_meal.py
++++ b/mealie/schema/meal_plan/new_meal.py
+@@ -5,12 +5,7 @@ from uuid import UUID
+ 
+ from pydantic import ConfigDict, Field, field_validator
+ from pydantic_core.core_schema import ValidationInfo
+-from sqlalchemy.orm import selectinload
+-from sqlalchemy.orm.interfaces import LoaderOption
+ 
+-from mealie.db.models.household import GroupMealPlan
+-from mealie.db.models.recipe import RecipeModel
+-from mealie.db.models.users.users import User
+ from mealie.schema._mealie import MealieModel
+ from mealie.schema.recipe.recipe import RecipeSummary
+ from mealie.schema.response.pagination import PaginationBase
+@@ -65,13 +60,8 @@ class ReadPlanEntry(UpdatePlanEntry):
+     model_config = ConfigDict(from_attributes=True)
+ 
+     @classmethod
+-    def loader_options(cls) -> list[LoaderOption]:
+-        return [
+-            selectinload(GroupMealPlan.recipe).joinedload(RecipeModel.recipe_category),
+-            selectinload(GroupMealPlan.recipe).joinedload(RecipeModel.tags),
+-            selectinload(GroupMealPlan.recipe).joinedload(RecipeModel.tools),
+-            selectinload(GroupMealPlan.user).load_only(User.household_id),
+-        ]
++    def loader_options(cls) -> list[str]:
++        return ["recipe__recipe_category", "recipe__tags", "recipe__tools", "user"]
+ 
+ 
+ class PlanEntryPagination(PaginationBase):
+diff --git a/mealie/schema/meal_plan/plan_rules.py b/mealie/schema/meal_plan/plan_rules.py
+index 142715cb9..6b8259c39 100644
+--- a/mealie/schema/meal_plan/plan_rules.py
++++ b/mealie/schema/meal_plan/plan_rules.py
+@@ -2,7 +2,6 @@ import datetime
+ from enum import StrEnum
+ from typing import Annotated
+ 
+-import sqlalchemy as sa
+ from pydantic import UUID4, ConfigDict, Field, ValidationInfo, field_validator
+ 
+ from mealie.core.root_logger import get_logger
+@@ -56,7 +55,7 @@ class PlanRulesCreate(MealieModel):
+         builder = QueryFilterBuilder(value)
+ 
+         try:
+-            builder.filter_query(sa.select(RecipeModel), RecipeModel)
++            builder.filter_query(RecipeModel.all(), RecipeModel)
+         except Exception as e:
+             raise ValueError("Invalid query filter string") from e
+ 
+diff --git a/mealie/schema/recipe/recipe.py b/mealie/schema/recipe/recipe.py
+index a9d44c927..90af6708e 100644
+--- a/mealie/schema/recipe/recipe.py
++++ b/mealie/schema/recipe/recipe.py
+@@ -3,32 +3,19 @@ from __future__ import annotations
+ import datetime
+ from numbers import Number
+ from pathlib import Path
+-from typing import Annotated, Any, ClassVar
++from typing import Annotated, Any, ClassVar, cast
+ from uuid import uuid4
+ 
+ from pydantic import UUID4, BaseModel, ConfigDict, Field, field_validator
+ from pydantic_core.core_schema import ValidationInfo
+ from slugify import slugify
+-from sqlalchemy import Select, desc, func, or_, select, text
+-from sqlalchemy.orm import Session, joinedload, selectinload
+-from sqlalchemy.orm.interfaces import LoaderOption
+ 
+ from mealie.core.config import get_app_dirs
+ from mealie.core.exceptions import SlugError
+-from mealie.db.models.users.users import User
+ from mealie.schema._mealie import MealieModel, SearchType
+ from mealie.schema._mealie.mealie_model import UpdatedAtField
+ from mealie.schema.response.pagination import PaginationBase
+ 
+-from ...db.models.recipe import (
+-    IngredientFoodModel,
+-    IngredientFoodSubstitutionModel,
+-    RecipeComment,
+-    RecipeIngredientModel,
+-    RecipeIngredientSubstitutionModel,
+-    RecipeInstruction,
+-    RecipeModel,
+-)
+ from .recipe_asset import RecipeAsset
+ from .recipe_comments import RecipeCommentOut
+ from .recipe_notes import RecipeNote
+@@ -227,13 +214,8 @@ class RecipeSummary(MealieModel):
+         return f"{number} {self.recipe_yield or ''}".strip()
+ 
+     @classmethod
+-    def loader_options(cls) -> list[LoaderOption]:
+-        return [
+-            joinedload(RecipeModel.recipe_category),
+-            joinedload(RecipeModel.tags),
+-            joinedload(RecipeModel.tools),
+-            joinedload(RecipeModel.user).load_only(User.household_id),
+-        ]
++    def loader_options(cls) -> list[str]:
++        return ["recipe_category", "tags", "tools", "user"]
+ 
+ 
+ class RecipePagination(PaginationBase):
+@@ -364,98 +346,74 @@ class Recipe(RecipeSummary):
+         return v or None
+ 
+     @classmethod
+-    def loader_options(cls) -> list[LoaderOption]:
++    def loader_options(cls) -> list[str]:
+         return [
+-            selectinload(RecipeModel.assets),
+-            selectinload(RecipeModel.comments).joinedload(RecipeComment.user),
+-            selectinload(RecipeModel.extras),
+-            joinedload(RecipeModel.recipe_category),
+-            selectinload(RecipeModel.tags),
+-            selectinload(RecipeModel.tools),
+-            selectinload(RecipeModel.recipe_ingredient).joinedload(RecipeIngredientModel.unit),
+-            selectinload(RecipeModel.recipe_ingredient)
+-            .joinedload(RecipeIngredientModel.food)
+-            .joinedload(IngredientFoodModel.extras),
+-            selectinload(RecipeModel.recipe_ingredient)
+-            .joinedload(RecipeIngredientModel.food)
+-            .joinedload(IngredientFoodModel.label),
+-            selectinload(RecipeModel.recipe_ingredient)
+-            .joinedload(RecipeIngredientModel.food)
+-            .selectinload(IngredientFoodModel.substitutions)
+-            .joinedload(IngredientFoodSubstitutionModel.substitute_food),
+-            selectinload(RecipeModel.recipe_ingredient)
+-            .selectinload(RecipeIngredientModel.substitutions)
+-            .joinedload(RecipeIngredientSubstitutionModel.substitute_food),
+-            selectinload(RecipeModel.recipe_instructions).joinedload(RecipeInstruction.ingredient_references),
+-            selectinload(RecipeModel.recipe_instructions).joinedload(RecipeInstruction.note_references),
+-            joinedload(RecipeModel.nutrition),
+-            joinedload(RecipeModel.settings),
+-            # for whatever reason, joinedload can mess up the order here, so use selectinload just this once
+-            selectinload(RecipeModel.notes),
++            "assets",
++            "comments__user",
++            "extras",
++            "recipe_category",
++            "tags",
++            "tools",
++            "recipe_ingredient__unit",
++            "recipe_ingredient__food__extras",
++            "recipe_ingredient__food__label",
++            "recipe_ingredient__food__substitutions__substitute_food",
++            "recipe_ingredient__substitutions__substitute_food",
++            "recipe_instructions__ingredient_references",
++            "recipe_instructions__note_references",
++            "nutrition",
++            "settings",
++            "notes",
+         ]
+ 
+     @classmethod
+     def filter_search_query(
+-        cls, db_model, query: Select, session: Session, search_type: SearchType, search: str, search_list: list[str]
+-    ) -> Select:
+-        """
+-        1. token search looks for any individual exact hit in name, description, and ingredients
+-        2. fuzzy search looks for trigram hits in name, description, and ingredients
+-        3. Sort order is determined by closeness to the recipe name
+-        Should search also look at tags?
+-        """
++        cls, db_model, query, session, search_type: SearchType, search: str, search_list: list[str]
++    ):
++        from tortoise.expressions import Case, Q, Subquery, When
++
++        from mealie.db.models.recipe.ingredient import RecipeIngredientModel
+ 
++        fields = ["name_normalized", "description_normalized"]
++        ingredient_fields = ["note_normalized", "original_text_normalized"]
+         if search_type is SearchType.fuzzy:
+-            # I would prefer to just do this in the recipe_ingredient.any part of the main query,
+-            # but it turns out that at least sqlite wont use indexes for that correctly anymore and
+-            # takes a big hit, so prefiltering it is
+-            ingredient_ids = (
+-                session.execute(
+-                    select(RecipeIngredientModel.id).filter(
+-                        or_(
+-                            RecipeIngredientModel.note_normalized.op("%>")(search),
+-                            RecipeIngredientModel.original_text_normalized.op("%>")(search),
+-                        )
+-                    )
+-                )
+-                .scalars()
+-                .all()
+-            )
++            from mealie.services.query_filter.expressions import WordSimilarity
+ 
+-            session.execute(text(f"set pg_trgm.word_similarity_threshold = {cls._fuzzy_similarity_threshold};"))
+-            return query.filter(
+-                or_(
+-                    RecipeModel.name_normalized.op("%>")(search),
+-                    RecipeModel.description_normalized.op("%>")(search),
+-                    RecipeModel.recipe_ingredient.any(RecipeIngredientModel.id.in_(ingredient_ids)),
+-                )
+-            ).order_by(  # trigram ordering could be too slow on million record db, but is fine with thousands.
+-                func.least(
+-                    RecipeModel.name_normalized.op("<->>")(search),
+-                )
++            query = query.annotate(
++                _name_similarity=WordSimilarity("name_normalized", search),
++                _description_similarity=WordSimilarity("description_normalized", search),
+             )
+-
+-        else:
+-            ingredient_ids = (
+-                session.execute(
+-                    select(RecipeIngredientModel.id).filter(
+-                        or_(
+-                            *[RecipeIngredientModel.note_normalized.like(f"%{ns}%") for ns in search_list],
+-                            *[RecipeIngredientModel.original_text_normalized.like(f"%{ns}%") for ns in search_list],
+-                        )
+-                    )
+-                )
+-                .scalars()
+-                .all()
++            ingredients = RecipeIngredientModel.annotate(
++                **{
++                    f"_ingredient_similarity_{index}": WordSimilarity(field, search)
++                    for index, field in enumerate(ingredient_fields)
++                }
++            ).filter(
++                Q(_ingredient_similarity_0__gte=cls._fuzzy_similarity_threshold)
++                | Q(_ingredient_similarity_1__gte=cls._fuzzy_similarity_threshold)
+             )
+-
+             return query.filter(
+-                or_(
+-                    *[RecipeModel.name_normalized.like(f"%{ns}%") for ns in search_list],
+-                    *[RecipeModel.description_normalized.like(f"%{ns}%") for ns in search_list],
+-                    RecipeModel.recipe_ingredient.any(RecipeIngredientModel.id.in_(ingredient_ids)),
+-                )
+-            ).order_by(desc(RecipeModel.name_normalized.like(f"%{search}%")))
++                Q(_name_similarity__gte=cls._fuzzy_similarity_threshold)
++                | Q(_description_similarity__gte=cls._fuzzy_similarity_threshold)
++                | Q(id__in=Subquery(ingredients.values("recipe_id")))
++            ).order_by("-_name_similarity")
++        ingredient_matches = Q()
++        recipe_matches = Q()
++        for token in search_list:
++            for field in fields:
++                recipe_matches |= Q(**{field + "__icontains": token})
++            for field in ingredient_fields:
++                ingredient_matches |= Q(**{field + "__icontains": token})
++        return (
++            query.filter(
++                recipe_matches
++                | Q(id__in=Subquery(RecipeIngredientModel.filter(ingredient_matches).values("recipe_id")))
++            )
++            .annotate(
++                _search_rank=Case(When(name_normalized__icontains=search, then=cast(Any, 1)), default=cast(Any, 0))
++            )
++            .order_by("-_search_rank")
++        )
+ 
+ 
+ class RecipeIn(Recipe):
+diff --git a/mealie/schema/recipe/recipe_category.py b/mealie/schema/recipe/recipe_category.py
+index 75673a975..73de0a9a3 100644
+--- a/mealie/schema/recipe/recipe_category.py
++++ b/mealie/schema/recipe/recipe_category.py
+@@ -1,8 +1,5 @@
+ from pydantic import UUID4, ConfigDict
+-from sqlalchemy.orm import selectinload
+-from sqlalchemy.orm.interfaces import LoaderOption
+ 
+-from mealie.db.models.recipe import RecipeModel, Tag
+ from mealie.schema._mealie import MealieModel
+ 
+ 
+@@ -64,12 +61,8 @@ class TagMerge(MealieModel):
+ 
+ class RecipeTagResponse(RecipeCategoryResponse):
+     @classmethod
+-    def loader_options(cls) -> list[LoaderOption]:
+-        return [
+-            selectinload(Tag.recipes).joinedload(RecipeModel.recipe_category),
+-            selectinload(Tag.recipes).joinedload(RecipeModel.tags),
+-            selectinload(Tag.recipes).joinedload(RecipeModel.tools),
+-        ]
++    def loader_options(cls) -> list[str]:
++        return ["recipes__recipe_category", "recipes__tags", "recipes__tools"]
+ 
+ 
+ from mealie.schema.recipe.recipe import RecipeSummary  # noqa: E402
+diff --git a/mealie/schema/recipe/recipe_comments.py b/mealie/schema/recipe/recipe_comments.py
+index 73889058e..dec20fb93 100644
+--- a/mealie/schema/recipe/recipe_comments.py
++++ b/mealie/schema/recipe/recipe_comments.py
+@@ -1,11 +1,7 @@
+ from datetime import datetime
+ 
+ from pydantic import UUID4, ConfigDict, field_validator
+-from sqlalchemy.orm import joinedload
+-from sqlalchemy.orm.interfaces import LoaderOption
+ 
+-from mealie.db.models.recipe import RecipeComment
+-from mealie.db.models.recipe.recipe import RecipeModel
+ from mealie.schema._mealie import MealieModel
+ from mealie.schema._mealie.mealie_model import UpdatedAtField
+ from mealie.schema.response.pagination import PaginationBase
+@@ -55,11 +51,8 @@ class RecipeCommentOut(MealieModel):
+     model_config = ConfigDict(from_attributes=True)
+ 
+     @classmethod
+-    def loader_options(cls) -> list[LoaderOption]:
+-        return [
+-            joinedload(RecipeComment.user),
+-            joinedload(RecipeComment.recipe).joinedload(RecipeModel.user),
+-        ]
++    def loader_options(cls) -> list[str]:
++        return ["user", "recipe__user"]
+ 
+ 
+ class RecipeCommentPagination(PaginationBase):
+diff --git a/mealie/schema/recipe/recipe_ingredient.py b/mealie/schema/recipe/recipe_ingredient.py
+index a02a755c9..8b14f1a4d 100644
+--- a/mealie/schema/recipe/recipe_ingredient.py
++++ b/mealie/schema/recipe/recipe_ingredient.py
+@@ -8,10 +8,7 @@ from typing import Any, ClassVar
+ from uuid import UUID, uuid4
+ 
+ from pydantic import UUID4, ConfigDict, Field, field_validator, model_validator
+-from sqlalchemy.orm import joinedload, selectinload
+-from sqlalchemy.orm.interfaces import LoaderOption
+ 
+-from mealie.db.models.recipe import IngredientFoodModel, IngredientFoodSubstitutionModel
+ from mealie.lang.locale_config import LocalePluralFoodHandling
+ from mealie.lang.providers import get_locale_context
+ from mealie.schema._mealie import MealieModel
+@@ -234,13 +231,8 @@ class IngredientFood(CreateIngredientFood):
+     model_config = ConfigDict(from_attributes=True)
+ 
+     @classmethod
+-    def loader_options(cls) -> list[LoaderOption]:
+-        return [
+-            selectinload(IngredientFoodModel.households_with_ingredient_food),
+-            joinedload(IngredientFoodModel.extras),
+-            joinedload(IngredientFoodModel.label),
+-            selectinload(IngredientFoodModel.substitutions).joinedload(IngredientFoodSubstitutionModel.substitute_food),
+-        ]
++    def loader_options(cls) -> list[str]:
++        return ["households_with_ingredient_food", "extras", "label", "substitutions__substitute_food"]
+ 
+     @field_validator("households_with_ingredient_food", mode="before")
+     def convert_households_to_slugs(cls, v):
+diff --git a/mealie/schema/recipe/recipe_share_token.py b/mealie/schema/recipe/recipe_share_token.py
+index 9dcdd4dac..332ee701d 100644
+--- a/mealie/schema/recipe/recipe_share_token.py
++++ b/mealie/schema/recipe/recipe_share_token.py
+@@ -1,20 +1,9 @@
+ from datetime import UTC, datetime, timedelta
+ 
+ from pydantic import UUID4, ConfigDict, Field
+-from sqlalchemy.orm import selectinload
+-from sqlalchemy.orm.interfaces import LoaderOption
+ 
+ from mealie.schema._mealie import MealieModel
+ 
+-from ...db.models.recipe import (
+-    IngredientFoodModel,
+-    IngredientFoodSubstitutionModel,
+-    RecipeIngredientModel,
+-    RecipeIngredientSubstitutionModel,
+-    RecipeInstruction,
+-    RecipeModel,
+-    RecipeShareTokenModel,
+-)
+ from .recipe import Recipe
+ 
+ 
+@@ -46,33 +35,20 @@ class RecipeShareToken(RecipeShareTokenSummary):
+     model_config = ConfigDict(from_attributes=True)
+ 
+     @classmethod
+-    def loader_options(cls) -> list[LoaderOption]:
++    def loader_options(cls) -> list[str]:
+         return [
+-            selectinload(RecipeShareTokenModel.recipe).joinedload(RecipeModel.recipe_category),
+-            selectinload(RecipeShareTokenModel.recipe).joinedload(RecipeModel.tags),
+-            selectinload(RecipeShareTokenModel.recipe).joinedload(RecipeModel.tools),
+-            selectinload(RecipeShareTokenModel.recipe).joinedload(RecipeModel.nutrition),
+-            selectinload(RecipeShareTokenModel.recipe).joinedload(RecipeModel.settings),
+-            selectinload(RecipeShareTokenModel.recipe).joinedload(RecipeModel.assets),
+-            selectinload(RecipeShareTokenModel.recipe).joinedload(RecipeModel.notes),
+-            selectinload(RecipeShareTokenModel.recipe).joinedload(RecipeModel.extras),
+-            selectinload(RecipeShareTokenModel.recipe).joinedload(RecipeModel.comments),
+-            selectinload(RecipeShareTokenModel.recipe)
+-            .joinedload(RecipeModel.recipe_instructions)
+-            .joinedload(RecipeInstruction.ingredient_references),
+-            selectinload(RecipeShareTokenModel.recipe)
+-            .joinedload(RecipeModel.recipe_ingredient)
+-            .joinedload(RecipeIngredientModel.unit),
+-            selectinload(RecipeShareTokenModel.recipe)
+-            .joinedload(RecipeModel.recipe_ingredient)
+-            .joinedload(RecipeIngredientModel.food),
+-            selectinload(RecipeShareTokenModel.recipe)
+-            .joinedload(RecipeModel.recipe_ingredient)
+-            .joinedload(RecipeIngredientModel.food)
+-            .selectinload(IngredientFoodModel.substitutions)
+-            .joinedload(IngredientFoodSubstitutionModel.substitute_food),
+-            selectinload(RecipeShareTokenModel.recipe)
+-            .joinedload(RecipeModel.recipe_ingredient)
+-            .selectinload(RecipeIngredientModel.substitutions)
+-            .joinedload(RecipeIngredientSubstitutionModel.substitute_food),
++            "recipe__recipe_category",
++            "recipe__tags",
++            "recipe__tools",
++            "recipe__nutrition",
++            "recipe__settings",
++            "recipe__assets",
++            "recipe__notes",
++            "recipe__extras",
++            "recipe__comments",
++            "recipe__recipe_instructions__ingredient_references",
++            "recipe__recipe_ingredient__unit",
++            "recipe__recipe_ingredient__food",
++            "recipe__recipe_ingredient__food__substitutions__substitute_food",
++            "recipe__recipe_ingredient__substitutions__substitute_food",
+         ]
+diff --git a/mealie/schema/recipe/recipe_timeline_events.py b/mealie/schema/recipe/recipe_timeline_events.py
+index 07246210b..e6c27e310 100644
+--- a/mealie/schema/recipe/recipe_timeline_events.py
++++ b/mealie/schema/recipe/recipe_timeline_events.py
+@@ -4,13 +4,9 @@ from pathlib import Path
+ from typing import Annotated
+ 
+ from pydantic import UUID4, ConfigDict, Field
+-from sqlalchemy.orm import joinedload
+-from sqlalchemy.orm.interfaces import LoaderOption
+ 
+ from mealie.core.config import get_app_dirs
+ from mealie.db.models._model_utils.datetime import get_utc_now
+-from mealie.db.models.recipe.recipe_timeline import RecipeTimelineEvent
+-from mealie.db.models.users.users import User
+ from mealie.schema._mealie import MealieModel
+ from mealie.schema._mealie.mealie_model import UpdatedAtField
+ from mealie.schema.recipe.recipe import Recipe
+@@ -66,11 +62,8 @@ class RecipeTimelineEventOut(RecipeTimelineEventCreate):
+     model_config = ConfigDict(from_attributes=True)
+ 
+     @classmethod
+-    def loader_options(cls) -> list[LoaderOption]:
+-        return [
+-            joinedload(RecipeTimelineEvent.recipe),
+-            joinedload(RecipeTimelineEvent.user).load_only(User.household_id, User.group_id),
+-        ]
++    def loader_options(cls) -> list[str]:
++        return ["recipe", "user"]
+ 
+     @classmethod
+     def image_dir_from_id(cls, recipe_id: UUID4 | str, timeline_event_id: UUID4 | str) -> Path:
+diff --git a/mealie/schema/recipe/recipe_tool.py b/mealie/schema/recipe/recipe_tool.py
+index 43704a02a..d5142d9fe 100644
+--- a/mealie/schema/recipe/recipe_tool.py
++++ b/mealie/schema/recipe/recipe_tool.py
+@@ -1,8 +1,5 @@
+ from pydantic import UUID4, ConfigDict, field_validator
+-from sqlalchemy.orm import selectinload
+-from sqlalchemy.orm.interfaces import LoaderOption
+ 
+-from mealie.db.models.recipe import RecipeModel, Tool
+ from mealie.schema._mealie import MealieModel
+ 
+ 
+@@ -33,10 +30,8 @@ class RecipeToolOut(RecipeToolCreate):
+             return v
+ 
+     @classmethod
+-    def loader_options(cls) -> list[LoaderOption]:
+-        return [
+-            selectinload(Tool.households_with_tool),
+-        ]
++    def loader_options(cls) -> list[str]:
++        return ["households_with_tool"]
+ 
+ 
+ class RecipeToolResponse(RecipeToolOut):
+@@ -44,13 +39,8 @@ class RecipeToolResponse(RecipeToolOut):
+     model_config = ConfigDict(from_attributes=True)
+ 
+     @classmethod
+-    def loader_options(cls) -> list[LoaderOption]:
+-        return [
+-            selectinload(Tool.households_with_tool),
+-            selectinload(Tool.recipes).joinedload(RecipeModel.recipe_category),
+-            selectinload(Tool.recipes).joinedload(RecipeModel.tags),
+-            selectinload(Tool.recipes).joinedload(RecipeModel.tools),
+-        ]
++    def loader_options(cls) -> list[str]:
++        return ["households_with_tool", "recipes__recipe_category", "recipes__tags", "recipes__tools"]
+ 
+ 
+ from .recipe import RecipeSummary  # noqa: E402
+diff --git a/mealie/schema/reports/reports.py b/mealie/schema/reports/reports.py
+index dd14867d3..6be8c1266 100644
+--- a/mealie/schema/reports/reports.py
++++ b/mealie/schema/reports/reports.py
+@@ -3,11 +3,8 @@ import enum
+ 
+ from pydantic import ConfigDict, Field
+ from pydantic.types import UUID4
+-from sqlalchemy.orm import joinedload
+-from sqlalchemy.orm.interfaces import LoaderOption
+ 
+ from mealie.db.models._model_utils.datetime import get_utc_now
+-from mealie.db.models.group import ReportModel
+ from mealie.schema._mealie import MealieModel
+ 
+ 
+@@ -55,5 +52,5 @@ class ReportOut(ReportSummary):
+     model_config = ConfigDict(from_attributes=True)
+ 
+     @classmethod
+-    def loader_options(cls) -> list[LoaderOption]:
+-        return [joinedload(ReportModel.entries)]
++    def loader_options(cls) -> list[str]:
++        return ["entries"]
+diff --git a/mealie/schema/response/query_search.py b/mealie/schema/response/query_search.py
+index 61ee7c61b..9e1a0b23e 100644
+--- a/mealie/schema/response/query_search.py
++++ b/mealie/schema/response/query_search.py
+@@ -1,10 +1,11 @@
+ import re
+ 
+-from sqlalchemy import Select
+-from sqlalchemy.orm import Session
+ from text_unidecode import unidecode
++from tortoise.backends.base.client import BaseDBAsyncClient
++from tortoise.models import Model
++from tortoise.queryset import QuerySet
+ 
+-from ...db.models._model_base import NORMALIZE_PUNCTUATION, SqlAlchemyBase
++from ...db.models._model_base import NORMALIZE_PUNCTUATION
+ from .._mealie import MealieModel, SearchType
+ 
+ 
+@@ -53,8 +54,8 @@ class SearchFilter:
+         # remove padding whitespace inside quotes
+         return [x.strip() for x in search_list]
+ 
+-    def __init__(self, session: Session, search: str, normalize_characters: bool = False) -> None:
+-        if session.get_bind().name != "postgresql" or self.quoted_regex.search(search.strip()):
++    def __init__(self, session: BaseDBAsyncClient, search: str, normalize_characters: bool = False) -> None:
++        if session.capabilities.dialect != "postgres" or self.quoted_regex.search(search.strip()):
+             self.search_type = SearchType.tokenized
+         else:
+             self.search_type = SearchType.fuzzy
+@@ -63,5 +64,5 @@ class SearchFilter:
+         self.search = self._normalize_search(search, normalize_characters)
+         self.search_list = self._build_search_list(self.search)
+ 
+-    def filter_query_by_search(self, query: Select, schema: type[MealieModel], model: type[SqlAlchemyBase]) -> Select:
++    def filter_query_by_search(self, query: QuerySet, schema: type[MealieModel], model: type[Model]) -> QuerySet:
+         return schema.filter_search_query(model, query, self.session, self.search_type, self.search, self.search_list)
+diff --git a/mealie/schema/user/user.py b/mealie/schema/user/user.py
+index 69dc068a5..4d75551ef 100644
+--- a/mealie/schema/user/user.py
++++ b/mealie/schema/user/user.py
+@@ -4,21 +4,15 @@ from typing import Annotated, Any
+ from uuid import UUID
+ 
+ from pydantic import UUID4, BaseModel, ConfigDict, Field, StringConstraints, field_validator
+-from sqlalchemy.orm import joinedload, selectinload
+-from sqlalchemy.orm.interfaces import LoaderOption
+ 
+ from mealie.core.config import get_app_dirs, get_app_settings
+-from mealie.db.models.recipe.recipe import RecipeModel
+-from mealie.db.models.users import User
+-from mealie.db.models.users.user_to_recipe import UserToRecipe
+-from mealie.db.models.users.users import AuthMethod, LongLiveToken
++from mealie.db.models.users.users import AuthMethod
+ from mealie.schema._mealie import MealieModel
+ from mealie.schema.group.ai_providers import AIProviderSettingsOut
+ from mealie.schema.group.group_preferences import ReadGroupPreferences
+ from mealie.schema.household.webhook import CreateWebhook, ReadWebhook
+ from mealie.schema.response.pagination import PaginationBase
+ 
+-from ...db.models.group import Group
+ from ..recipe import CategoryBase
+ 
+ DEFAULT_INTEGRATION_ID = "generic"
+@@ -37,8 +31,8 @@ class LongLiveTokenOut(MealieModel):
+     model_config = ConfigDict(from_attributes=True)
+ 
+     @classmethod
+-    def loader_options(cls) -> list[LoaderOption]:
+-        return [joinedload(LongLiveToken.user)]
++    def loader_options(cls) -> list[str]:
++        return ["user"]
+ 
+ 
+ class LongLiveTokenCreateResponse(LongLiveTokenOut):
+@@ -96,10 +90,8 @@ class UserRatingOut(UserRatingCreate):
+     id: UUID4
+ 
+     @classmethod
+-    def loader_options(cls) -> list[LoaderOption]:
+-        return [
+-            joinedload(UserToRecipe.recipe).joinedload(RecipeModel.user).load_only(User.household_id, User.group_id)
+-        ]
++    def loader_options(cls) -> list[str]:
++        return ["recipe__user"]
+ 
+ 
+ class UserRatings[DataT: BaseModel](BaseModel):
+@@ -184,8 +176,8 @@ class UserOut(UserBase):
+         return self.email == settings._DEFAULT_EMAIL.strip().lower()
+ 
+     @classmethod
+-    def loader_options(cls) -> list[LoaderOption]:
+-        return [joinedload(User.group), joinedload(User.household), joinedload(User.tokens)]
++    def loader_options(cls) -> list[str]:
++        return ["group", "household", "tokens"]
+ 
+ 
+ class UserSummary(MealieModel):
+@@ -236,8 +228,8 @@ class PrivateUser(UserOut):
+         return PrivateUser.get_directory(self.id)
+ 
+     @classmethod
+-    def loader_options(cls) -> list[LoaderOption]:
+-        return [joinedload(User.group), joinedload(User.household), joinedload(User.tokens)]
++    def loader_options(cls) -> list[str]:
++        return ["group", "household", "tokens"]
+ 
+ 
+ class UpdateGroup(GroupBase):
+@@ -285,15 +277,8 @@ class GroupInDB(UpdateGroup):
+         return GroupInDB.get_export_directory(self.id)
+ 
+     @classmethod
+-    def loader_options(cls) -> list[LoaderOption]:
+-        return [
+-            joinedload(Group.categories),
+-            joinedload(Group.webhooks),
+-            joinedload(Group.preferences),
+-            joinedload(Group.households),
+-            selectinload(Group.users).joinedload(User.group),
+-            selectinload(Group.users).joinedload(User.tokens),
+-        ]
++    def loader_options(cls) -> list[str]:
++        return ["categories", "webhooks", "preferences", "households", "users__group", "users__tokens"]
+ 
+ 
+ class GroupSummary(GroupBase):
+@@ -304,10 +289,8 @@ class GroupSummary(GroupBase):
+     ai_provider_settings: AIProviderSettingsOut | None = None
+ 
+     @classmethod
+-    def loader_options(cls) -> list[LoaderOption]:
+-        return [
+-            joinedload(Group.preferences),
+-        ]
++    def loader_options(cls) -> list[str]:
++        return ["preferences"]
+ 
+ 
+ class GroupPagination(PaginationBase):
+diff --git a/mealie/schema/user/user_passwords.py b/mealie/schema/user/user_passwords.py
+index 07ebd2031..63b54e88a 100644
+--- a/mealie/schema/user/user_passwords.py
++++ b/mealie/schema/user/user_passwords.py
+@@ -1,10 +1,7 @@
+ from pydantic import UUID4, ConfigDict
+-from sqlalchemy.orm import selectinload
+-from sqlalchemy.orm.interfaces import LoaderOption
+ 
+ from mealie.schema._mealie import MealieModel
+ 
+-from ...db.models.users import PasswordResetModel, User
+ from .user import PrivateUser
+ 
+ 
+@@ -36,9 +33,5 @@ class PrivatePasswordResetToken(SavePasswordResetToken):
+     model_config = ConfigDict(from_attributes=True)
+ 
+     @classmethod
+-    def loader_options(cls) -> list[LoaderOption]:
+-        return [
+-            selectinload(PasswordResetModel.user).joinedload(User.group),
+-            selectinload(PasswordResetModel.user).joinedload(User.household),
+-            selectinload(PasswordResetModel.user).joinedload(User.tokens),
+-        ]
++    def loader_options(cls) -> list[str]:
++        return ["user__group", "user__household", "user__tokens"]
