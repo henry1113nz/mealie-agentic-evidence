@@ -1,0 +1,2 @@
+mealie/db/tortoise_setup.py:22: error: "AbstractDBProvider" has no attribute "tortoise_db_url"  [attr-defined]
+Found 1 error in 1 file (checked 465 source files)

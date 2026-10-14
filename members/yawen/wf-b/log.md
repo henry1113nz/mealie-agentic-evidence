@@ -38,3 +38,28 @@ The 51-second measurement duration is not agent time.
 
 ## Transcript
 Saved as transcripts/s01.md (105 lines), including the initial prompt and the agent's final response.
+
+## s02 — Stage 1 implementation and typing fix
+
+- Date: 2026-10-14.
+- Agent time: 5.117 minutes (4m 53s implementation + 14s fix).
+- Reported token totals: 1968209 for implementation and 26084 for the fix; combined 1994293. Two local session files were observed; confirm their correspondence before treating the sum as final.
+- API-equivalent cost: not available.
+- Initial code commit: f52b1652d.
+- Final code commit: 6e08a90f2.
+- Transcript: transcripts/s02.md, 207 lines, including verification feedback and the typing fix.
+
+Added Tortoise ORM, Aerich and async database drivers, configuration URL support, and isolated database lifecycle helpers. Existing application startup was retained.
+
+Initial measurement (runs/s02/): 3177 passed, 0 failed, 0 errors, 18 skipped; mypy found 1 error because AbstractDBProvider did not declare tortoise_db_url.
+The participant supplied the exact error to Codex and requested a Stage 1-only fix. Codex added the provider interface declaration without suppressing the error.
+
+Final measurement (runs/s02-retry/): 3177 passed, 0 failed, 0 errors, 18 skipped; mypy 0 errors. SQLAlchemy files/models: 109/56; Tortoise models: 0. Test functions/assertions/skip markers: 1158/3837/12. Test-file and setup changes: 0. Measurement test duration: 51 seconds.
+
+Acceptance:
+- Dependencies and configuration construction: met according to agent checks.
+- Isolated SQLite connect/query/close: met according to agent smoke check.
+- Existing full suite: independently confirmed passing.
+- mypy: independently confirmed passing after repair.
+- Live PostgreSQL connection: not verified.
+Stage 1 accepted for progression with the PostgreSQL verification limitation recorded.

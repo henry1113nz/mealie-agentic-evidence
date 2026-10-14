@@ -1,2 +1,4 @@
 time,member,workflow,session,commit,passed,failed,errors,skipped,mypy_errors,sqlalchemy_files,sqlalchemy_models,tortoise_models,test_functions,asserts,skip_markers,test_file_lines_changed,test_setup_lines_changed,test_seconds
 2026-10-14T09:13:35+08:00,yawen,wf-b,s01,b0baf9b4e,3177,0,0,18,0,109,56,0,1158,3837,12,0,0,51
+2026-10-14T09:35:32+08:00,yawen,wf-b,s02,f52b1652d,3177,0,0,18,1,109,56,0,1158,3837,12,0,0,52
+2026-10-14T09:39:08+08:00,yawen,wf-b,s02-retry,6e08a90f2,3177,0,0,18,0,109,56,0,1158,3837,12,0,0,51
