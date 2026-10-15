@@ -505,3 +505,13 @@ SQLAlchemy remains widely used. The new query/filter layer still consults legacy
 SQLite and PostgreSQL migration/query checks passed in earlier stages, but those results do not cover the unverified Stage 8 PostgreSQL authentication path. Live LDAP and OIDC integrations also remain unverified.
 
 Evidence: progress.csv; runs/s10-final/; transcripts/s01.md through transcripts/s10.md; plan-reviewed.md; and the preceding session records.
+
+## Code publication update — 2026-10-15
+
+After obtaining write permission, I uploaded the final Workflow B code to `henry1113nz/mealie`, branch `yawen/wf-b`.
+
+Verified remote commit: `0ba880506eef7a22c2bc34a6bcdcef10c53403ed`.
+
+WSL could not connect to GitHub, so I transferred the existing Git history using a bundle and pushed from Windows PowerShell. The remote branch was verified with `git ls-remote`.
+
+This published the previously measured code and its commit history. It did not change the implementation, final measurements or early-stop status.

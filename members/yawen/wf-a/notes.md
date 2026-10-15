@@ -32,3 +32,7 @@ Evidence: log.md; opening and closing exchanges in transcripts/s01.md.
 ## Anything about the Mealie codebase that made this easier or harder
 The shared repository layer, controller base classes, SQLAlchemy-based query filters and synchronous event bus made isolated async conversion difficult. Webhook operations provided a smaller surface for partial migration.
 Evidence: transcripts/s01.md references to mealie/repos/repository_generic.py, mealie/routes/_base/base_controllers.py, mealie/services/query_filter/builder.py, mealie/services/event_bus_service/ and mealie/routes/households/controller_webhooks.py.
+
+## Code availability update — 2026-10-15
+
+The earlier statement that the code was available only locally is now superseded. After obtaining write permission, I published the final measured commit `ba55d682472c2cac88afa177526087694826dd22` to `henry1113nz/mealie`, branch `yawen/wf-a`. The remote commit was verified. No implementation changes accompanied publication.

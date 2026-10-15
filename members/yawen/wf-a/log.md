@@ -64,3 +64,13 @@ These are whole-session totals, including the initial “Reply with OK” test e
 An additional measurement completed at 2026-10-14T07:48:41+08:00 using run label s01 and the same code commit ba55d6824.
 Results matched s01-retry: 2263 passed, 15 failed, 900 errors, 18 skipped, and 4 mypy errors. Test duration was 136 seconds.
 This was a supplementary measurement, not a new agent session. The s01 directory now contains summary outputs instead of the earlier interrupted-run full logs; the earlier files remain in Git history.
+
+## Code publication update — 2026-10-15
+
+After obtaining write permission, I uploaded the final Workflow A code to `henry1113nz/mealie`, branch `yawen/wf-a`.
+
+Verified remote commit: `ba55d682472c2cac88afa177526087694826dd22`.
+
+The earlier permission-denied attempts remain part of the historical record. A subsequent WSL push failed because GitHub connectivity timed out. I transferred the existing Git history using a bundle and pushed from Windows PowerShell. The remote branch was verified with `git ls-remote`.
+
+This published the previously measured code; it did not change the implementation or measurement results.

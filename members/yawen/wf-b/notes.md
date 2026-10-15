@@ -46,3 +46,7 @@ Evidence: plan-reviewed.md; s09 and s10 records.
 Existing regression tests provided detailed behavioral specifications. Migration was complicated by filterability metadata, relation-heavy pagination, composite keys, cyclic foreign keys and registration spanning multiple services. The async repository and model graph became reusable foundations, but production SQLAlchemy paths remained widely present.
 
 Evidence: mealie/services/query_filter/, mealie/repos/, the Tortoise model/migration files in the code history, and s07–s10 transcripts.
+
+## Code availability update — 2026-10-15
+
+The final measured code is now published in `henry1113nz/mealie`, branch `yawen/wf-b`, at verified commit `0ba880506eef7a22c2bc34a6bcdcef10c53403ed`. Publication preserved the existing Git history and did not change the recorded results or remaining limitations.

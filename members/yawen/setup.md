@@ -73,3 +73,9 @@ I decided to conclude Workflow B after Stage 8, before exhausting the approximat
 The results should therefore be reported as an early-terminated Workflow B run involving AI-assisted review and execution guidance. Any observed differences between Workflows A and B cannot be attributed exclusively to the planning procedure. Execution order, experience gained during Workflow A, additional assistance, plan revisions and execution-context differences are potential confounding factors.
 
 Evidence: wf-b/log.md, wf-b/plan-unreviewed.md, wf-b/plan-reviewed.md and wf-b/transcripts/.
+
+## Post-experiment publication update — 2026-10-15
+
+I subsequently obtained write permission to the code repository and manually published the final Workflow A and B commits to `yawen/wf-a` and `yawen/wf-b`. Earlier permission-denied statements describe the access available at that earlier time.
+
+Because WSL connectivity to GitHub timed out, publication used Git bundles transferred to Windows and manual pushes from PowerShell. The original WSL code clones retained their disabled origin push URLs. This was a post-experiment publication step, not an agent-initiated push.
