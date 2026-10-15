@@ -8,7 +8,7 @@ Completed retrospectively on 2026-10-15 using terminal checks, session metadata 
 | Model | gpt-6-luna, confirmed in current configuration and Workflow B s10 metadata. |
 | Effort or reasoning level | low. |
 | Subagents used? | Guardian auxiliary sessions appear in the records. I did not explicitly request task delegation. Identified guardian usage was recorded separately. |
-| Plan / how cost is reported | Subscription/API billing arrangement pending confirmation. Tokens were extracted from session JSONL records. Cached input is included in input totals. API-equivalent cost was not calculated. |
+| Plan / how cost is reported | ChatGPT Plus subscription. Session token counts are usage records, not a separately itemized API bill. Tokens were extracted from session JSONL records. Cached input is included in input totals. API-equivalent cost was not calculated. |
 | Where the agent runs | VS Code connected to Ubuntu under WSL2 on my Windows laptop. Code clones are under /home/luna/574Agentic/. The evidence repository is outside the code workspace. |
 | Permission mode | on-request approval policy; workspace-write sandbox. Selected bounded diagnostics and tests ran outside the sandbox after explicit approval. |
 | Commands the agent may run without asking | Routine inspection, edits and checks permitted by the sandbox/tool policy. A complete command allowlist was not captured. |

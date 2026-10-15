@@ -3,7 +3,7 @@
 ## Final numbers
 Workflow A was ended early by the participant because of repeated stagnation; the rewrite was not completed. Final local code commit: ba55d682472c2cac88afa177526087694826dd22. Code was not pushed because the account lacked write permission.
 
-The valid measurement recorded 2263 passed, 15 failed, 900 errors and 18 skipped; mypy reported 4 errors. SQLAlchemy-dependent files decreased from 109 to 101, but all 56 SQLAlchemy models remained. The script counted 1 Tortoise model, whereas the agent reported 57 registered models; this discrepancy remains unresolved and is not a verified conversion count. Test functions, assertions and skip markers remained 1158, 3837 and 12. Test-file and setup changes were 28 and 6 lines. Measurement duration was 122 seconds; total agent time, tokens and cost were not available.
+The valid measurement recorded 2263 passed, 15 failed, 900 errors and 18 skipped; mypy reported 4 errors. SQLAlchemy-dependent files decreased from 109 to 101, but all 56 SQLAlchemy models remained. The script counted 1 Tortoise model, whereas the agent reported 57 registered models; this discrepancy remains unresolved and is not a verified conversion count. Test functions, assertions and skip markers remained 1158, 3837 and 12. Test-file and setup changes were 28 and 6 lines. Measurement duration was 122 seconds; total agent time and API-equivalent cost remain unavailable. A later inspection found a cumulative session total of 52,967,383 tokens. Because the run used an existing test conversation, this is a session-level figure rather than a verified task-only total; pre-prompt usage was not deducted.
 Evidence: progress.csv, runs/s01-retry/, local code commit ba55d6824.
 
 ## The three most important things that happened
