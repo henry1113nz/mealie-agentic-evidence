@@ -270,3 +270,52 @@ Session 01a1389f-a603-7b70-a628-92aa9bfccdd9 reported total 270989
 Earlier output also included an unidentified record with total 3036363.
 These snapshots are not summed: session ownership and possible overlap require verification.
 Complete Stage 4 token total and API-equivalent cost remain unavailable.
+
+## s07 — Stage 5 acceptance completed
+
+| Session | Date | Agent time (min) | Tokens | Cost (USD, API-equivalent) | Commit | What the agent did | Questions it asked and our answers | Problems seen |
+|---|---|---|---|---|---|---|---|---|
+| s07 | 2026-10-15 | 49.217 (49m13s) | Reported main-session total: 32066252; identifying header pending confirmation | Not available | 97ca845ce | Completed remaining models, key semantics, cross-domain FKs and ordered migrations; verified SQLite and PostgreSQL. | Participant reviewed the plan, supplied the dedicated PostgreSQL endpoint and restarted the test container. | Sandbox SQLite stalls; missing constraints and changed key semantics; generated migration comment import failure; stopped PostgreSQL container; temporary search_path omitted public. |
+
+### Acceptance
+Final code commit: 97ca845ce6b30b372d5f96a338c10970f791c690.
+The agent reported 68 registered models covering the legacy application tables.
+SQLite and PostgreSQL checks passed through the actual ordered Aerich migration path.
+Checks covered populated upgrade/downgrade, data/index preservation, four cross-domain FKs and ORM relations, five composite-key conversions, and twelve keyless association tables.
+Internal surrogate columns remain documented physical-schema differences.
+The Stage 4 regression test was unchanged and passed after removing the docstring that generated an invalid SQL-comment escape.
+Stage 5 acceptance is complete; Stage 6 was not started.
+
+### PostgreSQL verification
+Only the dedicated stage4_test database was used.
+Identity and contents were checked before verification.
+The temporary acceptance schema was removed afterward; no application tables remained.
+An initial isolated check failed because search_path omitted public, where pg_trgm was installed. Correcting temporary test setup resolved it without a persistent database change.
+Evidence: transcripts/s07.md, runs/s07/STAGE5_MODEL_INVENTORY.md and saved PostgreSQL scripts.
+
+### Independent measurement
+Run: s07; commit: 97ca845ce.
+3180 passed, 0 failed, 0 errors, 18 skipped; mypy: 0 errors.
+SQLAlchemy files/models: 109/56; Tortoise models counted by the script: 60.
+Test functions/assertions/skip markers: 1161/3919/12.
+Test-file/setup lines changed relative to baseline: 644/21.
+Measurement test duration: 51 seconds.
+The model count does not establish overall rewrite completion.
+Evidence: progress.csv and runs/s07/.
+
+### Usage
+The copied record attributed to the main session reported total_tokens 32066252,
+cached_input_tokens 31210240, output_tokens 166025 and reasoning_output_tokens 76312.
+Its identifying header was omitted from the copied output, so attribution remains pending confirmation.
+
+Separate records explicitly marked source.subagent.other = guardian:
+- 01a13d31-7b9b-7611-9eb4-341f383c2f4e: total 545980.
+- 01a13d43-af6d-7d40-a135-a1a729715b71: total 898388.
+
+Guardian records are not added to the reported main-session figure.
+Cached input is included in input tokens; reasoning output is not added separately to reported totals.
+API-equivalent cost is unavailable.
+
+### Durations and transcript
+21m29s + 2m6s + 1m49s + 19m5s + 4m44s = 49m13s.
+Full transcript: transcripts/s07.md.
