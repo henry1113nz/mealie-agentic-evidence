@@ -45,3 +45,31 @@ Sandboxed async SQLite and FastAPI TestClient checks sometimes stalled. Identica
 Docker Desktop integration with Ubuntu provided a dedicated PostgreSQL 16 test container during Workflow B. Agent code execution ran in WSL, not inside the Mealie container.
 
 Earlier school-computer and Windows-VM setup attempts were abandoned. The Workflow A and B runs recorded here used my own laptop.
+
+## Deviation for yawen / wf-a
+
+Workflow A was initiated in an existing Codex conversation rather than a fresh session. The conversation had previously been used for a “Reply with OK” functionality check. The extent of any additional retained context was not independently established; consequently, this run cannot be classified as a verified fresh-session execution.
+
+The agent conducted intermediate checks despite the prescribed Workflow A procedure specifying measurement after each session. Following repeated “continue” instructions and limited further progress, I decided to terminate the workflow before the approximately six-hour agent-time budget was verified as completed.
+
+These deviations limit procedural comparability with runs that followed the prescribed session setup, verification schedule and time budget. The results should therefore be identified as an early-terminated Workflow A run with a session-initialization deviation.
+
+Evidence: wf-a/log.md, wf-a/notes.md and wf-a/transcripts/s01.md.
+
+## Deviation for yawen / wf-b
+
+Workflow B used a separate code clone initialized from the common baseline. However, the plan-review process included assistance from a separate ChatGPT conversation. I used this assistance to evaluate and revise the agent-generated plan before applying the reviewed version. The review should therefore be classified as AI-assisted human review rather than independent human review.
+
+Additional assistance was used during execution to interpret verification results, formulate follow-up instructions, identify missing acceptance evidence and assess proposed changes to stage boundaries. Some follow-up instructions contained substantially more detail than the standard Workflow B prompt. This constitutes an additional intervention that may have influenced decomposition, recovery from implementation difficulties and verification coverage.
+
+Most implementation stages began in new Codex conversations, with retries and corrections retained within the corresponding stage conversation. The Stage 1 typing correction was performed in an additional conversation, as documented in the session records.
+
+The reviewed plan was subsequently amended to bring forward selected prerequisites. These included database constraints and migration operations originally assigned to Stage 15, together with registration-specific group and household operations originally assigned to Stage 9. The revisions were recorded in separate plan commits. Accordingly, the final execution sequence differs from the initial plan.
+
+Execution conditions also varied. Several asynchronous SQLite and FastAPI TestClient checks stalled within the sandbox, whereas identical bounded checks completed successfully outside it following explicit approval. Verification therefore involved both sandboxed and approved outside-sandbox execution. The associated diagnostics and interventions should be considered when interpreting recorded agent time and comparing workflow outcomes.
+
+I decided to conclude Workflow B after Stage 8, before exhausting the approximately six-hour agent-time budget. Stage 8 was verified on SQLite; live LDAP, live OIDC and PostgreSQL authentication behavior remained unverified. The overall ORM migration was incomplete.
+
+The results should therefore be reported as an early-terminated Workflow B run involving AI-assisted review and execution guidance. Any observed differences between Workflows A and B cannot be attributed exclusively to the planning procedure. Execution order, experience gained during Workflow A, additional assistance, plan revisions and execution-context differences are potential confounding factors.
+
+Evidence: wf-b/log.md, wf-b/plan-unreviewed.md, wf-b/plan-reviewed.md and wf-b/transcripts/.
