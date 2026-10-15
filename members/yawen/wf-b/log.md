@@ -515,3 +515,23 @@ Verified remote commit: `0ba880506eef7a22c2bc34a6bcdcef10c53403ed`.
 WSL could not connect to GitHub, so I transferred the existing Git history using a bundle and pushed from Windows PowerShell. The remote branch was verified with `git ls-remote`.
 
 This published the previously measured code and its commit history. It did not change the implementation, final measurements or early-stop status.
+
+## s06 token reconciliation — confirmed on 2026-10-15
+
+The previously unresolved s06 token count has now been identified from the final cumulative usage record of the main VS Code session.
+
+- Session: 01a13870-b61a-72a1-b003-9be9e68488d8.
+- Session file: rollout-2026-10-14T11-24-33-01a13870-b61a-72a1-b003-9be9e68488d8.jsonl.
+- Source: vscode.
+- Input tokens: 15707968, including cached input tokens: 15349504.
+- Output tokens: 83491.
+- Reasoning output tokens reported: 41452.
+- Total tokens: 15791459.
+
+This final cumulative record supersedes the earlier unresolved s06 snapshots. Those snapshots are not added again. Cached input is included in input tokens, and reasoning output is not added separately to the reported total. Separately identified guardian records are excluded.
+
+## Workflow B recorded token total — updated
+
+Adding the confirmed s06 total of 15791459 to the previously recorded subtotal of 123849833 gives a Workflow B total of 139641292 tokens across the recorded experiment sessions.
+
+This updates earlier statements that the workflow token total was unavailable pending s06 reconciliation. The figure includes cached input and repeated context processing across turns. It represents recorded model usage, not an itemized API charge. The experiment used a ChatGPT Plus subscription.
