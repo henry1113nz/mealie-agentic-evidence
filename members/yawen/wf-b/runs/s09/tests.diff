@@ -1,0 +1,1171 @@
+diff --git a/tests/conftest.py b/tests/conftest.py
+index c5148ba5c..6d8dca720 100644
+--- a/tests/conftest.py
++++ b/tests/conftest.py
+@@ -3,6 +3,7 @@ import os
+ from collections.abc import Generator
+ from pathlib import Path
+ 
++import pytest_asyncio
+ from pytest import MonkeyPatch, fixture
+ 
+ # Under pytest-xdist each worker (gw0, gw1, ...) gets its own data dir, so workers
+@@ -61,6 +62,26 @@ def override_get_db():
+         db.close()
+ 
+ 
++@pytest_asyncio.fixture
++async def tortoise_connection():
++    """Provide an isolated Tortoise connection on pytest's async fixture loop."""
++    from tortoise import connections
++
++    from mealie.core.config import get_app_settings
++    from mealie.db.tortoise_setup import tortoise_close, tortoise_init
++
++    settings = get_app_settings()
++    provider = settings.DB_PROVIDER
++    if provider is None:
++        raise RuntimeError("Database provider is not configured")
++
++    await tortoise_init(provider.tortoise_db_url)
++    try:
++        yield connections.get("default")
++    finally:
++        await tortoise_close()
++
++
+ @fixture(scope="session")
+ def api_client():
+     app.dependency_overrides[generate_session] = override_get_db
+diff --git a/tests/unit_tests/repository_tests/test_tortoise_query_filter_pagination.py b/tests/unit_tests/repository_tests/test_tortoise_query_filter_pagination.py
+new file mode 100644
+index 000000000..4d060e6d7
+--- /dev/null
++++ b/tests/unit_tests/repository_tests/test_tortoise_query_filter_pagination.py
+@@ -0,0 +1,278 @@
++"""Parity checks for the async Tortoise query path (legacy regressions stay separate)."""
++
++from __future__ import annotations
++
++import sqlite3
++from uuid import UUID, uuid4
++
++import pytest
++import pytest_asyncio
++from pydantic import BaseModel, ConfigDict
++from sqlalchemy import select
++
++from mealie.db.models import _all_models as _legacy_models  # noqa: F401
++from mealie.db.models.recipe.recipe import RecipeModel
++from mealie.db.tortoise_models import Group, Recipe, Tag, User
++from mealie.db.tortoise_setup import tortoise_close, tortoise_init
++from mealie.repos.tortoise_repository import AsyncRepository
++from mealie.schema.response.pagination import OrderByNullPosition, OrderDirection, PaginationQuery
++from mealie.services.query_filter.builder import NonFilterableValueError, QueryFilterBuilder
++from mealie.services.query_filter.tortoise import TortoiseFilterCompiler, validate_order_path
++
++
++class RecipeResult(BaseModel):
++    model_config = ConfigDict(from_attributes=True)
++
++    id: UUID
++    name: str
++
++
++@pytest_asyncio.fixture
++async def tortoise_recipe_db(tmp_path):
++    db_path = tmp_path / "stage7.sqlite3"
++    await tortoise_init(f"sqlite://{db_path}", create_schema=True)
++    try:
++        yield db_path
++    finally:
++        await tortoise_close()
++
++
++async def create_group(name: str = "stage7") -> Group:
++    return await Group.create(id=uuid4(), name=name, slug=name)
++
++
++async def create_recipe(group: Group, name: str, tags: list[Tag] | None = None, rating: float | None = 1) -> Recipe:
++    recipe = await Recipe.create(id=uuid4(), group=group, name=name, name_normalized=name.casefold(), rating=rating)
++    if tags:
++        await recipe.tags.add(*tags)
++    return recipe
++
++
++def legacy_ids(db_path, query) -> set[UUID]:
++    connection = sqlite3.connect(db_path)
++    try:
++        sql = str(query.compile(compile_kwargs={"literal_binds": True}))
++        return {UUID(row[0]) for row in connection.execute(sql).fetchall()}
++    finally:
++        connection.close()
++
++
++@pytest.mark.asyncio
++async def test_tortoise_filterability_matches_legacy_field_policy(tortoise_recipe_db):
++    # New-path checks: direct and relationship fields, plus the same policy for ordering.
++    with pytest.raises(NonFilterableValueError):
++        TortoiseFilterCompiler.compile('password = "secret"', User)
++    with pytest.raises(NonFilterableValueError):
++        TortoiseFilterCompiler.compile('email = "private@example.test"', User)
++    with pytest.raises(NonFilterableValueError):
++        TortoiseFilterCompiler.compile('user.email = "private@example.test"', Recipe)
++    with pytest.raises(NonFilterableValueError):
++        validate_order_path(User, "password")
++
++    TortoiseFilterCompiler.compile('full_name = "Visible Name"', User)
++    assert validate_order_path(User, "full_name")[0] == "full_name"
++
++
++@pytest.mark.asyncio
++async def test_related_not_in_is_anti_existence_but_scalar_not_in_keeps_sql_null_semantics(tortoise_recipe_db):
++    group = await create_group()
++    excluded_tag = await Tag.create(id=uuid4(), group=group, name="excluded", slug="excluded")
++    other_tag = await Tag.create(id=uuid4(), group=group, name="other", slug="other")
++    matching = await create_recipe(group, "matching", [excluded_tag, other_tag])
++    nonmatching = await create_recipe(group, "nonmatching", [other_tag])
++    empty = await create_recipe(group, "empty")
++    null_scalar = await create_recipe(group, "null-scalar", rating=None)
++    numeric_scalar = await create_recipe(group, "numeric-scalar", rating=5)
++
++    repo = AsyncRepository(Recipe, RecipeResult, group_id=group.id)
++    related = await repo.page_all(
++        PaginationQuery(per_page=-1, query_filter='tags.name NOT IN ["excluded"]', order_by="name")
++    )
++    related_ids = {item.id for item in related.items}
++    assert matching.id not in related_ids
++    assert nonmatching.id in related_ids
++    assert empty.id in related_ids
++    assert null_scalar.id in related_ids
++    legacy_related = QueryFilterBuilder('tags.name NOT IN ["excluded"]').filter_query(
++        select(RecipeModel.id), RecipeModel
++    )
++    assert related_ids == legacy_ids(tortoise_recipe_db, legacy_related)
++
++    scalar = await repo.page_all(PaginationQuery(per_page=-1, query_filter="rating NOT IN [5]", order_by="name"))
++    scalar_ids = {item.id for item in scalar.items}
++    assert numeric_scalar.id not in scalar_ids
++    # SQL NOT IN does not match NULL, unlike related anti-existence which keeps
++    # a parent with no related row matching the excluded value.
++    assert null_scalar.id not in scalar_ids
++    legacy_scalar = QueryFilterBuilder("rating NOT IN [5]").filter_query(select(RecipeModel.id), RecipeModel)
++    assert scalar_ids == legacy_ids(tortoise_recipe_db, legacy_scalar)
++
++    related_not_equal = await repo.page_all(
++        PaginationQuery(per_page=-1, query_filter='tags.name <> "excluded"', order_by="name")
++    )
++    assert {item.id for item in related_not_equal.items} == {matching.id, nonmatching.id}
++    legacy_not_equal = QueryFilterBuilder('tags.name <> "excluded"').filter_query(select(RecipeModel.id), RecipeModel)
++    assert {item.id for item in related_not_equal.items} == legacy_ids(tortoise_recipe_db, legacy_not_equal)
++
++    scalar_not_equal = await repo.page_all(PaginationQuery(per_page=-1, query_filter="rating <> 5", order_by="name"))
++    assert null_scalar.id not in {item.id for item in scalar_not_equal.items}
++    legacy_scalar_not_equal = QueryFilterBuilder("rating <> 5").filter_query(select(RecipeModel.id), RecipeModel)
++    assert {item.id for item in scalar_not_equal.items} == legacy_ids(tortoise_recipe_db, legacy_scalar_not_equal)
++
++
++@pytest.mark.asyncio
++async def test_contains_all_matches_separate_rows_single_value_and_empty_list(tortoise_recipe_db):
++    group = await create_group()
++    alpha = await Tag.create(id=uuid4(), group=group, name="alpha", slug="alpha")
++    beta = await Tag.create(id=uuid4(), group=group, name="beta", slug="beta")
++    only_alpha = await create_recipe(group, "alpha-only", [alpha])
++    both = await create_recipe(group, "both", [alpha, beta])
++    await create_recipe(group, "none")
++    repo = AsyncRepository(Recipe, RecipeResult, group_id=group.id)
++
++    all_values = await repo.page_all(
++        PaginationQuery(per_page=-1, query_filter="tags.name CONTAINS ALL [alpha, beta]", order_by="name")
++    )
++    assert [item.id for item in all_values.items] == [both.id]
++    legacy_all = QueryFilterBuilder("tags.name CONTAINS ALL [alpha, beta]").filter_query(
++        select(RecipeModel.id), RecipeModel
++    )
++    assert {item.id for item in all_values.items} == legacy_ids(tortoise_recipe_db, legacy_all)
++
++    one_value = await repo.page_all(
++        PaginationQuery(per_page=-1, query_filter="tags.name CONTAINS ALL [alpha]", order_by="name")
++    )
++    assert {item.id for item in one_value.items} == {only_alpha.id, both.id}
++    legacy_one = QueryFilterBuilder("tags.name CONTAINS ALL [alpha]").filter_query(select(RecipeModel.id), RecipeModel)
++    assert {item.id for item in one_value.items} == legacy_ids(tortoise_recipe_db, legacy_one)
++
++    # The unchanged parser represents [] as [""], so CONTAINS ALL [] means
++    # “has a related empty-string value” rather than an empty conjunction.
++    legacy_query = QueryFilterBuilder("tags.name CONTAINS ALL []").filter_query(select(RecipeModel.id), RecipeModel)
++    empty_values = await repo.page_all(
++        PaginationQuery(per_page=-1, query_filter="tags.name CONTAINS ALL []", order_by="name")
++    )
++    assert empty_values.items == []
++    assert {item.id for item in empty_values.items} == legacy_ids(tortoise_recipe_db, legacy_query)
++
++
++@pytest.mark.asyncio
++async def test_like_wildcards_and_case_insensitivity_match_legacy(tortoise_recipe_db):
++    group = await create_group()
++    expected = await create_recipe(group, "Test Unit 1")
++    wildcard = await create_recipe(group, "test uXit 2")
++    await create_recipe(group, "other")
++    repo = AsyncRepository(Recipe, RecipeResult, group_id=group.id)
++    query_filter = 'name LIKE "test u_it%"'
++    result = await repo.page_all(PaginationQuery(per_page=-1, query_filter=query_filter))
++    assert {item.id for item in result.items} == {expected.id, wildcard.id}
++    legacy_query = QueryFilterBuilder(query_filter).filter_query(select(RecipeModel.id), RecipeModel)
++    assert {item.id for item in result.items} == legacy_ids(tortoise_recipe_db, legacy_query)
++
++
++@pytest.mark.asyncio
++async def test_nested_filter_groups_keep_and_or_precedence(tortoise_recipe_db):
++    group = await create_group()
++    first = await create_recipe(group, "combo first", rating=1)
++    await create_recipe(group, "combo second", rating=2)
++    third = await create_recipe(group, "combo third", rating=3)
++    await create_recipe(group, "other first", rating=1)
++    repo = AsyncRepository(Recipe, RecipeResult, group_id=group.id)
++    query_filter = 'name LIKE "combo%" AND (rating = 1 OR rating = 3)'
++    result = await repo.page_all(PaginationQuery(per_page=-1, query_filter=query_filter, order_by="name"))
++    assert {item.id for item in result.items} == {first.id, third.id}
++    legacy = QueryFilterBuilder(query_filter).filter_query(select(RecipeModel.id), RecipeModel)
++    assert {item.id for item in result.items} == legacy_ids(tortoise_recipe_db, legacy)
++
++
++@pytest.mark.asyncio
++async def test_to_one_sort_null_position_matches_legacy(tortoise_recipe_db):
++    group = await create_group()
++    named_user = await User.create(id=uuid4(), group=group, full_name="Visible")
++    with_user = await Recipe.create(id=uuid4(), group=group, user=named_user, name="named", name_normalized="named")
++    without_user = await create_recipe(group, "anonymous")
++    repo = AsyncRepository(Recipe, RecipeResult, group_id=group.id)
++    result = await repo.page_all(
++        PaginationQuery(
++            per_page=-1,
++            order_by="user.full_name",
++            order_direction=OrderDirection.asc,
++            order_by_null_position=OrderByNullPosition.first,
++        )
++    )
++    assert [item.id for item in result.items] == [without_user.id, with_user.id]
++    legacy = select(RecipeModel.id).order_by(
++        QueryFilterBuilder.get_order_attr("user.full_name", RecipeModel, descending=False).asc().nulls_first()
++    )
++    assert [item.id for item in result.items] == legacy_ids_ordered(tortoise_recipe_db, legacy)
++
++
++@pytest.mark.asyncio
++async def test_to_many_sort_aggregates_nulls_counts_and_page_size(tortoise_recipe_db):
++    group = await create_group()
++    tags = [await Tag.create(id=uuid4(), group=group, name=name, slug=name) for name in ("a", "b", "c", "d", "e", "f")]
++    recipe_ac = await create_recipe(group, "ac", [tags[0], tags[2]])
++    recipe_bd = await create_recipe(group, "bd", [tags[1], tags[3]])
++    recipe_untagged = await create_recipe(group, "untagged")
++    # Three joined rows per root record must not consume three page slots.
++    page_group = await create_group("stage7-page")
++    page_tags = [await Tag.create(id=uuid4(), group=page_group, name=f"page-{i}", slug=f"page-{i}") for i in range(3)]
++    for index in range(5):
++        await create_recipe(page_group, f"page-recipe-{index}", page_tags)
++
++    repo = AsyncRepository(Recipe, RecipeResult, group_id=group.id)
++    ascending = await repo.page_all(
++        PaginationQuery(
++            per_page=-1,
++            order_by="tags.name",
++            order_direction=OrderDirection.asc,
++            order_by_null_position=OrderByNullPosition.last,
++        )
++    )
++    assert [item.id for item in ascending.items] == [recipe_ac.id, recipe_bd.id, recipe_untagged.id]
++    # The focused Tortoise assertion above checks the MIN aggregate behavior;
++    # legacy's aggregate order expression is compared explicitly below.
++    from mealie.services.query_filter.builder import QueryFilterBuilder
++
++    expected_ascending = select(RecipeModel.id).order_by(
++        QueryFilterBuilder.get_order_attr("tags.name", RecipeModel, descending=False).asc().nulls_last()
++    )
++    legacy_ordered_ids = legacy_ids_ordered(tortoise_recipe_db, expected_ascending)
++    selected_ids = {recipe_ac.id, recipe_bd.id, recipe_untagged.id}
++    assert [item.id for item in ascending.items] == [
++        item_id for item_id in legacy_ordered_ids if item_id in selected_ids
++    ]
++
++    descending = await repo.page_all(
++        PaginationQuery(
++            per_page=-1,
++            order_by="tags.name",
++            order_direction=OrderDirection.desc,
++            order_by_null_position=OrderByNullPosition.last,
++        )
++    )
++    assert [item.id for item in descending.items] == [recipe_bd.id, recipe_ac.id, recipe_untagged.id]
++    expected_descending = select(RecipeModel.id).order_by(
++        QueryFilterBuilder.get_order_attr("tags.name", RecipeModel, descending=True).desc().nulls_last()
++    )
++    legacy_ordered_ids = legacy_ids_ordered(tortoise_recipe_db, expected_descending)
++    assert [item_id for item_id in legacy_ordered_ids if item_id in selected_ids] == [
++        item.id for item in descending.items
++    ]
++
++    page_repo = AsyncRepository(Recipe, RecipeResult, group_id=page_group.id)
++    first_page = await page_repo.page_all(
++        PaginationQuery(page=1, per_page=5, order_by="tags.name", order_direction=OrderDirection.asc)
++    )
++    assert first_page.total == 5
++    assert len(first_page.items) == 5
++    assert len({item.id for item in first_page.items}) == 5
++
++
++def legacy_ids_ordered(db_path, query) -> list[UUID]:
++    connection = sqlite3.connect(db_path)
++    try:
++        sql = str(query.compile(compile_kwargs={"literal_binds": True}))
++        return [UUID(row[0]) for row in connection.execute(sql).fetchall()]
++    finally:
++        connection.close()
+diff --git a/tests/unit_tests/test_tortoise_async_repository.py b/tests/unit_tests/test_tortoise_async_repository.py
+new file mode 100644
+index 000000000..59ebb46dc
+--- /dev/null
++++ b/tests/unit_tests/test_tortoise_async_repository.py
+@@ -0,0 +1,180 @@
++from uuid import uuid4
++
++import pytest
++from pydantic import BaseModel, ConfigDict, UUID4
++from tortoise import Tortoise, fields
++from tortoise.exceptions import IntegrityError
++from tortoise.models import Model
++
++from mealie.repos.tortoise_repository import AsyncRepository
++from mealie.db.tortoise_setup import tortoise_close, tortoise_init
++
++
++class RepositoryGroup(Model):
++    id = fields.UUIDField(primary_key=True)
++    name = fields.CharField(max_length=255, unique=True)
++    slug = fields.CharField(max_length=255, null=True)
++
++    class Meta:
++        table = "stage6_groups"
++
++
++class RepositoryHousehold(Model):
++    id = fields.UUIDField(primary_key=True)
++    name = fields.CharField(max_length=255)
++    slug = fields.CharField(max_length=255, null=True)
++    group: fields.ForeignKeyRelation[RepositoryGroup] = fields.ForeignKeyField(
++        "models.RepositoryGroup", related_name="households", on_delete=fields.OnDelete.CASCADE
++    )
++
++    class Meta:
++        table = "stage6_households"
++
++
++class RepositoryHouseholdRecord(Model):
++    id = fields.UUIDField(primary_key=True)
++    name = fields.CharField(max_length=255)
++    group: fields.ForeignKeyRelation[RepositoryGroup] = fields.ForeignKeyField(
++        "models.RepositoryGroup", related_name="records", on_delete=fields.CASCADE
++    )
++    household: fields.ForeignKeyRelation[RepositoryHousehold] = fields.ForeignKeyField(
++        "models.RepositoryHousehold", related_name="records", on_delete=fields.CASCADE
++    )
++
++    class Meta:
++        table = "stage6_household_records"
++
++
++class GroupData(BaseModel):
++    model_config = ConfigDict(from_attributes=True)
++
++    id: UUID4
++    name: str
++    slug: str | None
++
++
++class HouseholdData(BaseModel):
++    model_config = ConfigDict(from_attributes=True)
++
++    id: UUID4
++    name: str
++    group: GroupData
++
++
++class HouseholdRecordData(BaseModel):
++    model_config = ConfigDict(from_attributes=True)
++
++    id: UUID4
++    name: str
++    group_id: UUID4
++    household_id: UUID4
++
++
++@pytest.fixture
++def sqlite_db(tmp_path):
++    """Provide an isolated database and create the models needed by this test file."""
++    return str(tmp_path / "async-repository.sqlite3")
++
++
++@pytest.mark.asyncio
++async def test_crud_scope_and_relation_materialization(sqlite_db):
++    await _init_test_models(sqlite_db)
++    try:
++        group_one = await RepositoryGroup.create(id=uuid4(), name="one", slug="one")
++        group_two = await RepositoryGroup.create(id=uuid4(), name="two", slug="two")
++        household_one = await RepositoryHousehold.create(id=uuid4(), name="home", group=group_one)
++        household_two = await RepositoryHousehold.create(id=uuid4(), name="home", group=group_two)
++
++        repo = AsyncRepository(
++            RepositoryHousehold, HouseholdData, group_id=group_one.id, related_fields=("group",)
++        )
++        assert await repo.count() == 1
++        assert [item.id for item in await repo.get_all()] == [household_one.id]
++        loaded = await repo.get_one(household_one.id)
++        assert loaded is not None
++        assert loaded.group.id == group_one.id
++        assert await repo.get_one(household_two.id) is None
++
++        updated = await repo.update(household_one.id, {"name": "updated"})
++        assert updated is not None
++        assert updated.name == "updated"
++        deleted = await repo.delete(household_one.id)
++        assert deleted is not None
++        assert await repo.count() == 0
++    finally:
++        await tortoise_close()
++
++
++@pytest.mark.asyncio
++async def test_create_many_and_failed_write_roll_back(sqlite_db):
++    await _init_test_models(sqlite_db)
++    try:
++        group = await RepositoryGroup.create(id=uuid4(), name="one", slug="one")
++        repo = AsyncRepository(
++            RepositoryHousehold, HouseholdData, group_id=group.id, related_fields=("group",)
++        )
++        created = await repo.create_many(
++            [
++                {"name": "first", "slug": "first", "group_id": group.id},
++                {"name": "second", "slug": "second", "group_id": group.id},
++            ]
++        )
++        assert [item.name for item in created] == ["first", "second"]
++
++        with pytest.raises(IntegrityError):
++            await repo.create({"name": "invalid", "slug": "invalid", "group_id": uuid4()})
++
++        assert await repo.count() == 2
++    finally:
++        await tortoise_close()
++
++
++@pytest.mark.asyncio
++async def test_household_scope_isolates_records_within_same_group(sqlite_db):
++    await _init_test_models(sqlite_db)
++    try:
++        group = await RepositoryGroup.create(id=uuid4(), name="shared-group", slug="shared-group")
++        household_one = await RepositoryHousehold.create(
++            id=uuid4(), name="first household", group=group
++        )
++        household_two = await RepositoryHousehold.create(
++            id=uuid4(), name="second household", group=group
++        )
++        record_one = await RepositoryHouseholdRecord.create(
++            id=uuid4(), name="first record", group=group, household=household_one
++        )
++        record_two = await RepositoryHouseholdRecord.create(
++            id=uuid4(), name="second record", group=group, household=household_two
++        )
++
++        repo_one = AsyncRepository(
++            RepositoryHouseholdRecord,
++            HouseholdRecordData,
++            group_id=group.id,
++            household_id=household_one.id,
++        )
++        repo_two = AsyncRepository(
++            RepositoryHouseholdRecord,
++            HouseholdRecordData,
++            group_id=group.id,
++            household_id=household_two.id,
++        )
++
++        assert [item.id for item in await repo_one.get_all()] == [record_one.id]
++        assert await repo_one.get_one(record_two.id) is None
++        assert [item.id for item in await repo_two.get_all()] == [record_two.id]
++        assert await repo_two.get_one(record_one.id) is None
++    finally:
++        await tortoise_close()
++
++
++async def _init_test_models(db_path: str) -> None:
++    await Tortoise.init(
++        config={
++            "connections": {"default": f"sqlite://{db_path}"},
++            "apps": {
++                "models": {"models": [__name__], "default_connection": "default"},
++            },
++        }
++    )
++    await Tortoise.generate_schemas(safe=True)
+diff --git a/tests/unit_tests/test_tortoise_stage4_migration.py b/tests/unit_tests/test_tortoise_stage4_migration.py
+new file mode 100644
+index 000000000..2da0f5422
+--- /dev/null
++++ b/tests/unit_tests/test_tortoise_stage4_migration.py
+@@ -0,0 +1,164 @@
++from __future__ import annotations
++
++import shutil
++from pathlib import Path
++from tempfile import TemporaryDirectory
++from uuid import uuid4
++
++import pytest
++from aerich import Command
++from tortoise import Tortoise
++from tortoise.exceptions import IntegrityError
++
++from mealie.db.tortoise_models import (
++    Group,
++    IngredientFood,
++    IngredientFoodAlias,
++    IngredientFoodSubstitution,
++    IngredientUnit,
++    IngredientUnitAlias,
++    Recipe,
++    RecipeIngredient,
++    RecipeIngredientSubstitution,
++)
++from mealie.db.tortoise_setup import tortoise_config
++
++
++@pytest.mark.asyncio
++async def test_stage4_aerich_migration_constraints_alias_identity_and_downgrade():
++    migration_source = (
++        Path(__file__).parents[2] / "mealie" / "db" / "aerich_migrations" / "models"
++        / "1_stage4_recipe_constraints.py"
++    )
++    with TemporaryDirectory(prefix="mealie-stage4-aerich-") as tmp:
++        root = Path(tmp)
++        db_path = root / "stage4.sqlite3"
++        migrations = root / "migrations"
++        config = tortoise_config(f"sqlite://{db_path}")
++        command = Command(tortoise_config=config, app="models", location=str(migrations))
++        try:
++            # Aerich creates the initial schema and records its baseline version.
++            await command.init_db(safe=True)
++            await command.init()
++            db = Tortoise.get_connection("default")
++            group = await Group.create(name="Stage 4")
++            food_a = await IngredientFood.create(group=group, name="food-a")
++            food_b = await IngredientFood.create(group=group, name="food-b")
++            unit_a = await IngredientUnit.create(group=group, name="unit-a")
++            unit_b = await IngredientUnit.create(group=group, name="unit-b")
++            recipe = await Recipe.create(group=group, name="recipe", name_normalized="recipe")
++            ingredient = await RecipeIngredient.create(recipe=recipe, food=food_a, unit=unit_a, position=0)
++            valid_food_sub = await IngredientFoodSubstitution.create(
++                food=food_a, substitute_food=food_b, note=None
++            )
++            valid_note_sub = await RecipeIngredientSubstitution.create(
++                ingredient=ingredient, substitute_food=None, note="use water"
++            )
++            alias_id = uuid4()
++            alias_a = await IngredientFoodAlias.create(id=alias_id, food=food_a, name="alias-a")
++            alias_b = await IngredientFoodAlias.create(id=alias_id, food=food_b, name="alias-b")
++            unit_alias_id = uuid4()
++            unit_alias_a = await IngredientUnitAlias.create(id=unit_alias_id, unit=unit_a, name="unit-alias-a")
++            unit_alias_b = await IngredientUnitAlias.create(id=unit_alias_id, unit=unit_b, name="unit-alias-b")
++            default_id_alias = await IngredientFoodAlias.create(food=food_a, name="default-id")
++            assert default_id_alias.id is not None
++
++            tables = (
++                "ingredient_foods_substitutions",
++                "recipes_ingredients_substitutions",
++            )
++            before_indexes = {
++                table: {
++                    row["name"]
++                    for row in await db.execute_query_dict(f"PRAGMA index_list('{table}')")
++                }
++                for table in tables
++            }
++            stage4_migration = migrations / "models" / "1_stage4_recipe_constraints.py"
++            shutil.copy2(migration_source, stage4_migration)
++            assert await command.upgrade(run_in_transaction=False) == [stage4_migration.name]
++
++            for table in tables:
++                ddl = (
++                    await db.execute_query_dict(
++                        "SELECT sql FROM sqlite_master WHERE type='table' AND name=?", [table]
++                    )
++                )[0]["sql"]
++                assert "CHECK" in ddl
++                after_indexes = {
++                    row["name"] for row in await db.execute_query_dict(f"PRAGMA index_list('{table}')")
++                }
++                assert after_indexes == before_indexes[table]
++            assert await IngredientFoodSubstitution.filter(pk=valid_food_sub.pk).exists()
++            assert await RecipeIngredientSubstitution.filter(pk=valid_note_sub.pk).exists()
++            assert await IngredientFoodAlias.filter(pk=alias_a.pk).exists()
++            assert await IngredientFoodAlias.filter(pk=alias_b.pk).exists()
++            assert await IngredientUnitAlias.filter(pk=unit_alias_a.pk).exists()
++            assert await IngredientUnitAlias.filter(pk=unit_alias_b.pk).exists()
++            assert await db.execute_query_dict("PRAGMA foreign_key_check") == []
++
++            for row in (
++                {"food": food_a, "substitute_food": food_a, "note": "self"},
++                {"food": food_a, "substitute_food": None, "note": None},
++            ):
++                with pytest.raises(IntegrityError):
++                    await IngredientFoodSubstitution.create(**row)
++            with pytest.raises(IntegrityError):
++                await RecipeIngredientSubstitution.create(ingredient=ingredient, note=None)
++
++            await RecipeIngredient.create(recipe=recipe, food=food_b, unit=unit_a, position=2)
++            ordered_ingredients = await RecipeIngredient.filter(recipe=recipe).all()
++            assert [row.position for row in ordered_ingredients] == [0, 2]
++            await ordered_ingredients[0].fetch_related("food", "unit", "recipe")
++            assert ordered_ingredients[0].food.name == "food-a"
++            assert ordered_ingredients[0].unit.name == "unit-a"
++            assert ordered_ingredients[0].recipe.id == recipe.id
++
++            assert alias_a.pk != alias_b.pk
++            with pytest.raises(IntegrityError):
++                await IngredientFoodAlias.create(id=alias_id, food=food_a, name="duplicate-pair")
++
++            found_a = await IngredientFoodAlias.get(id=alias_id, food=food_a)
++            found_a.name = "updated-a"
++            await found_a.save()
++            assert (await IngredientFoodAlias.get(pk=alias_a.pk)).name == "updated-a"
++            assert (await IngredientFoodAlias.get(pk=alias_b.pk)).name == "alias-b"
++            await IngredientFoodAlias.filter(pk=alias_a.pk).delete()
++            assert not await IngredientFoodAlias.filter(id=alias_id, food=food_a).exists()
++            assert await IngredientFoodAlias.filter(id=alias_id, food=food_b).exists()
++
++            assert unit_alias_a.pk != unit_alias_b.pk
++            with pytest.raises(IntegrityError):
++                await IngredientUnitAlias.create(id=unit_alias_id, unit=unit_a, name="duplicate-pair")
++            found_unit_a = await IngredientUnitAlias.get(id=unit_alias_id, unit=unit_a)
++            found_unit_a.name = "updated-unit-a"
++            await found_unit_a.save()
++            assert (await IngredientUnitAlias.get(pk=unit_alias_a.pk)).name == "updated-unit-a"
++            assert (await IngredientUnitAlias.get(pk=unit_alias_b.pk)).name == "unit-alias-b"
++            await IngredientUnitAlias.filter(pk=unit_alias_a.pk).delete()
++            assert not await IngredientUnitAlias.filter(id=unit_alias_id, unit=unit_a).exists()
++            assert await IngredientUnitAlias.filter(id=unit_alias_id, unit=unit_b).exists()
++
++            alias_table = await db.execute_query_dict("PRAGMA table_info(ingredient_foods_aliases)")
++            assert next(row for row in alias_table if row["name"] == "row_id")["pk"] == 1
++            assert next(row for row in alias_table if row["name"] == "id")["pk"] == 0
++            assert await db.execute_query_dict("PRAGMA foreign_key_check") == []
++
++            assert await command.downgrade(version=-1, delete=False) == [stage4_migration.name]
++            for table in tables:
++                ddl = (await db.execute_query_dict(
++                    "SELECT sql FROM sqlite_master WHERE type='table' AND name=?", [table]
++                ))[0]["sql"]
++                assert "CHECK" not in ddl
++                after_indexes = {
++                    row["name"] for row in await db.execute_query_dict(f"PRAGMA index_list('{table}')")
++                }
++                assert after_indexes == before_indexes[table]
++            assert await db.execute_query_dict("PRAGMA foreign_key_check") == []
++            assert await IngredientFoodSubstitution.filter(pk=valid_food_sub.pk).exists()
++            assert await RecipeIngredientSubstitution.filter(pk=valid_note_sub.pk).exists()
++            assert await IngredientFoodSubstitution.create(
++                food=food_a, substitute_food=food_a, note="invalid after downgrade"
++            )
++        finally:
++            await command.aclose()
+diff --git a/tests/unit_tests/test_tortoise_stage5_migration.py b/tests/unit_tests/test_tortoise_stage5_migration.py
+new file mode 100644
+index 000000000..2faf8ee47
+--- /dev/null
++++ b/tests/unit_tests/test_tortoise_stage5_migration.py
+@@ -0,0 +1,472 @@
++from __future__ import annotations
++
++import shutil
++from pathlib import Path
++from tempfile import TemporaryDirectory
++from uuid import uuid4
++
++import pytest
++from aerich import Command
++from tortoise import Tortoise
++from tortoise.exceptions import IntegrityError
++
++from mealie.db.tortoise_models import (
++    AIProvider,
++    AIProviderSettings,
++    Category,
++    CookBook,
++    Group,
++    GroupMealPlanRules,
++    Household,
++    HouseholdToRecipe,
++    IngredientFood,
++    MultiPurposeLabel,
++    Recipe,
++    ShoppingList,
++    ShoppingListItem,
++    ShoppingListItemRecipeReference,
++    ShoppingListMultiPurposeLabel,
++    ShoppingListRecipeReference,
++    Tag,
++    Tool,
++    User,
++    UserToRecipe,
++)
++from mealie.db.tortoise_setup import tortoise_config
++
++_ROOT = Path(__file__).parents[2]
++_MIGRATION_DIR = _ROOT / "mealie" / "db" / "aerich_migrations" / "models"
++_STAGE4_MIGRATION = _MIGRATION_DIR / "1_stage4_recipe_constraints.py"
++_STAGE5_MIGRATION = _MIGRATION_DIR / "2_stage5_cross_domain_foreign_keys.py"
++
++_KEYLESS_ASSOCIATIONS = {
++    "group_to_categories": ("group_id", "category_id"),
++    "plan_rules_to_categories": ("group_plan_rule_id", "category_id"),
++    "recipes_to_categories": ("recipe_id", "category_id"),
++    "cookbooks_to_categories": ("cookbook_id", "category_id"),
++    "recipes_to_tags": ("recipe_id", "tag_id"),
++    "plan_rules_to_tags": ("plan_rule_id", "tag_id"),
++    "cookbooks_to_tags": ("cookbook_id", "tag_id"),
++    "households_to_tools": ("household_id", "tool_id"),
++    "recipes_to_tools": ("recipe_id", "tool_id"),
++    "cookbooks_to_tools": ("cookbook_id", "tool_id"),
++    "plan_rules_to_households": ("group_plan_rule_id", "household_id"),
++    "households_to_ingredient_foods": ("household_id", "food_id"),
++}
++
++_KEYLESS_FOREIGN_KEYS = {
++    "group_to_categories": {"group_id": "groups", "category_id": "categories"},
++    "plan_rules_to_categories": {
++        "group_plan_rule_id": "group_meal_plan_rules",
++        "category_id": "categories",
++    },
++    "recipes_to_categories": {"recipe_id": "recipes", "category_id": "categories"},
++    "cookbooks_to_categories": {"cookbook_id": "cookbooks", "category_id": "categories"},
++    "recipes_to_tags": {"recipe_id": "recipes", "tag_id": "tags"},
++    "plan_rules_to_tags": {"plan_rule_id": "group_meal_plan_rules", "tag_id": "tags"},
++    "cookbooks_to_tags": {"cookbook_id": "cookbooks", "tag_id": "tags"},
++    "households_to_tools": {"household_id": "households", "tool_id": "tools"},
++    "recipes_to_tools": {"recipe_id": "recipes", "tool_id": "tools"},
++    "cookbooks_to_tools": {"cookbook_id": "cookbooks", "tool_id": "tools"},
++    "plan_rules_to_households": {
++        "group_plan_rule_id": "group_meal_plan_rules",
++        "household_id": "households",
++    },
++    "households_to_ingredient_foods": {
++        "household_id": "households",
++        "food_id": "ingredient_foods",
++    },
++}
++
++_COMPOSITE_KEYS = {
++    "households_to_recipes": ("id", "household_id", "recipe_id"),
++    "shopping_list_item_recipe_reference": ("id", "shopping_list_item_id"),
++    "shopping_list_recipe_reference": ("id", "shopping_list_id"),
++    "shopping_lists_multi_purpose_labels": ("id", "shopping_list_id", "label_id"),
++    "users_to_recipes": ("id", "user_id", "recipe_id"),
++}
++
++_STAGE5_FOREIGN_KEYS = {
++    "ai_provider_settings": {
++        "default_provider_id": "ai_providers",
++        "audio_provider_id": "ai_providers",
++        "image_provider_id": "ai_providers",
++    },
++    "users": {"owned_recipes_id": "recipes"},
++}
++
++
++async def _table_rows(db, table: str) -> list[dict]:
++    return await db.execute_query_dict(f'SELECT * FROM "{table}" ORDER BY rowid')
++
++
++async def _index_inventory(db, table: str) -> tuple:
++    indexes = await db.execute_query_dict(f'PRAGMA index_list("{table}")')
++    inventory = []
++    for index in indexes:
++        columns = await db.execute_query_dict(f'PRAGMA index_info("{index["name"]}")')
++        sql = await db.execute_query_dict(
++            "SELECT sql FROM sqlite_master WHERE type='index' AND name=?", [index["name"]]
++        )
++        inventory.append(
++            (index["name"], index["unique"], tuple(row["name"] for row in columns), sql[0]["sql"])
++        )
++    return tuple(sorted(inventory))
++
++
++async def _foreign_key_inventory(db, table: str) -> dict[str, tuple[str, str, str]]:
++    rows = await db.execute_query_dict(f'PRAGMA foreign_key_list("{table}")')
++    return {row["from"]: (row["table"], row["to"], row["on_delete"]) for row in rows}
++
++
++async def _assert_unique_tuple(db, table: str, expected_columns: tuple[str, ...]) -> None:
++    indexes = await db.execute_query_dict(f'PRAGMA index_list("{table}")')
++    unique_tuples = set()
++    for index in indexes:
++        if index["unique"]:
++            columns = await db.execute_query_dict(f'PRAGMA index_info("{index["name"]}")')
++            unique_tuples.add(tuple(row["name"] for row in columns))
++    assert expected_columns in unique_tuples
++
++
++async def _unique_tuples(db, table: str) -> set[tuple[str, ...]]:
++    indexes = await db.execute_query_dict(f'PRAGMA index_list("{table}")')
++    unique_tuples = set()
++    for index in indexes:
++        if index["unique"]:
++            columns = await db.execute_query_dict(f'PRAGMA index_info("{index["name"]}")')
++            unique_tuples.add(tuple(row["name"] for row in columns))
++    return unique_tuples
++
++
++@pytest.mark.asyncio
++async def test_stage5_ordered_aerich_migrations_preserve_schema_and_key_behavior():
++    with TemporaryDirectory(prefix="mealie-stage5-aerich-") as tmp:
++        root = Path(tmp)
++        db_path = root / "stage5.sqlite3"
++        migrations = root / "migrations"
++        command = Command(
++            tortoise_config=tortoise_config(f"sqlite://{db_path}"),
++            app="models",
++            location=str(migrations),
++        )
++        try:
++            await command.init_db(safe=True)
++            await command.init()
++            db = Tortoise.get_connection("default")
++
++            group = await Group.create(name="Stage 5")
++            household = await Household.create(name="home", group=group)
++            other_household = await Household.create(name="other home", group=group)
++            user = await User.create(group=group, full_name="Owner")
++            other_user = await User.create(group=group, full_name="Other")
++            recipe = await Recipe.create(
++                group=group,
++                name="recipe",
++                name_normalized="recipe",
++                user=user,
++            )
++            other_recipe = await Recipe.create(
++                group=group,
++                name="other recipe",
++                name_normalized="other recipe",
++                user=other_user,
++            )
++
++            settings = await AIProviderSettings.create(group=group)
++            provider = await AIProvider.create(
++                settings=settings,
++                name="provider",
++                api_key="key",
++                model="model",
++            )
++            settings.default_provider = provider
++            settings.audio_provider = provider
++            settings.image_provider = provider
++            await settings.save()
++            user.owned_recipes = recipe
++            await user.save()
++
++            shopping_list = await ShoppingList.create(group=group, user=user, name="list")
++            other_list = await ShoppingList.create(group=group, user=other_user, name="other list")
++            item = await ShoppingListItem.create(shopping_list=shopping_list, position=0)
++            other_item = await ShoppingListItem.create(shopping_list=other_list, position=0)
++            label = await MultiPurposeLabel.create(group=group, name="label")
++            category = await Category.create(group=group, name="category", slug="category")
++            tag = await Tag.create(group=group, name="tag", slug="tag")
++            tool = await Tool.create(group=group, name="tool", slug="tool")
++            cookbook = await CookBook.create(
++                group=group,
++                household=household,
++                name="cookbook",
++                slug="cookbook",
++            )
++            plan_rule = await GroupMealPlanRules.create(group=group, household=household)
++            food = await IngredientFood.create(group=group, name="food")
++
++            keyless_values = {
++                "group_to_categories": ("group_id", str(group.id), "category_id", str(category.id)),
++                "plan_rules_to_categories": (
++                    "group_plan_rule_id", str(plan_rule.id), "category_id", str(category.id)
++                ),
++                "recipes_to_categories": ("recipe_id", str(recipe.id), "category_id", str(category.id)),
++                "cookbooks_to_categories": (
++                    "cookbook_id", str(cookbook.id), "category_id", str(category.id)
++                ),
++                "recipes_to_tags": ("recipe_id", str(recipe.id), "tag_id", str(tag.id)),
++                "plan_rules_to_tags": ("plan_rule_id", str(plan_rule.id), "tag_id", str(tag.id)),
++                "cookbooks_to_tags": ("cookbook_id", str(cookbook.id), "tag_id", str(tag.id)),
++                "households_to_tools": ("household_id", str(household.id), "tool_id", str(tool.id)),
++                "recipes_to_tools": ("recipe_id", str(recipe.id), "tool_id", str(tool.id)),
++                "cookbooks_to_tools": ("cookbook_id", str(cookbook.id), "tool_id", str(tool.id)),
++                "plan_rules_to_households": (
++                    "group_plan_rule_id", str(plan_rule.id), "household_id", str(household.id)
++                ),
++                "households_to_ingredient_foods": (
++                    "household_id", str(household.id), "food_id", str(food.id)
++                ),
++            }
++
++            # SQL UNIQUE permits repeated rows when one or more key columns are NULL.
++            for table, pair in _KEYLESS_ASSOCIATIONS.items():
++                first, second = pair
++                await db.execute_query(
++                    f'INSERT INTO "{table}" ("{first}", "{second}") VALUES (NULL, NULL)'
++                )
++                first_col, first_id, second_col, second_id = keyless_values[table]
++                await db.execute_query(
++                    f'INSERT INTO "{table}" ("{first_col}", "{second_col}") VALUES (?, ?)',
++                    [first_id, second_id],
++                )
++                await db.execute_query(
++                    f'INSERT INTO "{table}" ("{first}", "{second}") VALUES (NULL, NULL)'
++                )
++
++            shared_id = uuid4()
++            household_rows = [
++                await HouseholdToRecipe.create(
++                    id=shared_id, household=household, recipe=recipe, last_made=None
++                ),
++                await HouseholdToRecipe.create(
++                    id=shared_id, household=other_household, recipe=other_recipe, last_made=None
++                ),
++            ]
++            with pytest.raises(IntegrityError):
++                await HouseholdToRecipe.create(id=shared_id, household=household, recipe=recipe)
++
++            item_ref_rows = [
++                await ShoppingListItemRecipeReference.create(
++                    id=shared_id, shopping_list_item=item, recipe=recipe, recipe_quantity=1
++                ),
++                await ShoppingListItemRecipeReference.create(
++                    id=shared_id, shopping_list_item=other_item, recipe=other_recipe, recipe_quantity=2
++                ),
++            ]
++            assert item_ref_rows[0].recipe_scale == 1
++            with pytest.raises(IntegrityError):
++                await ShoppingListItemRecipeReference.create(
++                    id=shared_id, shopping_list_item=item, recipe_quantity=3
++                )
++
++            list_ref_rows = [
++                await ShoppingListRecipeReference.create(
++                    id=shared_id, shopping_list=shopping_list, recipe=recipe, recipe_quantity=1
++                ),
++                await ShoppingListRecipeReference.create(
++                    id=shared_id, shopping_list=other_list, recipe=other_recipe, recipe_quantity=2
++                ),
++            ]
++            with pytest.raises(IntegrityError):
++                await ShoppingListRecipeReference.create(
++                    id=shared_id, shopping_list=shopping_list, recipe_quantity=3
++                )
++
++            label_rows = [
++                await ShoppingListMultiPurposeLabel.create(
++                    id=shared_id, shopping_list=shopping_list, label=label
++                ),
++                await ShoppingListMultiPurposeLabel.create(
++                    id=shared_id, shopping_list=other_list, label=label
++                ),
++            ]
++            assert label_rows[0].position == 0
++            with pytest.raises(IntegrityError):
++                await ShoppingListMultiPurposeLabel.create(
++                    id=uuid4(), shopping_list=shopping_list, label=label
++                )
++
++            rating_rows = [
++                await UserToRecipe.create(id=shared_id, user=user, recipe=recipe, is_favorite=True),
++                await UserToRecipe.create(id=shared_id, user=other_user, recipe=other_recipe, is_favorite=False),
++            ]
++            with pytest.raises(IntegrityError):
++                await UserToRecipe.create(id=shared_id, user=user, recipe=recipe, is_favorite=False)
++            assert rating_rows[0].rating is None
++
++            # Existing Stage 5 relations load before and after constraints are installed.
++            await settings.fetch_related("default_provider", "audio_provider", "image_provider")
++            assert settings.default_provider.id == provider.id
++            assert settings.audio_provider.id == provider.id
++            assert settings.image_provider.id == provider.id
++            await user.fetch_related("owned_recipes")
++            assert user.owned_recipes.id == recipe.id
++
++            # Preserve schema/data snapshots across the ordered migrations.
++            watched_tables = (
++                "ai_provider_settings",
++                "users",
++                *tuple(_COMPOSITE_KEYS),
++                *tuple(_KEYLESS_ASSOCIATIONS),
++            )
++            before_rows = {table: await _table_rows(db, table) for table in watched_tables}
++            before_indexes = {
++                table: await _index_inventory(db, table)
++                for table in ("ai_provider_settings", "users")
++            }
++            before_foreign_keys = {
++                table: await _foreign_key_inventory(db, table) for table in _STAGE5_FOREIGN_KEYS
++            }
++            shutil.copy2(_STAGE4_MIGRATION, migrations / "models" / _STAGE4_MIGRATION.name)
++            shutil.copy2(_STAGE5_MIGRATION, migrations / "models" / _STAGE5_MIGRATION.name)
++            assert await command.upgrade(run_in_transaction=False) == [
++                _STAGE4_MIGRATION.name,
++                _STAGE5_MIGRATION.name,
++            ]
++
++            migrated_rows = {table: await _table_rows(db, table) for table in watched_tables}
++            assert migrated_rows == before_rows
++            for table, snapshot in before_indexes.items():
++                assert await _index_inventory(db, table) == snapshot
++
++            for table, columns in _STAGE5_FOREIGN_KEYS.items():
++                observed = await _foreign_key_inventory(db, table)
++                expected = dict(before_foreign_keys[table])
++                for column, target in columns.items():
++                    assert observed[column] == (target, "id", "NO ACTION")
++                    expected[column] = (target, "id", "NO ACTION")
++                assert observed == expected
++            assert (await db.execute_query_dict("PRAGMA foreign_keys"))[0]["foreign_keys"] == 1
++            assert await db.execute_query_dict("PRAGMA foreign_key_check") == []
++            await settings.fetch_related("default_provider", "audio_provider", "image_provider")
++            assert settings.default_provider.id == provider.id
++            assert settings.audio_provider.id == provider.id
++            assert settings.image_provider.id == provider.id
++            await user.fetch_related("owned_recipes")
++            assert user.owned_recipes.id == recipe.id
++            for table, constraints in _STAGE5_FOREIGN_KEYS.items():
++                for column in constraints:
++                    with pytest.raises(IntegrityError):
++                        await db.execute_query(
++                            f'UPDATE "{table}" SET "{column}"=? WHERE "id"=?',
++                            [str(uuid4()), str(settings.id if table == "ai_provider_settings" else user.id)],
++                        )
++            settings.default_provider = None
++            settings.audio_provider = None
++            settings.image_provider = None
++            await settings.save()
++            user.owned_recipes = None
++            await user.save()
++            await settings.fetch_related("default_provider", "audio_provider", "image_provider")
++            await user.fetch_related("owned_recipes")
++            assert settings.default_provider is None
++            assert settings.audio_provider is None
++            assert settings.image_provider is None
++            assert user.owned_recipes is None
++            assert await db.execute_query_dict("PRAGMA foreign_key_check") == []
++
++            # Each keyless association keeps its exact former FK/unique pair and SQL NULL behavior.
++            for table, pair in _KEYLESS_ASSOCIATIONS.items():
++                row_id = await db.execute_query_dict(f'PRAGMA table_info("{table}")')
++                surrogate = "id" if table == "households_to_ingredient_foods" else "row_id"
++                assert next(row for row in row_id if row["name"] == surrogate)["pk"] == 1
++                await _assert_unique_tuple(db, table, pair)
++                assert await _unique_tuples(db, table) == {pair}
++                observed = await _foreign_key_inventory(db, table)
++                for column, target in _KEYLESS_FOREIGN_KEYS[table].items():
++                    assert observed[column] == (target, "id", "NO ACTION")
++                    with pytest.raises(IntegrityError):
++                        await db.execute_query(
++                            f'INSERT INTO "{table}" ("{column}") VALUES (?)', [str(uuid4())]
++                        )
++                null_count = await db.execute_query_dict(
++                    f'SELECT COUNT(*) AS count FROM "{table}" WHERE "{pair[0]}" IS NULL AND "{pair[1]}" IS NULL'
++                )
++                assert null_count[0]["count"] == 2
++                duplicate_rows = await db.execute_query_dict(
++                    f'SELECT "{surrogate}" FROM "{table}" '
++                    f'WHERE "{pair[0]}" IS NULL AND "{pair[1]}" IS NULL ORDER BY "{surrogate}"'
++                )
++                first_key, second_key = (row[surrogate] for row in duplicate_rows)
++                moved_key = max(first_key, second_key) + 1000
++                await db.execute_query(
++                    f'UPDATE "{table}" SET "{surrogate}"=? WHERE "{surrogate}"=?',
++                    [moved_key, first_key],
++                )
++                assert await db.execute_query_dict(
++                    f'SELECT "{surrogate}" FROM "{table}" WHERE "{surrogate}"=?', [moved_key]
++                ) == [{surrogate: moved_key}]
++                assert await db.execute_query_dict(
++                    f'SELECT "{surrogate}" FROM "{table}" WHERE "{surrogate}"=?', [second_key]
++                ) == [{surrogate: second_key}]
++                await db.execute_query(
++                    f'DELETE FROM "{table}" WHERE "{surrogate}"=?', [moved_key]
++                )
++                assert await db.execute_query_dict(
++                    f'SELECT "{surrogate}" FROM "{table}" WHERE "{surrogate}"=?', [moved_key]
++                ) == []
++                remaining_null_count = await db.execute_query_dict(
++                    f'SELECT COUNT(*) AS count FROM "{table}" '
++                    f'WHERE "{pair[0]}" IS NULL AND "{pair[1]}" IS NULL'
++                )
++                assert remaining_null_count[0]["count"] == 1
++                first_col, first_id, second_col, second_id = keyless_values[table]
++                with pytest.raises(IntegrityError):
++                    await db.execute_query(
++                        f'INSERT INTO "{table}" ("{first_col}", "{second_col}") VALUES (?, ?)',
++                        [first_id, second_id],
++                    )
++
++            # Former composite tuples remain unique; id alone is no longer over-constrained.
++            for table, pair in _COMPOSITE_KEYS.items():
++                await _assert_unique_tuple(db, table, pair)
++                expected_uniques = {pair}
++                if table in {"households_to_recipes", "shopping_lists_multi_purpose_labels", "users_to_recipes"}:
++                    expected_uniques.add(
++                        {
++                            "households_to_recipes": ("household_id", "recipe_id"),
++                            "shopping_lists_multi_purpose_labels": ("shopping_list_id", "label_id"),
++                            "users_to_recipes": ("user_id", "recipe_id"),
++                        }[table]
++                    )
++                assert await _unique_tuples(db, table) == expected_uniques
++                info = await db.execute_query_dict(f'PRAGMA table_info("{table}")')
++                assert next(row for row in info if row["name"] == "row_id")["pk"] == 1
++                assert next(row for row in info if row["name"] == "id")["pk"] == 0
++
++            # Row-scoped updates/deletes use the surrogate, even when UUID id values repeat.
++            for row in (household_rows, item_ref_rows, list_ref_rows, label_rows, rating_rows):
++                assert row[0].row_id != row[1].row_id
++                row[0].id = shared_id
++                await row[0].save()
++                await row[0].delete()
++                assert await row[1].__class__.filter(pk=row[1].row_id).exists()
++
++            upgraded_rows = {table: await _table_rows(db, table) for table in watched_tables}
++
++            assert await command.downgrade(version=-1, delete=False) == [_STAGE5_MIGRATION.name]
++            for table, columns in _STAGE5_FOREIGN_KEYS.items():
++                observed = await _foreign_key_inventory(db, table)
++                assert observed == before_foreign_keys[table]
++            assert (await db.execute_query_dict("PRAGMA foreign_keys"))[0]["foreign_keys"] == 1
++            assert await db.execute_query_dict("PRAGMA foreign_key_check") == []
++            for table, snapshot in before_indexes.items():
++                assert await _index_inventory(db, table) == snapshot
++            for table in watched_tables:
++                assert await _table_rows(db, table) == upgraded_rows[table]
++
++            assert await command.downgrade(version=-1, delete=False) == [_STAGE4_MIGRATION.name]
++            assert await db.execute_query_dict("PRAGMA foreign_key_check") == []
++            for table in watched_tables:
++                assert await _table_rows(db, table) == upgraded_rows[table]
++        finally:
++            await command.aclose()
+diff --git a/tests/unit_tests/test_tortoise_test_lifecycle.py b/tests/unit_tests/test_tortoise_test_lifecycle.py
+new file mode 100644
+index 000000000..580b9faba
+--- /dev/null
++++ b/tests/unit_tests/test_tortoise_test_lifecycle.py
+@@ -0,0 +1,8 @@
++import pytest
++
++
++@pytest.mark.asyncio
++async def test_tortoise_connection_fixture_executes_query(tortoise_connection):
++    result = await tortoise_connection.execute_query_dict("SELECT 1 AS value")
++
++    assert result == [{"value": 1}]

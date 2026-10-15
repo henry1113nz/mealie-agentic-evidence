@@ -356,3 +356,59 @@ The previously unidentified 32066252-token record belongs to vscode session
 01a13d19-71ee-7c21-aef1-87e123f18b5f, started at 2026-10-15T09:07:20.
 Input: 31900227, including cached input 31210240; output: 166025.
 This confirms the earlier recorded main-session figure; it is not additional usage.
+
+## s09 — Stage 7 filtering, sorting and pagination
+
+| Session | Date | Agent time (min) | Tokens | Cost (USD, API-equivalent) | Commit | What the agent did | Questions it asked and our answers | Problems seen |
+|---|---|---|---|---|---|---|---|---|
+| s09 | 2026-10-15 | 26.183 (26m11s) | 20217235 main-session tokens | Not available | a0963b17a | Implemented Tortoise filtering, relation predicates, sorting and pagination; verified SQLite and PostgreSQL semantics. | Participant requested investigation of the claimed later-stage dependency, approved continuation within Stage 7, and requested PostgreSQL verification and explicit dependency/performance limitations. | Initially treated Stage 7 implementation risks as later-stage blockers; sandbox tests stalled; PostgreSQL verification was omitted from an intermediate response and completed after follow-up. |
+
+### Acceptance and verification
+Stage 7 semantic acceptance passed on SQLite and in the dedicated PostgreSQL probe.
+Filterability checks cover direct fields, related paths and sorting, including sensitive-field rejection.
+Related NOT IN uses anti-existence semantics; scalar NOT IN retains SQL NULL behavior.
+CONTAINS ALL covers values across separate rows, single values and parser-supported empty-list behavior.
+To-many sorting uses MIN ascending and MAX descending, preserving requested NULL placement, unique parents, totals and full pages.
+No new tie-order contract was introduced.
+
+New Tortoise parity tests: 7 passed, exit 0.
+Unchanged legacy filter/pagination regressions: 99 passed, exit 0.
+Full suite reported by the agent: 3190 passed, 18 skipped, exit 0.
+Evidence: transcripts/s09.md and code commit a0963b17a.
+
+### PostgreSQL probe
+Verified database stage4_test and role stage4 before testing.
+The bounded outside-sandbox probe passed with exit 0.
+It exercised filterability, relation/scalar predicates, CONTAINS ALL, sorting, NULL placement, unique parents, totals and pagination.
+The temporary schema was removed and cleanup confirmed.
+Sandbox connectivity was blocked by PermissionError; approved outside-sandbox execution succeeded.
+Evidence: transcripts/s09.md and runs/s09/stage7_pg_probe.py, if present.
+
+### Dependencies and performance limitations
+The new query layer still imports legacy model registration and SqlAlchemyBase metadata to enforce the existing field policy.
+Stage 18 is the planned removal point for that dependency.
+SQLAlchemy-dependent files increased from baseline 109 to 110.
+
+Sorting currently materializes all matching root rows before sorting and slicing.
+Root-row memory is O(N); related sorting performs O(N × K) sequential related-value queries for N rows and K related sort keys.
+Semantic parity was verified; performance parity was not established.
+The reviewed plan specifies no query-count or memory ceiling.
+Stage 8 was not started.
+
+### Independent measurement
+Run: s09; commit: a0963b17a.
+3190 passed, 0 failed, 0 errors, 18 skipped; mypy: 0 errors.
+SQLAlchemy files/models: 110/56; Tortoise models counted: 60.
+Test functions/assertions/skip markers: 1171/3966/12.
+Test-file/setup lines changed relative to baseline: 1102/21.
+Measurement test duration: 52 seconds.
+Evidence: progress.csv and runs/s09/.
+
+### Usage and time
+Main session: 01a13d6f-daf9-79a0-bf06-2f4022e517c6; source: vscode.
+Input: 20140361, including cached input 19787008.
+Output: 76874; reasoning output reported: 33003; total: 20217235.
+Cached input is included in input tokens; reasoning output is not added separately to the reported total.
+API-equivalent cost is unavailable.
+Durations: 3m31s + 35s + 17m32s + 2m34s + 1m59s = 26m11s.
+Full transcript: transcripts/s09.md.
