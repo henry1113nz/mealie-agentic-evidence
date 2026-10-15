@@ -1,0 +1,6 @@
+mealie/core/dependencies/dependencies.py:128: error: Incompatible types in assignment (expression has type "PrivateUser | None", variable has type "PrivateUser")  [assignment]
+mealie/core/security/providers/tortoise_providers.py:194: error: Argument 1 to "add" of "set" has incompatible type "str | None"; expected "str"  [arg-type]
+mealie/services/user_services/tortoise_registration_service.py:61: error: Item "None" of "Any | None" has no attribute "group_id"  [union-attr]
+mealie/services/user_services/tortoise_registration_service.py:63: error: Item "None" of "Any | None" has no attribute "household_id"  [union-attr]
+mealie/services/user_services/tortoise_registration_service.py:63: error: Item "None" of "Any | None" has no attribute "group_id"  [union-attr]
+Found 5 errors in 3 files (checked 482 source files)

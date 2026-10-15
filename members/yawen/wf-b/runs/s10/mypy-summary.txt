@@ -1,0 +1,1 @@
+Found 5 errors in 3 files (checked 482 source files)

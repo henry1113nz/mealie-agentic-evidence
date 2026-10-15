@@ -412,3 +412,58 @@ Cached input is included in input tokens; reasoning output is not added separate
 API-equivalent cost is unavailable.
 Durations: 3m31s + 35s + 17m32s + 2m34s + 1m59s = 26m11s.
 Full transcript: transcripts/s09.md.
+
+## s10 — Stage 8 async authentication and registration
+
+| Session | Date | Agent time (min) | Tokens | Cost (USD, API-equivalent) | Commit | What the agent did | Questions it asked and our answers | Problems seen |
+|---|---|---|---|---|---|---|---|---|
+| s10 | 2026-10-15 | 52.933 (52m56s) | 57059744 main-session tokens | Not available | 0ba880506 | Converted authentication, registration and password reset paths; added application Tortoise lifecycle, request dependencies and registration prerequisites. | Participant reviewed the bounded plan revision and requested identical TestClient diagnostics outside the sandbox, followed by fixes for independently measured mypy errors. | Initial dependency-boundary stop; sandbox TestClient lifespan hang; global connection registry interference; UUID format mismatch; missing default avatar; five mypy errors found and fixed. |
+
+### Scope and verification
+The reviewed plan moved registration-only group/household creation, preferences, invite handling and optional seeding prerequisites forward from Stage 9.
+Minimal actual application Tortoise lifecycle and request wiring were included; full startup/schema cutover remains deferred.
+
+SQLite lifecycle, coexistence, authentication, registration and image checks passed according to the session report.
+Focused Stage 8 tests after typing fixes: 87 passed, 9 skipped.
+Final OIDC/auth focused rerun: 26 passed, 9 skipped.
+Required full suite: 3195 passed, 18 skipped, exit 0.
+Live LDAP, live OIDC provider integrations and PostgreSQL behavior remain unverified.
+Stage 8 SQLite verification is complete with these limitations; Stage 9 was not started.
+
+### Sandbox diagnosis and fixes
+A standalone FastAPI TestClient lifespan reproducer timed out inside the sandbox with exit 124.
+The identical bounded command outside the sandbox entered/exited lifespan, returned HTTP 404 and exited 0.
+This demonstrated a sandbox-specific difference; it did not establish a general AnyIO failure.
+
+The full suite exposed connection-registry interference from temporary Tortoise tests, compact-versus-hyphenated SQLite UUID differences, and missing registration profile-image initialization.
+The agent reported correcting these without weakening assertions.
+Independent measurement then found five mypy errors in three files.
+Corrections handled optional user lookup, OIDC claim names and invite lookup results.
+Final mypy passed in 482 source files.
+
+### Independent measurements
+Initial run s10, commit d9f415021:
+3195 passed, 0 failed, 0 errors, 18 skipped; mypy: 5 errors.
+Evidence: runs/s10/, including mypy-details.log.
+
+Final run s10-final, commit 0ba880506eef7a22c2bc34a6bcdcef10c53403ed:
+3195 passed, 0 failed, 0 errors, 18 skipped; mypy: 0 errors.
+SQLAlchemy files/models: 108/56; Tortoise models counted: 60.
+Test functions/assertions/skip markers: 1176/3993/12.
+Test-file/setup lines changed relative to baseline: 1330/41.
+Measurement test duration: 55 seconds.
+Evidence: progress.csv and runs/s10-final/.
+
+Integrity counts did not decrease and skip-marker counts did not increase.
+These aggregate counts alone do not prove that every assertion retained its strength.
+The agent reported preserving assertions; the saved tests.diff records the changes for review.
+
+### Usage, duration and transcript
+Main session: 01a13d9e-927a-7170-b7b9-cec3b99e03d3; source: vscode.
+Input: 56923310, including cached input 55952128.
+Output: 136434; reasoning output reported: 57802; total: 57059744.
+Cached input is included in input tokens; reasoning output is not added separately to reported totals.
+API-equivalent cost is unavailable.
+
+Durations: 20s + 36s + 26s + 21m3s + 27m11s + 3m20s = 52m56s.
+Full transcript: transcripts/s10.md (2640 lines).
