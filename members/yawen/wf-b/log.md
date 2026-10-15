@@ -319,3 +319,40 @@ API-equivalent cost is unavailable.
 ### Durations and transcript
 21m29s + 2m6s + 1m49s + 19m5s + 4m44s = 49m13s.
 Full transcript: transcripts/s07.md.
+
+## s08 — Stage 6 async repository primitives
+
+| Session | Date | Agent time (min) | Tokens | Cost (USD, API-equivalent) | Commit | What the agent did | Questions it asked and our answers | Problems seen |
+|---|---|---|---|---|---|---|---|---|
+| s08 | 2026-10-15 | 13.4 (13m24s) | 4147924 main-session tokens | Not available | 739eeec78 | Added async repository CRUD, transaction handling, tenant scoping and relation materialization, with focused tests. | Participant supplied prior sandbox diagnostic evidence and requested explicit same-group household isolation verification. | Sandbox tests stalled; initial temporary test models lacked required fields; household isolation was initially missing and was added before final verification. |
+
+### Acceptance
+Focused repository tests: 3 passed, exit 0.
+Checks cover CRUD, rollback after failed writes, group isolation, same-group household isolation and relation materialization.
+The household test verifies each repository returns only its own record and returns None for the other household's record.
+The full suite passed with legacy repository wiring retained, providing regression evidence for existing callers.
+Stage 6 acceptance is complete. Stage 7 was not started.
+Evidence: transcripts/s08.md and code commit 739eeec78584146378cdf15dc51fa179c4a36621.
+
+### Independent measurement
+Run: s08; commit: 739eeec78.
+3183 passed, 0 failed, 0 errors, 18 skipped; mypy: 0 errors.
+SQLAlchemy files/models: 109/56; Tortoise models counted: 60.
+Test functions/assertions/skip markers: 1164/3934/12.
+Test-file/setup lines changed relative to baseline: 824/21.
+Measurement test duration: 53 seconds.
+Evidence: progress.csv and runs/s08/.
+
+### Usage and time
+Main session: 01a13d59-3e35-7861-9928-ba730bb32060; source: vscode.
+Input: 4136504, including cached input 4002304.
+Output: 11420; total: 4147924.
+Separate guardian session 01a13d59-3e6f-76b2-8bc0-82e0681789ed reported 113063 tokens and is not added to the main-session figure.
+API-equivalent cost is unavailable.
+Recorded durations: 10m24s + 1m36s + 1m24s = 13m24s.
+
+## s07 usage attribution confirmed
+The previously unidentified 32066252-token record belongs to vscode session
+01a13d19-71ee-7c21-aef1-87e123f18b5f, started at 2026-10-15T09:07:20.
+Input: 31900227, including cached input 31210240; output: 166025.
+This confirms the earlier recorded main-session figure; it is not additional usage.
