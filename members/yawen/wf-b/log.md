@@ -467,3 +467,41 @@ API-equivalent cost is unavailable.
 
 Durations: 20s + 36s + 26s + 21m3s + 27m11s + 3m20s = 52m56s.
 Full transcript: transcripts/s10.md (2640 lines).
+
+## Final workflow status — ended after Stage 8
+
+I decided to end Workflow B after Stage 8. The overall rewrite remains incomplete, and I stopped before using the approximately six-hour agent-time budget.
+
+### Completion assessment
+
+Implementation and available acceptance evidence cover the first eight of eighteen reviewed stages, giving a plan-stage progress measure of 44.4%. Stage 8 was verified on SQLite; live LDAP, live OIDC and PostgreSQL authentication behavior remain unverified.
+
+The 44.4% figure describes progress through the plan only. It does not measure overall code migration completion. The stages differ in scope and effort, legacy and new implementations coexist, and some new code still depends on SQLAlchemy metadata. I therefore cannot establish a reliable overall migration percentage from the available evidence.
+
+Completed work includes async database infrastructure and test lifecycle support; Tortoise model mappings and ordered migration checks; async repository primitives and tenant isolation; filtering, sorting and pagination; and async authentication, registration and password-reset paths.
+
+Stages 9–18 were not completed. Remaining work includes broader business-operation conversion, final startup and seed cutover, backup integration, full migration validation and removal of legacy ORM dependencies.
+
+### Final measured state
+
+Final local code commit: 0ba880506eef7a22c2bc34a6bcdcef10c53403ed.
+Measurement: s10-final.
+
+- Tests: 3195 passed, 0 failed, 0 errors and 18 skipped.
+- mypy: 0 errors.
+- SQLAlchemy-dependent files: 108, compared with baseline 109.
+- SQLAlchemy models: 56, unchanged from baseline.
+- Tortoise models identified by the measurement script: 60.
+- Test functions: 1176, compared with baseline 1158.
+- Assertions: 3993, compared with baseline 3837.
+- Skip markers: 12, unchanged from baseline.
+
+The passing suite provides regression evidence for the retained implementation, including legacy paths. It does not establish that every application path has migrated to Tortoise. Similarly, the Tortoise model count does not represent the number of fully converted runtime features.
+
+### Material limitations
+
+SQLAlchemy remains widely used. The new query/filter layer still consults legacy SQLAlchemy metadata. Related sorting materializes matching root rows and can issue one related-value query per row per sort key. Semantic parity was tested, but performance parity was not established.
+
+SQLite and PostgreSQL migration/query checks passed in earlier stages, but those results do not cover the unverified Stage 8 PostgreSQL authentication path. Live LDAP and OIDC integrations also remain unverified.
+
+Evidence: progress.csv; runs/s10-final/; transcripts/s01.md through transcripts/s10.md; plan-reviewed.md; and the preceding session records.
