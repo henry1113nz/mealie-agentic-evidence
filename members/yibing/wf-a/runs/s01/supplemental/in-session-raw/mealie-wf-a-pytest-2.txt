@@ -1,0 +1,278 @@
+bringing up nodes...
+bringing up nodes...
+
+........................................................................ [  2%]
+........................................................................ [  4%]
+........................................................................ [  6%]
+........................................................................ [  9%]
+........................................................................ [ 11%]
+........................................................................ [ 13%]
+........................................................................ [ 15%]
+........................................................................ [ 18%]
+........................................................................ [ 20%]
+........................................................................ [ 22%]
+........................................................................ [ 24%]
+........................................................................ [ 27%]
+........................................................................ [ 29%]
+........................................................................ [ 31%]
+........................................................................ [ 33%]
+........................................................................ [ 36%]
+........................................................................ [ 38%]
+........................................................................ [ 40%]
+........................................................................ [ 42%]
+........................................................................ [ 45%]
+........................................................................ [ 47%]
+........................................................................ [ 49%]
+........................................................................ [ 51%]
+........................................................................ [ 54%]
+........................................................................ [ 56%]
+........................................................................ [ 58%]
+........................................................................ [ 60%]
+........................................................................ [ 63%]
+.........................F.FFF..F....................................... [ 65%]
+................................................................ssssss.s [ 67%]
+ss...................................................................... [ 69%]
+........................................................................ [ 72%]
+........................................................................ [ 74%]
+........................................................................ [ 76%]
+........................................................................ [ 78%]
+........................................................................ [ 81%]
+........................................................................ [ 83%]
+........................................................................ [ 85%]
+........................................................................ [ 87%]
+........................................................................ [ 90%]
+........................................................................ [ 92%]
+........................................................ssssss.......... [ 94%]
+........................................................................ [ 96%]
+........................................................................ [ 99%]
+.....................s........                                           [100%][WARNING|settings|L109] 2026-10-05T14:36:32: Secrets directory '/run/secrets' does not exist
+
+=================================== FAILURES ===================================
+_____________ test_async_transport_pins_connection_to_validated_ip _____________
+[gw0] darwin -- Python 3.14.7 /Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-a/.venv/bin/python
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x1154b9860>
+
+    @pytest.mark.asyncio
+    async def test_async_transport_pins_connection_to_validated_ip(monkeypatch):
+>       with _LocalServer() as server:
+             ^^^^^^^^^^^^^^
+
+tests/unit_tests/pkgs/safehttp/test_transport.py:174: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit_tests/pkgs/safehttp/test_transport.py:156: in __init__
+    self.server = http.server.HTTPServer(("127.0.0.1", 0), Handler)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/estherzhang/.local/share/uv/python/cpython-3.14.7-macos-aarch64-none/lib/python3.14/socketserver.py:457: in __init__
+    self.server_bind()
+/Users/estherzhang/.local/share/uv/python/cpython-3.14.7-macos-aarch64-none/lib/python3.14/http/server.py:148: in server_bind
+    socketserver.TCPServer.server_bind(self)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <http.server.HTTPServer object at 0x115d702f0>
+
+    def server_bind(self):
+        """Called by constructor to bind the socket.
+    
+        May be overridden.
+    
+        """
+        if self.allow_reuse_address and hasattr(socket, "SO_REUSEADDR"):
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        # Since Linux 6.12.9, SO_REUSEPORT is not allowed
+        # on other address families than AF_INET/AF_INET6.
+        if (
+            self.allow_reuse_port and hasattr(socket, "SO_REUSEPORT")
+            and self.address_family in (socket.AF_INET, socket.AF_INET6)
+        ):
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+>       self.socket.bind(self.server_address)
+E       PermissionError: [Errno 1] Operation not permitted
+
+/Users/estherzhang/.local/share/uv/python/cpython-3.14.7-macos-aarch64-none/lib/python3.14/socketserver.py:478: PermissionError
+_________ test_async_transport_falls_back_to_a_reachable_address[ips0] _________
+[gw0] darwin -- Python 3.14.7 /Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-a/.venv/bin/python
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x115474a60>
+ips = ['2001:db8::1', '127.0.0.1']
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("ips", [["2001:db8::1", "127.0.0.1"], ["127.0.0.1", "2001:db8::1"]])
+    async def test_async_transport_falls_back_to_a_reachable_address(monkeypatch, ips: list[str]):
+        """A dual-stack host must still connect when one of its address families isn't routable."""
+>       with _LocalServer() as server:
+             ^^^^^^^^^^^^^^
+
+tests/unit_tests/pkgs/safehttp/test_transport.py:188: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit_tests/pkgs/safehttp/test_transport.py:156: in __init__
+    self.server = http.server.HTTPServer(("127.0.0.1", 0), Handler)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/estherzhang/.local/share/uv/python/cpython-3.14.7-macos-aarch64-none/lib/python3.14/socketserver.py:457: in __init__
+    self.server_bind()
+/Users/estherzhang/.local/share/uv/python/cpython-3.14.7-macos-aarch64-none/lib/python3.14/http/server.py:148: in server_bind
+    socketserver.TCPServer.server_bind(self)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <http.server.HTTPServer object at 0x115c465d0>
+
+    def server_bind(self):
+        """Called by constructor to bind the socket.
+    
+        May be overridden.
+    
+        """
+        if self.allow_reuse_address and hasattr(socket, "SO_REUSEADDR"):
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        # Since Linux 6.12.9, SO_REUSEPORT is not allowed
+        # on other address families than AF_INET/AF_INET6.
+        if (
+            self.allow_reuse_port and hasattr(socket, "SO_REUSEPORT")
+            and self.address_family in (socket.AF_INET, socket.AF_INET6)
+        ):
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+>       self.socket.bind(self.server_address)
+E       PermissionError: [Errno 1] Operation not permitted
+
+/Users/estherzhang/.local/share/uv/python/cpython-3.14.7-macos-aarch64-none/lib/python3.14/socketserver.py:478: PermissionError
+_________ test_async_transport_falls_back_to_a_reachable_address[ips1] _________
+[gw0] darwin -- Python 3.14.7 /Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-a/.venv/bin/python
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x115dfae40>
+ips = ['127.0.0.1', '2001:db8::1']
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("ips", [["2001:db8::1", "127.0.0.1"], ["127.0.0.1", "2001:db8::1"]])
+    async def test_async_transport_falls_back_to_a_reachable_address(monkeypatch, ips: list[str]):
+        """A dual-stack host must still connect when one of its address families isn't routable."""
+>       with _LocalServer() as server:
+             ^^^^^^^^^^^^^^
+
+tests/unit_tests/pkgs/safehttp/test_transport.py:188: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit_tests/pkgs/safehttp/test_transport.py:156: in __init__
+    self.server = http.server.HTTPServer(("127.0.0.1", 0), Handler)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/estherzhang/.local/share/uv/python/cpython-3.14.7-macos-aarch64-none/lib/python3.14/socketserver.py:457: in __init__
+    self.server_bind()
+/Users/estherzhang/.local/share/uv/python/cpython-3.14.7-macos-aarch64-none/lib/python3.14/http/server.py:148: in server_bind
+    socketserver.TCPServer.server_bind(self)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <http.server.HTTPServer object at 0x115c46490>
+
+    def server_bind(self):
+        """Called by constructor to bind the socket.
+    
+        May be overridden.
+    
+        """
+        if self.allow_reuse_address and hasattr(socket, "SO_REUSEADDR"):
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        # Since Linux 6.12.9, SO_REUSEPORT is not allowed
+        # on other address families than AF_INET/AF_INET6.
+        if (
+            self.allow_reuse_port and hasattr(socket, "SO_REUSEPORT")
+            and self.address_family in (socket.AF_INET, socket.AF_INET6)
+        ):
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+>       self.socket.bind(self.server_address)
+E       PermissionError: [Errno 1] Operation not permitted
+
+/Users/estherzhang/.local/share/uv/python/cpython-3.14.7-macos-aarch64-none/lib/python3.14/socketserver.py:478: PermissionError
+__________________ test_sync_post_blocks_loopback_by_default ___________________
+[gw0] darwin -- Python 3.14.7 /Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-a/.venv/bin/python
+
+    def test_sync_post_blocks_loopback_by_default():
+>       with _LocalServer() as server:
+             ^^^^^^^^^^^^^^
+
+tests/unit_tests/pkgs/safehttp/test_transport.py:199: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit_tests/pkgs/safehttp/test_transport.py:156: in __init__
+    self.server = http.server.HTTPServer(("127.0.0.1", 0), Handler)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/estherzhang/.local/share/uv/python/cpython-3.14.7-macos-aarch64-none/lib/python3.14/socketserver.py:457: in __init__
+    self.server_bind()
+/Users/estherzhang/.local/share/uv/python/cpython-3.14.7-macos-aarch64-none/lib/python3.14/http/server.py:148: in server_bind
+    socketserver.TCPServer.server_bind(self)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <http.server.HTTPServer object at 0x115f6d220>
+
+    def server_bind(self):
+        """Called by constructor to bind the socket.
+    
+        May be overridden.
+    
+        """
+        if self.allow_reuse_address and hasattr(socket, "SO_REUSEADDR"):
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        # Since Linux 6.12.9, SO_REUSEPORT is not allowed
+        # on other address families than AF_INET/AF_INET6.
+        if (
+            self.allow_reuse_port and hasattr(socket, "SO_REUSEPORT")
+            and self.address_family in (socket.AF_INET, socket.AF_INET6)
+        ):
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+>       self.socket.bind(self.server_address)
+E       PermissionError: [Errno 1] Operation not permitted
+
+/Users/estherzhang/.local/share/uv/python/cpython-3.14.7-macos-aarch64-none/lib/python3.14/socketserver.py:478: PermissionError
+____________________ test_sync_post_allows_configured_host _____________________
+[gw0] darwin -- Python 3.14.7 /Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-a/.venv/bin/python
+
+    def test_sync_post_allows_configured_host():
+>       with _LocalServer() as server:
+             ^^^^^^^^^^^^^^
+
+tests/unit_tests/pkgs/safehttp/test_transport.py:205: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit_tests/pkgs/safehttp/test_transport.py:156: in __init__
+    self.server = http.server.HTTPServer(("127.0.0.1", 0), Handler)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/estherzhang/.local/share/uv/python/cpython-3.14.7-macos-aarch64-none/lib/python3.14/socketserver.py:457: in __init__
+    self.server_bind()
+/Users/estherzhang/.local/share/uv/python/cpython-3.14.7-macos-aarch64-none/lib/python3.14/http/server.py:148: in server_bind
+    socketserver.TCPServer.server_bind(self)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <http.server.HTTPServer object at 0x115f6d6e0>
+
+    def server_bind(self):
+        """Called by constructor to bind the socket.
+    
+        May be overridden.
+    
+        """
+        if self.allow_reuse_address and hasattr(socket, "SO_REUSEADDR"):
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        # Since Linux 6.12.9, SO_REUSEPORT is not allowed
+        # on other address families than AF_INET/AF_INET6.
+        if (
+            self.allow_reuse_port and hasattr(socket, "SO_REUSEPORT")
+            and self.address_family in (socket.AF_INET, socket.AF_INET6)
+        ):
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+>       self.socket.bind(self.server_address)
+E       PermissionError: [Errno 1] Operation not permitted
+
+/Users/estherzhang/.local/share/uv/python/cpython-3.14.7-macos-aarch64-none/lib/python3.14/socketserver.py:478: PermissionError
+=========================== short test summary info ============================
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:264: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:285: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:293: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:314: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:322: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:348: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:375: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:401: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:427: requires ldap service in github actions
+SKIPPED [6] tests/unit_tests/test_recipe_parser.py:18: Long Running API Test - manually run when updating the parser
+SKIPPED [1] tests/integration_tests/user_recipe_tests/test_recipe_bulk_import.py:8: Long Running Scraper
+FAILED tests/unit_tests/pkgs/safehttp/test_transport.py::test_async_transport_pins_connection_to_validated_ip
+FAILED tests/unit_tests/pkgs/safehttp/test_transport.py::test_async_transport_falls_back_to_a_reachable_address[ips0]
+FAILED tests/unit_tests/pkgs/safehttp/test_transport.py::test_async_transport_falls_back_to_a_reachable_address[ips1]
+FAILED tests/unit_tests/pkgs/safehttp/test_transport.py::test_sync_post_blocks_loopback_by_default
+FAILED tests/unit_tests/pkgs/safehttp/test_transport.py::test_sync_post_allows_configured_host
+5 failed, 3177 passed, 16 skipped in 52.22s

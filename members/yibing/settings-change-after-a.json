@@ -1,0 +1,7 @@
+{
+  "at": "2026-10-05T03:08:20.034506+00:00",
+  "change": "Requested features.apps=false for future B execution and C sessions; A and B planning original configurations remain preserved in per-session metadata and original settings copies.",
+  "why": "Actual A public-source GitHub connector use showed plugins=false and shell network=false did not disable Apps.",
+  "verification": "Local CLI recognizes disable apps; actual future tool absence not yet independently observed.",
+  "comparison_limit": "Permission/tool availability changed after A and B planning. Disclose as an evaluation limitation."
+}

@@ -1,0 +1,139 @@
+bringing up nodes...
+bringing up nodes...
+
+........................................................................ [  2%]
+........................................................................ [  4%]
+........................................................................ [  6%]
+........................................................................ [  9%]
+........................................................................ [ 11%]
+........................................................................ [ 13%]
+........................................................................ [ 15%]
+........................................................................ [ 18%]
+........................................................................ [ 20%]
+........................................................................ [ 22%]
+........................................................................ [ 24%]
+........................................................................ [ 27%]
+........................................................................ [ 29%]
+........................................................................ [ 31%]
+........................................................................ [ 33%]
+........................................................................ [ 36%]
+........................................................................ [ 38%]
+........................................................................ [ 40%]
+........................................................................ [ 42%]
+........................................................................ [ 45%]
+........................................................................ [ 47%]
+........................................................................ [ 49%]
+........................................................................ [ 51%]
+........................................................................ [ 54%]
+........................................................................ [ 56%]
+........................................................................ [ 58%]
+........................................................................ [ 60%]
+........................................................................ [ 63%]
+........................................................................ [ 65%]
+........................................................................ [ 67%]
+..........................................................sssssssss..... [ 69%]
+........................................................................ [ 72%]
+........................................................................ [ 74%]
+........................................................................ [ 76%]
+........................................................................ [ 78%]
+........................................................................ [ 81%]
+........................................................................ [ 83%]
+........................................................................ [ 85%]
+........................................................................ [ 87%]
+........................................................................ [ 90%]
+........................................................................ [ 92%]
+......................................................ssssss............ [ 94%]
+........................................................................ [ 96%]
+..............................ss........................................ [ 99%]
+..........s................                                              [100%][WARNING|settings|L109] 2026-10-05T16:07:37: Secrets directory '/run/secrets' does not exist
+[INFO|plugins|L37] 2026-10-05T16:07:46: setup plugin alembic.autogenerate.schemas
+[INFO|plugins|L37] 2026-10-05T16:07:46: setup plugin alembic.autogenerate.tables
+[INFO|plugins|L37] 2026-10-05T16:07:46: setup plugin alembic.autogenerate.types
+[INFO|plugins|L37] 2026-10-05T16:07:46: setup plugin alembic.autogenerate.constraints
+[INFO|plugins|L37] 2026-10-05T16:07:46: setup plugin alembic.autogenerate.defaults
+[INFO|plugins|L37] 2026-10-05T16:07:46: setup plugin alembic.autogenerate.comments
+[INFO|plugins|L37] 2026-10-05T16:07:46: setup plugin alembic.ext.checkconstraint_byname
+[INFO|init_db|L97] 2026-10-05T16:07:46: Database connection established.
+[INFO|migration|L205] 2026-10-05T16:07:46: Context impl SQLiteImpl.
+[INFO|migration|L208] 2026-10-05T16:07:46: Will assume non-transactional DDL.
+[INFO|init_db|L118] 2026-10-05T16:07:46: Migration needed. Performing migration...
+[INFO|migration|L205] 2026-10-05T16:07:46: Context impl SQLiteImpl.
+[INFO|migration|L208] 2026-10-05T16:07:46: Will assume non-transactional DDL.
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade  -> 6b0f5f32d602, Initial tables
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade 6b0f5f32d602 -> 263dd6707191, convert quantity from integer to float
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade 263dd6707191 -> f1a2dbee5fe9, Add original_text column to recipes_ingredients
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade f1a2dbee5fe9 -> 59eb59135381, add tags to cookbooks
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade 59eb59135381 -> 09dfc897ad62, add require_all for cookbook filters
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade 09dfc897ad62 -> ab0bae02578f, Add use_abbreviation column to ingredients
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade ab0bae02578f -> f30cf048c228, add new webhook fields
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade f30cf048c228 -> 188374910655, add login_attemps and locked_at field to user table
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade 188374910655 -> 089bfa50d0ed, Add is_ocr_recipe column to recipes
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade 089bfa50d0ed -> 44e8d670719d, add extras to shopping lists, list items, and ingredient foods
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade 44e8d670719d -> 2ea7a807915c, add recipe_timeline_events table
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade 2ea7a807915c -> 1923519381ad, added recipe last made timestamp
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade 1923519381ad -> 167eb69066ad, add recipe_scale to shopping list item ref
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade 167eb69066ad -> 165d943c64ee, add related user to mealplan
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade 165d943c64ee -> ff5f73b01a7a, add missing foreign key and order indices
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade ff5f73b01a7a -> 16160bf731a0, add more indices necessary for search
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade 16160bf731a0 -> 5ab195a474eb, add normalized search properties
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade 5ab195a474eb -> b04a08da2108, added shopping list label settings
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade b04a08da2108 -> 38514b39a824, add auth_method to user table
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade 38514b39a824 -> b3dbb554ba53, postgres fuzzy search
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade b3dbb554ba53 -> 04ac51cbe9a4, added group slug
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade 04ac51cbe9a4 -> 1825b5225403, added recipe note to shopping list recipe ref
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade 1825b5225403 -> bcfdad6b7355, remove tool name and slug unique contraints
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade bcfdad6b7355 -> 0341b154f79a, added normalized unit and food names
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade 0341b154f79a -> dded3119c1fe, added unique constraints
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade dded3119c1fe -> ba1e4a6cfe99, added plural names and alias tables for foods and units
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade ba1e4a6cfe99 -> 2298bb460ffd, added user to shopping list
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade 2298bb460ffd -> 09aba125b57a, add OIDC auth method
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade 09aba125b57a -> d7c6efd2de42, migrate favorites and ratings to user_ratings
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade d7c6efd2de42 -> 7788478a0338, add group recipe actions
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade 7788478a0338 -> 32d69327997b, Add staple flag to foods
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade 32d69327997b -> feecc8ffb956, add households
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade feecc8ffb956 -> be568e39ffdf, added household recipe lock setting and household management user permission
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade be568e39ffdf -> 1fe4bd37ccc8, add households filter to meal plans
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade 1fe4bd37ccc8 -> 602927e1013e, 'add the rest of the schema.org nutrition properties'
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade 602927e1013e -> 86054b40fd06, added query_filter_string to cookbook and mealplan
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade 86054b40fd06 -> 3897397b4631, 'Add summary to recipe instructions'
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade 3897397b4631 -> b1020f328e98, add recipe yield quantity
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade b1020f328e98 -> b9e516e2d3b3, add household to recipe last made, household to foods, and household to tools
+[INFO|2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_|L167] 2026-10-05T16:07:46: Running new model migration (migrate_recipe_last_made_to_household)
+[INFO|2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_|L167] 2026-10-05T16:07:46: Running new model migration (migrate_foods_on_hand_to_household)
+[INFO|2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_|L167] 2026-10-05T16:07:46: Running new model migration (migrate_tools_on_hand_to_household)
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade b9e516e2d3b3 -> 7cf3054cbbcc, remove instructions index
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade 7cf3054cbbcc -> d7b3ce6fa31a, empty migration to fix food flag data
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade d7b3ce6fa31a -> e6bb583aac2d, 'Add label notifier CRUD bools'
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade e6bb583aac2d -> 1d9a002d7234, 'Add referenced_recipe to ingredients'
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade 1d9a002d7234 -> a39c7f1826e3, add unit standardization fields
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade a39c7f1826e3 -> cdc93edaf73d, 'Add mealplan updated and deleted to group notifier options'
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade cdc93edaf73d -> 4395a04f7784, add announcements
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade 4395a04f7784 -> c7427796f7b6, more aggresive normalization
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade c7427796f7b6 -> 2187537c52b8, add table for ai providers
+[WARNING|settings|L109] 2026-10-05T16:07:46: Secrets directory '/run/secrets' does not exist
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade 2187537c52b8 -> 69e942bab3aa, add tokens valid after column to users
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade 69e942bab3aa -> b3f1c9a27d84, add external avatar hash to users
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade b3f1c9a27d84 -> f2191b69db2e, add ingredient substitutions
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade f2191b69db2e -> 4b91d3a7c0e2, backfill recipe image column from disk
+[INFO|2026-09-03-16.12.44_4b91d3a7c0e2_backfill_recipe_image_column|L96] 2026-10-05T16:07:46: Recipe image backfill checked 0 recipes: 0 image references restored, 0 cleared
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade 4b91d3a7c0e2 -> 3527efeeec34, 'add recipe_note_ref_link'
+[INFO|migration|L611] 2026-10-05T16:07:46: Running upgrade 3527efeeec34 -> 27621d27c7e1, add structured recipe times
+[INFO|2026-09-24-13.16.56_27621d27c7e1_add_structured_recipe_times|L194] 2026-10-05T16:07:46: Converted 0 recipe times to structured durations and cleared 0 empty ones across 0 recipes
+[INFO|init_db|L134] 2026-10-05T16:07:46: Database contains no users, initializing...
+[INFO|init_db|L44] 2026-10-05T16:07:46: Generating Default Group and Household
+[INFO|init_users|L62] 2026-10-05T16:07:46: Generating Default User
+
+=========================== short test summary info ============================
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:263: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:284: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:292: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:313: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:321: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:347: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:374: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:400: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:426: requires ldap service in github actions
+SKIPPED [6] tests/unit_tests/test_recipe_parser.py:18: Long Running API Test - manually run when updating the parser
+SKIPPED [2] tests/utils/routes/test_mixins.py:12: psycopg2 is only installed with the pgsql extra
+SKIPPED [1] tests/integration_tests/user_recipe_tests/test_recipe_bulk_import.py:8: Long Running Scraper
+3177 passed, 18 skipped in 68.69s (0:01:08)

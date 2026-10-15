@@ -1,17 +1,28 @@
 # Session log: yibing / wf-c
 
-One row per session. Fill it in straight after the session, not later.
+One row per session. The same tool and model were retained throughout: Codex CLI 0.155.0-alpha.16, gpt-6-astra, ultra effort.
 
 | Session | Date | Agent time (min) | Tokens | Cost (USD, API-equivalent) | Commit | What the agent did | Questions it asked and our answers | Problems seen (with transcript line or commit) |
-|---|---|---|---|---|---|---|---|---|
-| s01 | | | | | | | | |
+|---|---|---:|---|---|---|---|---|---|
+| s01 / C1 foundation | 2026-10-11 | 10.661 | 3,016,314 input (2,915,968 cached); 17,122 output | Unavailable; subscription usage only | `8ae69c858` | Added Tortoise configuration, lifecycle, base model/field primitives and foundation tests; updated AGENTS.md. | No rule question. The agent reported blocked package access; dependencies were prepared separately after the session. | The agent correctly said C1 was incomplete. One wrapper test failed, five socket tests were blocked and three dependency collection errors remained (`transcripts/s01.md`; `runs/s01/failures.txt`). |
+| s02 / C1 repair | 2026-10-11 | 3.873 | 990,866 input (941,696 cached); 5,888 output | Unavailable; subscription usage only | `138cf95ab` | Opened the connection before the health query and completed the C1 gate; updated AGENTS.md. | None. No participant code hint was given. | Five socket-binding tests still failed only inside the restricted sandbox (`transcripts/s02.md`). External measurement recorded 3,218 passed and 0 failed. |
+| s03 / C2 server | 2026-10-11 | 6.635 | 1,822,292 input (1,751,424 cached); 10,080 output | Unavailable; subscription usage only | `554af9e25` | Converted ServerTask and cleanup behaviour to Tortoise; updated tests and AGENTS.md. | None. | Agent-side full run still had five sandbox socket failures; live PostgreSQL was not tested (`transcripts/s03.md`). |
+| s04 / C3 users | 2026-10-11 | 14.682 | 4,914,141 input (4,801,024 cached); 22,142 output | Unavailable; subscription usage only | `fc599ff55` | Converted user models, repositories and callers, using temporary compatibility bridges; updated AGENTS.md. | None. | Compatibility bridges increased cross-module complexity; five sandbox socket failures and no live PostgreSQL evidence remained (`transcripts/s04.md`). |
+| s05 / C4 groups | 2026-10-11 | 10.425 | 5,480,644 input (5,373,056 cached); 19,062 output | Unavailable; subscription usage only | `edd0b6d07` | Converted group models/repositories and explicit transaction/cleanup behaviour; updated AGENTS.md. | None. | Five sandbox socket failures and no live PostgreSQL evidence remained (`transcripts/s05.md`). |
+| s06 / C5 households | 2026-10-11 | 14.050 | 9,150,787 input (8,993,408 cached); 22,528 output | Unavailable; subscription usage only | `f14e4ae33` | Converted household models, repositories and callers; updated AGENTS.md. | None. | The shared measurement row records 3,256 passed and five socket-permission failures, not a clean pass (`progress.csv`; `runs/s06/failures.txt`). |
+| s07 / launch failure | 2026-10-11 | 0.000 | No usage recorded | Unavailable | no commit | Attempted to start C6. | None. | Codex exited immediately because of local permission/configuration failure (`transcripts/s07.md`; `transcripts/s07.meta.json`). |
+| s07-retry / C6 recipe | 2026-10-11 | 23.917 | 11,326,632 input (11,176,064 cached); 23,126 output | Unavailable; subscription usage only | `22d1240ff` | Converted recipe, ingredient, organizer, comment, share-token and timeline paths; updated AGENTS.md. | None. | Shared measurement recorded 3,269 passed and five sandbox socket failures; live PostgreSQL remained untested (`progress.csv`; `transcripts/s07-retry.md`). |
+| s08 / C7 removal | 2026-10-11–12 | 20.285 | 9,858,689 input (9,701,504 cached); 24,075 output | Unavailable; subscription usage only | `eac43d51a` | Removed remaining SQLAlchemy/Alembic imports under `mealie/`, added Aerich and ran static/schema/OpenAPI/backup checks; updated AGENTS.md. | None. The agent reported that Aerich could not be installed inside its sandbox; dependencies were installed outside the session for measurement. | The required full suite was not run by the agent. The first external run had 37 failures (`transcripts/s08.md`; `runs/s08/failures.txt`). |
+| s09 / C7 validation follow-up | 2026-10-12 | 0.900 | Not separately reported | Unavailable | `cf99f5eef` | Fixed recipe search and compatibility checks, then repeated validation. | None recorded. | Final measurement had 3,277 passed and 6 failed: five socket-permission failures plus one historical backup regression (`progress.csv`; `runs/s09/failures.txt`). Live PostgreSQL remained untested. |
 
 ## Problems to watch for
 
-Write down each one as soon as you see it, with the commit or transcript line:
+- **Premature completion risk:** C7 removed all SQLAlchemy imports, but s08 still had 37 failures and required a follow-up (`progress.csv`, s08–s09).
+- **Environment-specific failures:** five socket-binding tests repeatedly failed in the restricted environment. These are recorded as failures rather than silently removed.
+- **Test-integrity gate:** test functions increased from 1,158 to 1,237, assertions from 3,837 to 4,434, and skip markers stayed at 12. Existing tests were not deleted, but counts alone do not prove semantic coverage.
+- **Database parity:** all recorded runtime measurements used SQLite; live PostgreSQL was not tested.
+- **Context and staging:** AGENTS.md snapshots are preserved as `agents-s00.md`, `agents-s02.md` through `agents-s08.md`. They show the decisions carried between module stages.
 
-- Loss of context in long sessions (forgets earlier decisions, repeats work, re-reads files)
-- Hallucinated APIs (calls Tortoise methods or options that do not exist)
-- Tests deleted, skipped or weakened (also check the integrity columns in progress.csv)
-- Premature claims of completion (says done; measure.sh disagrees)
-- Drift from project conventions (naming, layering, style)
+## Protocol deviation
+
+The participant chose to skip Workflow B implementation and continue C on 2026-10-11. B's plan-only session is preserved in `../wf-b/`, but a full A/B/C comparison is not possible. This deviation is also recorded in `../workflow-decision-2026-10-11.md`.

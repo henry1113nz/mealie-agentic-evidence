@@ -1,0 +1,60 @@
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 1fe4bd37ccc8 -> 602927e1013e, 'add the rest of the schema.org nutrition properties'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 602927e1013e -> 86054b40fd06, added query_filter_string to cookbook and mealplan
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 86054b40fd06 -> 3897397b4631, 'Add summary to recipe instructions'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 3897397b4631 -> b1020f328e98, add recipe yield quantity
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade b1020f328e98 -> b9e516e2d3b3, add household to recipe last made, household to foods, and household to tools
+INFO     root:2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_.py:167 Running new model migration (migrate_recipe_last_made_to_household)
+INFO     root:2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_.py:167 Running new model migration (migrate_foods_on_hand_to_household)
+INFO     root:2024-11-20-17.30.41_b9e516e2d3b3_add_household_to_recipe_last_made_.py:167 Running new model migration (migrate_tools_on_hand_to_household)
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade b9e516e2d3b3 -> 7cf3054cbbcc, remove instructions index
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 7cf3054cbbcc -> d7b3ce6fa31a, empty migration to fix food flag data
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade d7b3ce6fa31a -> e6bb583aac2d, 'Add label notifier CRUD bools'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade e6bb583aac2d -> 1d9a002d7234, 'Add referenced_recipe to ingredients'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 1d9a002d7234 -> a39c7f1826e3, add unit standardization fields
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade a39c7f1826e3 -> cdc93edaf73d, 'Add mealplan updated and deleted to group notifier options'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade cdc93edaf73d -> 4395a04f7784, add announcements
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 4395a04f7784 -> c7427796f7b6, more aggresive normalization
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade c7427796f7b6 -> 2187537c52b8, add table for ai providers
+WARNING  root:settings.py:109 Secrets directory '/run/secrets' does not exist
+INFO     root:2026-05-18-16.27.05_2187537c52b8_add_table_for_ai_providers.py:114 Creating provider settings for group_id='42c4431a30cb4c91bd5c09555f1aff35'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 2187537c52b8 -> 69e942bab3aa, add tokens valid after column to users
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 69e942bab3aa -> b3f1c9a27d84, add external avatar hash to users
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade b3f1c9a27d84 -> f2191b69db2e, add ingredient substitutions
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade f2191b69db2e -> 4b91d3a7c0e2, backfill recipe image column from disk
+WARNING  root:2026-09-03-16.12.44_4b91d3a7c0e2_backfill_recipe_image_column.py:72 Skipping the clearing half of the recipe image backfill: 42 recipes reference an image but no image files were found under /Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-c/tests/.temp/gw3/recipes. If the recipe data volume was not mounted, nothing was cleared.
+INFO     root:2026-09-03-16.12.44_4b91d3a7c0e2_backfill_recipe_image_column.py:96 Recipe image backfill checked 42 recipes: 0 image references restored, 0 cleared
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 4b91d3a7c0e2 -> 3527efeeec34, 'add recipe_note_ref_link'
+INFO     alembic.runtime.migration:migration.py:611 Running upgrade 3527efeeec34 -> 27621d27c7e1, add structured recipe times
+INFO     root:2026-09-24-13.16.56_27621d27c7e1_add_structured_recipe_times.py:196 Converted 0 recipe times to structured durations and cleared 0 empty ones across 42 recipes
+INFO     init_db:legacy_backup_fixes.py:203 Checking for migration data fixes
+INFO     init_db:legacy_backup_fixes.py:203 Checking for migration data fixes
+INFO     root:backup_v2.py:94 initializing backup restore
+INFO     root:backup_v2.py:117 importing database tables
+INFO     root:backup_v2.py:94 initializing backup restore
+INFO     root:backup_v2.py:117 importing database tables
+INFO     root:backup_v2.py:120 database tables imported successfully
+INFO     root:backup_v2.py:122 restoring data directory
+INFO     root:backup_v2.py:89 invalidating appsettings cache
+WARNING  root:settings.py:109 Secrets directory '/run/secrets' does not exist
+INFO     root:backup_v2.py:124 data directory restored successfully
+INFO     root:backup_v2.py:125 backup restore complete
+=========================== short test summary info ============================
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:264: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:285: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:293: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:314: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:322: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:348: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:375: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:401: requires ldap service in github actions
+SKIPPED [1] tests/integration_tests/user_tests/test_user_login.py:427: requires ldap service in github actions
+SKIPPED [6] tests/unit_tests/test_recipe_parser.py:18: Long Running API Test - manually run when updating the parser
+SKIPPED [2] tests/utils/routes/test_mixins.py:12: psycopg2 is only installed with the pgsql extra
+SKIPPED [1] tests/integration_tests/user_recipe_tests/test_recipe_bulk_import.py:8: Long Running Scraper
+FAILED tests/unit_tests/pkgs/safehttp/test_transport.py::test_async_transport_pins_connection_to_validated_ip
+FAILED tests/unit_tests/pkgs/safehttp/test_transport.py::test_async_transport_falls_back_to_a_reachable_address[ips0]
+FAILED tests/unit_tests/pkgs/safehttp/test_transport.py::test_async_transport_falls_back_to_a_reachable_address[ips1]
+FAILED tests/unit_tests/pkgs/safehttp/test_transport.py::test_sync_post_blocks_loopback_by_default
+FAILED tests/unit_tests/pkgs/safehttp/test_transport.py::test_sync_post_allows_configured_host
+FAILED tests/unit_tests/services_tests/backup_v2_tests/test_backup_v2.py::test_database_restore_data
+6 failed, 3277 passed, 18 skipped in 50.26s

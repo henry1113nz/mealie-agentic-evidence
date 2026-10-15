@@ -1,0 +1,547 @@
+diff --git a/tests/unit_tests/test_tortoise_config.py b/tests/unit_tests/test_tortoise_config.py
+new file mode 100644
+index 000000000..6904bc137
+--- /dev/null
++++ b/tests/unit_tests/test_tortoise_config.py
+@@ -0,0 +1,85 @@
++from pathlib import Path
++
++import pytest
++
++from mealie.core.config import get_app_settings
++from mealie.core.settings.db_providers import PostgresProvider, SQLiteProvider
++from mealie.db.tortoise_config import get_tortoise_config
++
++
++@pytest.mark.parametrize(
++    ("testing", "wal", "expected_pragmas"),
++    [
++        (False, False, {}),
++        (False, True, {"journal_mode": "WAL"}),
++        (True, False, {"journal_mode": "MEMORY", "synchronous": "OFF"}),
++        (True, True, {"journal_mode": "WAL", "synchronous": "OFF"}),
++    ],
++)
++def test_sqlite_path_and_settings(tmp_path: Path, testing: bool, wal: bool, expected_pragmas: dict[str, str]) -> None:
++    provider = SQLiteProvider(data_dir=tmp_path / "spaces and #symbols", prefix="worker_")
++    settings = get_app_settings().model_copy(
++        update={"DB_PROVIDER": provider, "TESTING": testing, "SQLITE_MIGRATE_JOURNAL_WAL": wal}
++    )
++    config = get_tortoise_config(settings)
++    connection = config["connections"]["default"]
++
++    assert connection["engine"] == "mealie.db.tortoise_sqlite"
++    assert connection["credentials"] == {"file_path": str(provider.db_path.absolute()), **expected_pragmas}
++    assert config["use_tz"] is True
++    assert config["timezone"] == "UTC"
++
++
++def test_postgres_credentials_preserve_special_characters() -> None:
++    provider = PostgresProvider(
++        POSTGRES_USER="cook",
++        POSTGRES_PASSWORD="p@ss:/%?#[]",
++        POSTGRES_SERVER="db.example",
++        POSTGRES_PORT="5433",
++        POSTGRES_DB="recipes",
++        POSTGRES_URL_OVERRIDE=None,
++    )
++    settings = get_app_settings().model_copy(update={"DB_PROVIDER": provider})
++    connection = get_tortoise_config(settings)["connections"]["default"]
++
++    assert connection["engine"] == "mealie.db.tortoise_postgres"
++    assert connection["credentials"] == {
++        "host": "db.example",
++        "port": 5433,
++        "user": "cook",
++        "password": "p@ss:/%?#[]",
++        "database": "recipes",
++    }
++
++
++@pytest.mark.parametrize(
++    ("url", "expected"),
++    [
++        (
++            "postgresql://cook:p@ss:word@db.example:5433/recipes?sslmode=require&application_name=mealie",
++            "postgresql://cook:p%40ss%3Aword@db.example:5433/recipes?sslmode=require&application_name=mealie",
++        ),
++        ("postgresql:///recipes?host=/run/postgresql", "postgresql:///recipes?host=/run/postgresql"),
++        ("postgresql://cook@[::1]:5433/recipes", "postgresql://cook@[::1]:5433/recipes"),
++    ],
++)
++def test_postgres_override_preserves_socket_tls_and_ipv6(url: str, expected: str) -> None:
++    provider = PostgresProvider(POSTGRES_URL_OVERRIDE=url)
++    settings = get_app_settings().model_copy(update={"DB_PROVIDER": provider})
++
++    assert get_tortoise_config(settings)["connections"]["default"]["credentials"] == {"dsn": expected}
++
++
++def test_missing_provider_is_rejected() -> None:
++    settings = get_app_settings().model_copy(update={"DB_PROVIDER": None})
++    with pytest.raises(ValueError, match="SQLite or PostgreSQL"):
++        get_tortoise_config(settings)
++
++
++def test_config_has_no_domain_models_or_shared_mutable_state() -> None:
++    config = get_tortoise_config()
++    assert config["apps"] == {
++        "models": {"models": ["mealie.db.models._tortoise_base"], "default_connection": "default"}
++    }
++    config["apps"]["models"]["models"].append("unrelated.module")
++    assert get_tortoise_config()["apps"]["models"]["models"] == ["mealie.db.models._tortoise_base"]
+diff --git a/tests/unit_tests/test_tortoise_models.py b/tests/unit_tests/test_tortoise_models.py
+new file mode 100644
+index 000000000..e6e20a1cd
+--- /dev/null
++++ b/tests/unit_tests/test_tortoise_models.py
+@@ -0,0 +1,138 @@
++from collections.abc import AsyncGenerator
++from datetime import UTC, datetime, timedelta, timezone
++from types import SimpleNamespace
++from typing import cast
++from uuid import UUID, uuid4
++
++import pytest
++import pytest_asyncio
++from tortoise import Model, Tortoise, fields
++from tortoise.backends.base.client import BaseDBAsyncClient
++from tortoise.connection import get_connection
++from tortoise.context import TortoiseContext
++
++from mealie.db.models._model_base import SqlAlchemyBase
++from mealie.db.models._tortoise_base import TortoiseBase, UTCDateTimeField, UUIDField
++
++
++class FoundationRecord(TortoiseBase):
++    identifier = UUIDField(unique=True)
++    name = fields.CharField(max_length=100)
++    occurred_at = UTCDateTimeField(null=True)
++
++    class Meta:
++        table = "foundation_records"
++
++
++@pytest_asyncio.fixture
++async def foundation_connection() -> AsyncGenerator[BaseDBAsyncClient]:
++    async with TortoiseContext():
++        await Tortoise.init(db_url="sqlite://:memory:", modules={"models": [__name__]}, use_tz=True, timezone="UTC")
++        await Tortoise.generate_schemas()
++        yield get_connection("default")
++
++
++@pytest.mark.parametrize(
++    "value, expected",
++    [
++        ("Gluten-Free Bread", "gluten free bread"),
++        ("Mac & Cheese", "mac   cheese"),
++        ("Chicken/Rice Bowl", "chicken rice bowl"),
++        ("Rátàtôuile", "ratatouile"),
++        ('Mom\'s "Pasta"', 'mom\'s "pasta"'),
++        ("  " + "É" * 300, "e" * 255),
++    ],
++)
++def test_normalization_preserves_search_and_legacy_storage(value: str, expected: str) -> None:
++    assert TortoiseBase.normalize(value) == expected
++    assert TortoiseBase.normalize(value) == SqlAlchemyBase.normalize(value)
++
++
++@pytest.mark.asyncio
++async def test_automatic_timestamps_preserve_columns_and_alias(
++    foundation_connection: BaseDBAsyncClient, monkeypatch: pytest.MonkeyPatch
++) -> None:
++    created = datetime(2026, 1, 1, tzinfo=UTC)
++    updated = created + timedelta(days=1)
++    monkeypatch.setattr("tortoise.fields.data.timezone.now", lambda: created)
++    record = await FoundationRecord.create(identifier=uuid4(), name="first")
++
++    assert isinstance(record.id, int)
++    assert record.created_at == created
++    assert record.updated_at == created
++    monkeypatch.setattr("tortoise.fields.data.timezone.now", lambda: updated)
++    record.name = "second"
++    await record.save()
++
++    saved = await FoundationRecord.get(id=record.id)
++    assert saved.created_at == created
++    assert saved.update_at == updated
++    assert saved.updated_at == updated
++    saved.updated_at = created
++    assert saved.update_at == created
++
++    columns = await foundation_connection.execute_query_dict('PRAGMA table_info("foundation_records")')
++    assert {column["name"] for column in columns} == {
++        "id",
++        "created_at",
++        "update_at",
++        "identifier",
++        "name",
++        "occurred_at",
++    }
++    rows = await foundation_connection.execute_query_dict('SELECT "created_at", "update_at" FROM "foundation_records"')
++    assert datetime.fromisoformat(rows[0]["created_at"]).tzinfo is None
++    assert datetime.fromisoformat(rows[0]["update_at"]).tzinfo is None
++
++
++@pytest.mark.asyncio
++async def test_uuid_and_datetime_interoperate_with_legacy_sqlite_storage(
++    foundation_connection: BaseDBAsyncClient,
++) -> None:
++    identifier = uuid4()
++    offset_time = datetime(2026, 1, 2, 3, 4, 5, tzinfo=timezone(timedelta(hours=2)))
++    expected = offset_time.astimezone(UTC)
++    record = await FoundationRecord.create(identifier=identifier, name="async", occurred_at=offset_time)
++
++    rows = await foundation_connection.execute_query_dict(
++        'SELECT "identifier", "occurred_at" FROM "foundation_records" WHERE "id" = ?', [record.id]
++    )
++    assert rows[0]["identifier"] == identifier.hex
++    assert datetime.fromisoformat(rows[0]["occurred_at"]) == expected.replace(tzinfo=None)
++    assert await FoundationRecord.filter(identifier=identifier.hex).count() == 1
++    assert await FoundationRecord.filter(identifier=str(identifier)).count() == 1
++
++    legacy_identifier = uuid4()
++    await foundation_connection.execute_query(
++        'INSERT INTO "foundation_records" ("identifier", "name", "occurred_at") VALUES (?, ?, ?)',
++        [legacy_identifier.hex, "legacy", "2026-01-02 01:04:05.000000"],
++    )
++    legacy_record = await FoundationRecord.get(identifier=legacy_identifier)
++    assert legacy_record.identifier == legacy_identifier
++    assert legacy_record.occurred_at == expected
++    assert legacy_record.created_at is None
++    assert legacy_record.updated_at is None
++
++
++@pytest.mark.parametrize("dialect, expected_type", [("sqlite", "CHAR(32)"), ("postgres", "UUID")])
++def test_uuid_field_preserves_backend_representation(dialect: str, expected_type: str) -> None:
++    field = UUIDField(null=True)
++    model = cast(
++        Model, SimpleNamespace(_meta=SimpleNamespace(db=SimpleNamespace(capabilities=SimpleNamespace(dialect=dialect))))
++    )
++    identifier = UUID("193984d6-e8c2-429a-bb6c-19d4a6b728fc")
++    expected_value = identifier.hex if dialect == "sqlite" else str(identifier)
++
++    assert field.get_for_dialect(dialect, "SQL_TYPE") == expected_type
++    assert field.to_db_value(identifier, model) == expected_value
++    assert field.to_python_value(expected_value) == identifier
++    assert field.to_db_value(None, model) is None
++    assert field.to_python_value(None) is None
++
++
++def test_postgres_timestamp_type_preserves_naive_storage() -> None:
++    field = UTCDateTimeField(null=True)
++    timestamp = datetime(2026, 1, 2, 3, tzinfo=timezone(timedelta(hours=2)))
++    assert field.get_for_dialect("postgres", "SQL_TYPE") == "TIMESTAMP"
++    assert field.to_db_value(timestamp, FoundationRecord) == datetime(2026, 1, 2, 1, tzinfo=UTC).replace(tzinfo=None)
++    assert field.to_python_value(None) is None
+diff --git a/tests/unit_tests/test_tortoise_postgres.py b/tests/unit_tests/test_tortoise_postgres.py
+new file mode 100644
+index 000000000..f02ad7664
+--- /dev/null
++++ b/tests/unit_tests/test_tortoise_postgres.py
+@@ -0,0 +1,155 @@
++import inspect
++import ssl
++from pathlib import Path
++from typing import Any
++from unittest.mock import AsyncMock
++
++import asyncpg
++import pytest
++from asyncpg import connect_utils
++
++from mealie.db.tortoise_postgres import MealieAsyncpgClient
++
++
++@pytest.mark.asyncio
++async def test_postgres_explicit_credentials_are_preserved(monkeypatch: pytest.MonkeyPatch) -> None:
++    create_pool = AsyncMock()
++    monkeypatch.setattr(asyncpg, "create_pool", create_pool)
++    client = MealieAsyncpgClient(
++        connection_name="default",
++        host="db.example",
++        port=5433,
++        user="cook",
++        password="p@ss:/%?#[]",
++        database="recipes",
++    )
++
++    await client.create_connection(with_db=True)
++
++    assert client._pool is create_pool.return_value
++    assert create_pool.call_args.args == (None,)
++    assert {name: create_pool.call_args.kwargs[name] for name in ("host", "port", "user", "password", "database")} == {
++        "host": "db.example",
++        "port": 5433,
++        "user": "cook",
++        "password": "p@ss:/%?#[]",
++        "database": "recipes",
++    }
++
++
++@pytest.mark.asyncio
++@pytest.mark.parametrize(
++    ("dsn", "addresses", "password", "tls_mode", "server_settings"),
++    [
++        (
++            "postgresql://cook:p%40ss%3A%2F%25%3F%23%5B%5D@db.example:5433/recipes"
++            "?sslmode=disable&application_name=Mealie%20test",
++            [("db.example", 5433)],
++            "p@ss:/%?#[]",
++            connect_utils.SSLMode.disable,
++            {"application_name": "Mealie test"},
++        ),
++        (
++            "postgresql://cook:secret@/recipes?host=%2Frun%2Fpostgresql&port=5437&sslmode=disable",
++            ["/run/postgresql/.s.PGSQL.5437"],
++            "secret",
++            connect_utils.SSLMode.disable,
++            {},
++        ),
++        (
++            "postgresql://cook:secret@[::1]:5433/recipes?sslmode=disable",
++            [("::1", 5433)],
++            "secret",
++            connect_utils.SSLMode.disable,
++            {},
++        ),
++        (
++            "postgresql://cook:secret@db.example:5433/recipes?sslmode=require",
++            [("db.example", 5433)],
++            "secret",
++            connect_utils.SSLMode.require,
++            {},
++        ),
++    ],
++)
++async def test_postgres_dsn_reaches_asyncpg_without_default_overrides(
++    monkeypatch: pytest.MonkeyPatch,
++    tmp_path: Path,
++    dsn: str,
++    addresses: list[tuple[str, int] | str],
++    password: str,
++    tls_mode: connect_utils.SSLMode,
++    server_settings: dict[str, str],
++) -> None:
++    create_pool = AsyncMock()
++    monkeypatch.setattr(asyncpg, "create_pool", create_pool)
++    # Keep the parser check independent of developer TLS files and settings.
++    monkeypatch.setattr(connect_utils, "_dot_postgresql_path", lambda name: tmp_path / name)
++    for name in ("PGSSLROOTCERT", "PGSSLCERT", "PGSSLKEY", "PGSSLCRL"):
++        monkeypatch.delenv(name, raising=False)
++    client = MealieAsyncpgClient(connection_name="default", dsn=dsn, minsize=2, maxsize=7)
++
++    await client.create_connection(with_db=True)
++    await client.create_connection(with_db=True)
++
++    assert create_pool.await_count == 2
++    assert all(call.args == (dsn,) for call in create_pool.call_args_list)
++    assert create_pool.call_args.args == (dsn,)
++    kwargs = create_pool.call_args.kwargs
++    assert not {"dsn", "host", "port", "user", "password", "database"}.intersection(kwargs)
++    assert kwargs["min_size"] == 2
++    assert kwargs["max_size"] == 7
++    assert client._pool is create_pool.return_value
++    assert "dsn" not in client.extra
++    assert "dsn" not in client._template
++    assert "password" not in client._template
++    assert dsn not in repr(client._template)
++
++    # Exercise the driver's own URI parser without opening a socket. Parameters
++    # added by newer asyncpg versions receive their ordinary None defaults.
++    parser = connect_utils._parse_connect_dsn_and_args
++    parser_kwargs: dict[str, Any] = dict.fromkeys(inspect.signature(parser).parameters)
++    parser_kwargs.update({name: value for name, value in kwargs.items() if name in parser_kwargs})
++    parsed_addresses, parameters = parser(
++        dsn=dsn, **{name: value for name, value in parser_kwargs.items() if name != "dsn"}
++    )
++    assert parsed_addresses == addresses
++    assert parameters.user == "cook"
++    assert parameters.password == password
++    assert parameters.database == "recipes"
++    assert parameters.sslmode == tls_mode
++    assert parameters.server_settings == server_settings
++    if tls_mode == connect_utils.SSLMode.require:
++        assert isinstance(parameters.ssl, ssl.SSLContext)
++
++
++@pytest.mark.asyncio
++@pytest.mark.parametrize(("value", "timeout"), [("10", 10), ("0", None), ("-1", None), ("", None)])
++async def test_postgres_connect_timeout_is_a_client_option(
++    monkeypatch: pytest.MonkeyPatch, value: str, timeout: int | None
++) -> None:
++    create_pool = AsyncMock()
++    monkeypatch.setattr(asyncpg, "create_pool", create_pool)
++    client = MealieAsyncpgClient(
++        connection_name="default",
++        dsn=f"postgresql://cook:secret@db.example:5433/recipes?sslmode=require&connect_timeout={value}",
++    )
++
++    await client.create_connection(with_db=True)
++
++    assert create_pool.call_args.args == ("postgresql://cook:secret@db.example:5433/recipes?sslmode=require",)
++    assert create_pool.call_args.kwargs["timeout"] == timeout
++
++
++@pytest.mark.asyncio
++async def test_postgres_invalid_connect_timeout_fails_before_connecting(monkeypatch: pytest.MonkeyPatch) -> None:
++    create_pool = AsyncMock()
++    monkeypatch.setattr(asyncpg, "create_pool", create_pool)
++    client = MealieAsyncpgClient(
++        connection_name="default", dsn="postgresql://cook:secret@db.example/recipes?connect_timeout=invalid"
++    )
++
++    with pytest.raises(ValueError):
++        await client.create_connection(with_db=True)
++
++    create_pool.assert_not_called()
+diff --git a/tests/unit_tests/test_tortoise_setup.py b/tests/unit_tests/test_tortoise_setup.py
+new file mode 100644
+index 000000000..497882ec0
+--- /dev/null
++++ b/tests/unit_tests/test_tortoise_setup.py
+@@ -0,0 +1,145 @@
++import asyncio
++import sqlite3
++from pathlib import Path
++from typing import Any
++
++import pytest
++from tortoise.connection import get_connection
++from tortoise.context import get_current_context
++from tortoise.transactions import in_transaction
++
++from mealie.core.config import get_app_settings
++from mealie.core.settings.db_providers import SQLiteProvider
++from mealie.db.tortoise_config import get_tortoise_config
++from mealie.db.tortoise_setup import database_context
++
++
++@pytest.fixture
++def database_config(tmp_path: Path) -> dict[str, Any]:
++    settings = get_app_settings().model_copy(
++        update={
++            "DB_PROVIDER": SQLiteProvider(data_dir=tmp_path),
++            "TESTING": False,
++            "SQLITE_MIGRATE_JOURNAL_WAL": False,
++        }
++    )
++    return get_tortoise_config(settings)
++
++
++@pytest.mark.asyncio
++async def test_context_closes_connections_without_creating_tables(database_config: dict[str, Any]) -> None:
++    previous_context = get_current_context()
++    async with database_context(database_config) as context:
++        client = context.db()
++        assert get_current_context() is context
++        assert await client.execute_query_dict("SELECT name FROM sqlite_master WHERE type='table'") == []
++    assert client._connection is None
++    assert get_current_context() is previous_context
++
++
++@pytest.mark.asyncio
++async def test_context_closes_connections_after_error(database_config: dict[str, Any]) -> None:
++    previous_context = get_current_context()
++    with pytest.raises(RuntimeError, match="work failed"):
++        async with database_context(database_config) as context:
++            client = context.db()
++            raise RuntimeError("work failed")
++    assert client._connection is None
++    assert get_current_context() is previous_context
++
++
++@pytest.mark.asyncio
++async def test_context_cleans_up_when_connection_fails(database_config: dict[str, Any], tmp_path: Path) -> None:
++    database_config["connections"]["default"]["credentials"]["file_path"] = str(tmp_path / "missing" / "db.sqlite")
++    previous_context = get_current_context()
++    with pytest.raises(sqlite3.OperationalError, match="unable to open database"):
++        async with database_context(database_config, global_fallback=True):
++            pytest.fail("An unavailable database must fail during startup")
++    assert get_current_context() is previous_context
++
++
++@pytest.mark.asyncio
++@pytest.mark.parametrize("initial_mode", ["delete", "wal"])
++async def test_disabled_wal_setting_preserves_existing_journal_mode(
++    database_config: dict[str, Any], initial_mode: str
++) -> None:
++    db_path = database_config["connections"]["default"]["credentials"]["file_path"]
++    with sqlite3.connect(db_path) as connection:
++        connection.execute(f"PRAGMA journal_mode={initial_mode}")
++    connection.close()
++
++    async with database_context(database_config) as context:
++        assert await context.db().execute_query_dict("PRAGMA journal_mode") == [{"journal_mode": initial_mode}]
++
++
++@pytest.mark.asyncio
++@pytest.mark.parametrize("wal", [False, True])
++async def test_testing_pragmas_and_foreign_keys_are_applied(tmp_path: Path, wal: bool) -> None:
++    settings = get_app_settings().model_copy(
++        update={
++            "DB_PROVIDER": SQLiteProvider(data_dir=tmp_path),
++            "TESTING": True,
++            "SQLITE_MIGRATE_JOURNAL_WAL": wal,
++        }
++    )
++    async with database_context(get_tortoise_config(settings)) as context:
++        assert await context.db().execute_query_dict("PRAGMA journal_mode") == [
++            {"journal_mode": "wal" if wal else "memory"}
++        ]
++        assert await context.db().execute_query_dict("PRAGMA synchronous") == [{"synchronous": 0}]
++        assert await context.db().execute_query_dict("PRAGMA foreign_keys") == [{"foreign_keys": 1}]
++
++
++@pytest.mark.asyncio
++async def test_transactions_commit_and_rollback(database_config: dict[str, Any]) -> None:
++    async with database_context(database_config) as context:
++        await context.db().execute_script("CREATE TABLE foundation_transaction (value INTEGER NOT NULL)")
++        async with in_transaction("default") as transaction:
++            await transaction.execute_query("INSERT INTO foundation_transaction VALUES (?)", [1])
++        with pytest.raises(RuntimeError, match="rollback"):
++            async with in_transaction("default") as transaction:
++                await transaction.execute_query("INSERT INTO foundation_transaction VALUES (?)", [2])
++                raise RuntimeError("rollback")
++        assert await context.db().execute_query_dict("SELECT value FROM foundation_transaction") == [{"value": 1}]
++
++
++@pytest.mark.asyncio
++async def test_lifespan_context_is_available_to_sibling_request_tasks(database_config: dict[str, Any]) -> None:
++    ready = asyncio.Event()
++
++    async def request() -> list[dict[str, Any]]:
++        await ready.wait()
++        return await get_connection("default").execute_query_dict("SELECT 1 AS value")
++
++    # Start before entering the context, like ASGI's sibling request/lifespan tasks.
++    async with asyncio.TaskGroup() as tasks:
++        task = tasks.create_task(request())
++        async with database_context(database_config, global_fallback=True):
++            ready.set()
++            assert await task == [{"value": 1}]
++    assert get_current_context() is None
++
++
++@pytest.mark.asyncio
++async def test_app_closes_database_when_scheduler_startup_fails(
++    database_config: dict[str, Any], monkeypatch: pytest.MonkeyPatch
++) -> None:
++    import mealie.app as application
++    import mealie.db.init_db as legacy_init
++    import mealie.db.tortoise_setup as setup
++
++    clients = []
++
++    async def fail_scheduler() -> None:
++        clients.append(get_connection("default"))
++        raise RuntimeError("scheduler startup failed")
++
++    monkeypatch.setattr(legacy_init, "main", lambda: None)
++    monkeypatch.setattr(setup, "get_tortoise_config", lambda: database_config)
++    monkeypatch.setattr(application, "start_scheduler", fail_scheduler)
++    with pytest.raises(RuntimeError, match="scheduler startup failed"):
++        async with application.lifespan_fn(application.app):
++            pytest.fail("A failed scheduler must fail application startup")
++    assert len(clients) == 1
++    assert clients[0]._connection is None
++    assert get_current_context() is None

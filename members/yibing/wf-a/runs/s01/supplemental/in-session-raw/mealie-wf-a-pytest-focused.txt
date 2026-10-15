@@ -1,0 +1,7 @@
+bringing up nodes...
+bringing up nodes...
+
+........................................................................ [ 55%]
+..........................................................               [100%][WARNING|settings|L109] 2026-10-05T14:32:58: Secrets directory '/run/secrets' does not exist
+
+130 passed in 13.71s

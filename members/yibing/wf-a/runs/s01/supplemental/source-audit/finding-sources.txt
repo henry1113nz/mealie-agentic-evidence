@@ -1,0 +1,70 @@
+Read-only source excerpts collected after Workflow A; no project imports or tests.
+
+tests/unit_tests/repository_tests/test_search.py (file SHA256 b8267a4b57b1bd135976564da053954f22dfd8897156cbbcde9cc6e5359d872f)
+ 110: 
+ 111: def test_fuzzy_search(
+ 112:     unique_db: AllRepositories,
+ 113:     search_units: list[IngredientUnit],  # required so database is populated
+ 114: ):
+ 115:     # this only works on postgres
+ 116:     if unique_db.session.capabilities.dialect != "postgresql":
+ 117:         return
+ 118: 
+ 119:     repo = unique_db.ingredient_units
+ 120:     pagination = PaginationQuery(page=1, per_page=-1, order_by="created_at", order_direction=OrderDirection.asc)
+ 121:     results = run_db(repo.page_all(pagination, search="tabel spoone")).items
+ 122: 
+ 123:     assert results and results[0].name == "Table Spoon"
+ 124: 
+
+tests/unit_tests/repository_tests/test_recipe_repository.py (file SHA256 4970f792ebd2f4164183193a67a761bf796b4ec5d7e8a1a4a2ffb86d651608b3)
+ 565: 
+ 566: def test_fuzzy_recipe_search(
+ 567:     unique_db: AllRepositories,
+ 568:     search_recipes: list[Recipe],  # required so database is populated
+ 569: ):
+ 570:     # this only works on postgres
+ 571:     if unique_db.session.capabilities.dialect != "postgresql":
+ 572:         return
+ 573: 
+ 574:     repo = unique_db.recipes
+ 575:     pagination = PaginationQuery(page=1, per_page=-1, order_by="created_at", order_direction=OrderDirection.asc)
+ 576:     results = run_db(repo.page_all(pagination, search="Steinbuck")).items
+ 577: 
+ 578:     assert results and results[0].name == "Steinbock Sloop"
+ 579: 
+
+mealie/schema/response/query_search.py (file SHA256 9f55bb1a9d3bdcb817c36e1554439825a8c2bf1aba338ebbccd59f610e719748)
+  55:         return [x.strip() for x in search_list]
+  56: 
+  57:     def __init__(self, session: BaseDBAsyncClient, search: str, normalize_characters: bool = False) -> None:
+  58:         if session.capabilities.dialect != "postgres" or self.quoted_regex.search(search.strip()):
+  59:             self.search_type = SearchType.tokenized
+  60:         else:
+  61:             self.search_type = SearchType.fuzzy
+  62: 
+  63:         self.session = session
+  64:         self.search = self._normalize_search(search, normalize_characters)
+
+.venv/lib/python3.14/site-packages/tortoise/backends/base_postgres/client.py (file SHA256 892f03d7aedd2aa9dd05f86c822406998428a8843e1fdf31e3f1e77be0818793)
+  42: class BasePostgresClient(BaseDBAsyncClient, abc.ABC):
+  43:     DSN_TEMPLATE = "postgres://{user}:{password}@{host}:{port}/{database}"
+  44:     query_class: type[PostgreSQLQuery] = PostgreSQLQuery
+  45:     executor_class: type[BasePostgresExecutor] = BasePostgresExecutor
+  46:     schema_generator: type[BasePostgresSchemaGenerator] = BasePostgresSchemaGenerator
+  47:     capabilities = Capabilities(
+  48:         "postgres",
+  49:         support_update_limit_order_by=False,
+  50:         support_for_posix_regex_queries=True,
+  51:         support_for_no_key_update=True,
+  52:         support_json_attributes=True,
+  53:     )
+  54:     connection_class: AsyncConnection | Connection | None = None
+
+.venv/lib/python3.14/site-packages/tortoise/backends/asyncpg/client.py (file SHA256 b18c55c1cfa4e15b9514ef49af1bd00b530ccd4eb5b330575a7e604fcffba3ad)
+  31: F = TypeVar("F", bound=FuncType)
+  32: 
+  33: 
+  34: class AsyncpgDBClient(BasePostgresClient):
+  35:     executor_class = AsyncpgExecutor
+

@@ -1,0 +1,21 @@
+{
+  "argv": [
+    "uv",
+    "run",
+    "pytest",
+    "-n",
+    "4",
+    "--dist",
+    "loadfile",
+    "-p",
+    "no:cacheprovider",
+    "--junitxml=/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/evidence/members/yibing/wf-a/runs/s01/junit.xml"
+  ],
+  "timeout_seconds": 2700.0,
+  "started_at_utc": "2026-10-05T02:37:39.619774+00:00",
+  "timed_out": false,
+  "termination_grace_seconds": 10,
+  "child_returncode": 0,
+  "elapsed_seconds": 107.9414628339,
+  "exit_code": 0
+}

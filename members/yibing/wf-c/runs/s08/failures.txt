@@ -1,0 +1,37 @@
+FAILED tests/unit_tests/test_structured_recipe_times_migration.py::test_parse_seconds[1 hour 30 minutes-5400]
+FAILED tests/unit_tests/test_structured_recipe_times_migration.py::test_parse_seconds[1 Hour-3600]
+FAILED tests/unit_tests/test_structured_recipe_times_migration.py::test_parse_seconds[2 days 4 hours-187200]
+FAILED tests/unit_tests/test_structured_recipe_times_migration.py::test_parse_seconds[45 seconds-45]
+FAILED tests/unit_tests/test_structured_recipe_times_migration.py::test_parse_seconds[1 Stunde 30 Minuten-5400]
+FAILED tests/unit_tests/test_structured_recipe_times_migration.py::test_parse_seconds[2 heures 15 minutes-8100]
+FAILED tests/unit_tests/test_structured_recipe_times_migration.py::test_parse_seconds[1 \u6642\u9593 30 \u5206-5400]
+FAILED tests/unit_tests/test_structured_recipe_times_migration.py::test_parse_seconds[1\u6642\u959330\u5206-5400]
+FAILED tests/unit_tests/test_structured_recipe_times_migration.py::test_parse_seconds[1.5 hours-5400]
+FAILED tests/unit_tests/test_structured_recipe_times_migration.py::test_parse_seconds[  20 minutes  -1200]
+FAILED tests/unit_tests/test_structured_recipe_times_migration.py::test_parse_seconds_leaves_text_alone[30 minutes, plus overnight]
+FAILED tests/unit_tests/test_structured_recipe_times_migration.py::test_parse_seconds_leaves_text_alone[1 hour and 30 minutes]
+FAILED tests/unit_tests/test_structured_recipe_times_migration.py::test_parse_seconds_leaves_text_alone[1 hour, 30 minutes]
+FAILED tests/unit_tests/test_structured_recipe_times_migration.py::test_parse_seconds_leaves_text_alone[30 minutes 1 hour]
+FAILED tests/unit_tests/test_structured_recipe_times_migration.py::test_parse_seconds_leaves_text_alone[10 minutes 5 minutes]
+FAILED tests/unit_tests/test_structured_recipe_times_migration.py::test_parse_seconds_leaves_text_alone[30 mins]
+FAILED tests/unit_tests/test_structured_recipe_times_migration.py::test_parse_seconds_leaves_text_alone[1 hr]
+FAILED tests/unit_tests/test_structured_recipe_times_migration.py::test_parse_seconds_leaves_text_alone[0 minutes]
+FAILED tests/unit_tests/pkgs/safehttp/test_transport.py::test_async_transport_pins_connection_to_validated_ip
+FAILED tests/unit_tests/pkgs/safehttp/test_transport.py::test_async_transport_falls_back_to_a_reachable_address[ips0]
+FAILED tests/unit_tests/pkgs/safehttp/test_transport.py::test_async_transport_falls_back_to_a_reachable_address[ips1]
+FAILED tests/unit_tests/pkgs/safehttp/test_transport.py::test_sync_post_blocks_loopback_by_default
+FAILED tests/unit_tests/pkgs/safehttp/test_transport.py::test_sync_post_allows_configured_host
+FAILED tests/unit_tests/repository_tests/test_recipe_repository.py::test_basic_recipe_search[no_match]
+FAILED tests/unit_tests/repository_tests/test_recipe_repository.py::test_basic_recipe_search[search_by_title]
+FAILED tests/unit_tests/repository_tests/test_recipe_repository.py::test_basic_recipe_search[search_by_description]
+FAILED tests/unit_tests/repository_tests/test_recipe_repository.py::test_basic_recipe_search[search_by_ingredient]
+FAILED tests/unit_tests/repository_tests/test_recipe_repository.py::test_basic_recipe_search[literal_search]
+FAILED tests/unit_tests/repository_tests/test_recipe_repository.py::test_basic_recipe_search[special_character_removal]
+FAILED tests/unit_tests/repository_tests/test_recipe_repository.py::test_basic_recipe_search[normalization]
+FAILED tests/unit_tests/repository_tests/test_recipe_repository.py::test_basic_recipe_search[token_separation]
+FAILED tests/unit_tests/repository_tests/test_recipe_repository.py::test_random_order_recipe_search
+FAILED tests/unit_tests/core/test_dependencies.py::test_validate_long_live_token_commits_after_successful_lookup
+FAILED tests/unit_tests/core/test_dependencies.py::test_validate_long_live_token_rolls_back_after_failed_lookup
+FAILED tests/unit_tests/test_tortoise_users.py::test_user_models_are_registered_with_the_default_connection
+FAILED tests/unit_tests/repository_tests/test_recipe_native_persistence.py::test_recipe_random_search_keeps_exact_name_priority
+FAILED tests/unit_tests/services_tests/backup_v2_tests/test_backup_v2.py::test_database_restore_data

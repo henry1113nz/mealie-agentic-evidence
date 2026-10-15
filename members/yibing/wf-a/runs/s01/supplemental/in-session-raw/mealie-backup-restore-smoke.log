@@ -1,0 +1,83 @@
+[WARNING|settings|L109] 2026-10-05T14:36:43: Secrets directory '/run/secrets' does not exist
+[INFO|backup_v2|L97] 2026-10-05T14:36:43: initializing backup restore
+[INFO|backup_v2|L125] 2026-10-05T14:36:43: importing database tables
+[INFO|backup_v2|L128] 2026-10-05T14:36:43: database tables imported successfully
+[INFO|backup_v2|L130] 2026-10-05T14:36:43: restoring data directory
+[INFO|backup_v2|L92] 2026-10-05T14:36:43: invalidating appsettings cache
+[WARNING|settings|L109] 2026-10-05T14:36:43: Secrets directory '/run/secrets' does not exist
+[INFO|backup_v2|L132] 2026-10-05T14:36:43: data directory restored successfully
+[INFO|backup_v2|L133] 2026-10-05T14:36:43: backup restore complete
+[INFO|backup_v2|L97] 2026-10-05T14:36:43: initializing backup restore
+[INFO|backup_v2|L125] 2026-10-05T14:36:43: importing database tables
+[INFO|backup_v2|L128] 2026-10-05T14:36:44: database tables imported successfully
+[INFO|backup_v2|L130] 2026-10-05T14:36:44: restoring data directory
+[INFO|backup_v2|L92] 2026-10-05T14:36:44: invalidating appsettings cache
+[WARNING|settings|L109] 2026-10-05T14:36:44: Secrets directory '/run/secrets' does not exist
+[INFO|backup_v2|L132] 2026-10-05T14:36:44: data directory restored successfully
+[INFO|backup_v2|L133] 2026-10-05T14:36:44: backup restore complete
+[INFO|backup_v2|L97] 2026-10-05T14:36:45: initializing backup restore
+[INFO|backup_v2|L125] 2026-10-05T14:36:45: importing database tables
+[INFO|backup_v2|L128] 2026-10-05T14:36:45: database tables imported successfully
+[INFO|backup_v2|L130] 2026-10-05T14:36:45: restoring data directory
+[INFO|backup_v2|L92] 2026-10-05T14:36:45: invalidating appsettings cache
+[WARNING|settings|L109] 2026-10-05T14:36:45: Secrets directory '/run/secrets' does not exist
+[INFO|backup_v2|L132] 2026-10-05T14:36:45: data directory restored successfully
+[INFO|backup_v2|L133] 2026-10-05T14:36:45: backup restore complete
+[INFO|backup_v2|L97] 2026-10-05T14:36:45: initializing backup restore
+[INFO|backup_v2|L125] 2026-10-05T14:36:45: importing database tables
+[INFO|backup_v2|L128] 2026-10-05T14:36:45: database tables imported successfully
+[INFO|backup_v2|L130] 2026-10-05T14:36:45: restoring data directory
+[INFO|backup_v2|L92] 2026-10-05T14:36:45: invalidating appsettings cache
+[WARNING|settings|L109] 2026-10-05T14:36:45: Secrets directory '/run/secrets' does not exist
+[INFO|backup_v2|L132] 2026-10-05T14:36:45: data directory restored successfully
+[INFO|backup_v2|L133] 2026-10-05T14:36:45: backup restore complete
+[INFO|backup_v2|L97] 2026-10-05T14:36:45: initializing backup restore
+[INFO|backup_v2|L125] 2026-10-05T14:36:45: importing database tables
+[INFO|backup_v2|L128] 2026-10-05T14:36:45: database tables imported successfully
+[INFO|backup_v2|L130] 2026-10-05T14:36:45: restoring data directory
+[INFO|backup_v2|L92] 2026-10-05T14:36:45: invalidating appsettings cache
+[WARNING|settings|L109] 2026-10-05T14:36:45: Secrets directory '/run/secrets' does not exist
+[INFO|backup_v2|L132] 2026-10-05T14:36:45: data directory restored successfully
+[INFO|backup_v2|L133] 2026-10-05T14:36:45: backup restore complete
+[INFO|backup_v2|L97] 2026-10-05T14:36:45: initializing backup restore
+[INFO|backup_v2|L125] 2026-10-05T14:36:45: importing database tables
+[INFO|backup_v2|L128] 2026-10-05T14:36:46: database tables imported successfully
+[INFO|backup_v2|L130] 2026-10-05T14:36:46: restoring data directory
+[INFO|backup_v2|L92] 2026-10-05T14:36:46: invalidating appsettings cache
+[WARNING|settings|L109] 2026-10-05T14:36:46: Secrets directory '/run/secrets' does not exist
+[INFO|backup_v2|L132] 2026-10-05T14:36:46: data directory restored successfully
+[INFO|backup_v2|L133] 2026-10-05T14:36:46: backup restore complete
+[INFO|backup_v2|L97] 2026-10-05T14:36:46: initializing backup restore
+[INFO|backup_v2|L125] 2026-10-05T14:36:46: importing database tables
+[INFO|backup_v2|L128] 2026-10-05T14:36:47: database tables imported successfully
+[INFO|backup_v2|L130] 2026-10-05T14:36:47: restoring data directory
+[INFO|backup_v2|L92] 2026-10-05T14:36:47: invalidating appsettings cache
+[WARNING|settings|L109] 2026-10-05T14:36:47: Secrets directory '/run/secrets' does not exist
+[INFO|backup_v2|L132] 2026-10-05T14:36:47: data directory restored successfully
+[INFO|backup_v2|L133] 2026-10-05T14:36:47: backup restore complete
+[INFO|backup_v2|L97] 2026-10-05T14:36:47: initializing backup restore
+[INFO|backup_v2|L125] 2026-10-05T14:36:47: importing database tables
+[INFO|backup_v2|L128] 2026-10-05T14:36:47: database tables imported successfully
+[INFO|backup_v2|L130] 2026-10-05T14:36:47: restoring data directory
+[INFO|backup_v2|L92] 2026-10-05T14:36:47: invalidating appsettings cache
+[WARNING|settings|L109] 2026-10-05T14:36:47: Secrets directory '/run/secrets' does not exist
+[INFO|backup_v2|L132] 2026-10-05T14:36:47: data directory restored successfully
+[INFO|backup_v2|L133] 2026-10-05T14:36:47: backup restore complete
+[INFO|backup_v2|L97] 2026-10-05T14:36:47: initializing backup restore
+[INFO|backup_v2|L125] 2026-10-05T14:36:47: importing database tables
+[INFO|backup_v2|L128] 2026-10-05T14:36:47: database tables imported successfully
+[INFO|backup_v2|L130] 2026-10-05T14:36:47: restoring data directory
+[INFO|backup_v2|L92] 2026-10-05T14:36:47: invalidating appsettings cache
+[WARNING|settings|L109] 2026-10-05T14:36:47: Secrets directory '/run/secrets' does not exist
+[INFO|backup_v2|L132] 2026-10-05T14:36:47: data directory restored successfully
+[INFO|backup_v2|L133] 2026-10-05T14:36:47: backup restore complete
+[INFO|backup_v2|L97] 2026-10-05T14:36:48: initializing backup restore
+[INFO|backup_v2|L125] 2026-10-05T14:36:48: importing database tables
+[INFO|backup_v2|L128] 2026-10-05T14:36:48: database tables imported successfully
+[INFO|backup_v2|L130] 2026-10-05T14:36:48: restoring data directory
+[INFO|backup_v2|L92] 2026-10-05T14:36:48: invalidating appsettings cache
+[WARNING|settings|L109] 2026-10-05T14:36:48: Secrets directory '/run/secrets' does not exist
+[INFO|backup_v2|L132] 2026-10-05T14:36:48: data directory restored successfully
+[INFO|backup_v2|L133] 2026-10-05T14:36:48: backup restore complete
+PASS all nine legacy fixture restores and unchanged migration-data assertions
+[INFO|__init__|L570] 2026-10-05T14:36:48: Tortoise-ORM shutdown

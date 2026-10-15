@@ -1,0 +1,5 @@
+session,wall_minutes,assistant_messages,input_tokens,cache_write_tokens,cache_read_tokens,output_tokens
+s01,9,33,66,48009,13601975,33365
+s02,14,30,60,47122,13708246,29391
+s03,10,28,56,43657,14070234,30186
+s04,7,24,48,43033,13173012,28664

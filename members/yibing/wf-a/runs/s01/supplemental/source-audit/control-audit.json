@@ -1,0 +1,241 @@
+{
+  "guard_changes": [
+    {
+      "file": "tests/unit_tests/repository_tests/test_recipe_repository.py",
+      "function": "test_fuzzy_recipe_search",
+      "line": 566,
+      "baseline": [
+        "unique_db.session.get_bind().name != 'postgresql'"
+      ],
+      "current": [
+        "unique_db.session.capabilities.dialect != 'postgresql'"
+      ]
+    },
+    {
+      "file": "tests/unit_tests/repository_tests/test_search.py",
+      "function": "test_fuzzy_search",
+      "line": 111,
+      "baseline": [
+        "unique_db.session.get_bind().name != 'postgresql'"
+      ],
+      "current": [
+        "unique_db.session.capabilities.dialect != 'postgresql'"
+      ]
+    }
+  ],
+  "constant_changes": [
+    {
+      "file": "tests/integration_tests/user_recipe_tests/test_recipe_crud.py",
+      "function": "test_get_recipe_ingredient_missing_reference_id",
+      "line": 2046,
+      "removed": {},
+      "added": {
+        "0": 1,
+        "'recipe_ingredient'": 1
+      }
+    },
+    {
+      "file": "tests/unit_tests/core/test_dependencies.py",
+      "function": "test_validate_long_live_token_commits_after_successful_lookup",
+      "line": 88,
+      "removed": {},
+      "added": {
+        "'mealie.core.dependencies.dependencies.in_transaction'": 1
+      }
+    },
+    {
+      "file": "tests/unit_tests/core/test_dependencies.py",
+      "function": "test_validate_long_live_token_rolls_back_after_failed_lookup",
+      "line": 108,
+      "removed": {},
+      "added": {
+        "'mealie.core.dependencies.dependencies.in_transaction'": 1
+      }
+    },
+    {
+      "file": "tests/unit_tests/repository_tests/test_query_filter_builder.py",
+      "function": "test_filter_query_by_food_label_joins_through_ingredients",
+      "line": 171,
+      "removed": {
+        "'literal_binds'": 1
+      },
+      "added": {
+        "'id'": 1,
+        "'='": 1,
+        "' = '": 1,
+        "'\"'": 1,
+        "''": 1
+      }
+    },
+    {
+      "file": "tests/unit_tests/repository_tests/test_query_filter_builder.py",
+      "function": "test_filter_query_excluding_food_label_excludes_the_whole_recipe",
+      "line": 187,
+      "removed": {
+        "'literal_binds'": 1
+      },
+      "added": {
+        "'id'": 1,
+        "'='": 1,
+        "' = '": 1,
+        "'\"'": 1,
+        "''": 1
+      }
+    },
+    {
+      "file": "tests/unit_tests/repository_tests/test_search.py",
+      "function": "test_search_normalize_symmetric_with_store_normalize",
+      "line": 169,
+      "removed": {
+        "\"SearchFilter._normalize_search and SqlAlchemyBase.normalize must produce the same\\n    output for the same input, otherwise stored values and search queries won't match.\"": 1
+      },
+      "added": {
+        "\"SearchFilter._normalize_search and TortoiseModel.normalize must produce the same\\n    output for the same input, otherwise stored values and search queries won't match.\"": 1
+      }
+    },
+    {
+      "file": "tests/unit_tests/services_tests/backup_v2_tests/test_alchemy_exporter.py",
+      "function": "test_every_datetime_column_survives_a_backup",
+      "line": 20,
+      "removed": {},
+      "added": {
+        "'mealie.'": 1,
+        "'models'": 1
+      }
+    },
+    {
+      "file": "tests/unit_tests/services_tests/ingredient_parser/test_openai_parser.py",
+      "function": "test_openai_parser",
+      "line": 28,
+      "removed": {},
+      "added": {
+        "True": 1
+      }
+    },
+    {
+      "file": "tests/unit_tests/services_tests/ingredient_parser/test_openai_parser.py",
+      "function": "test_openai_parser_rejects_extra",
+      "line": 72,
+      "removed": {},
+      "added": {
+        "True": 1
+      }
+    },
+    {
+      "file": "tests/unit_tests/services_tests/ingredient_parser/test_openai_parser.py",
+      "function": "test_openai_parser_sanitize_output",
+      "line": 111,
+      "removed": {},
+      "added": {
+        "True": 1
+      }
+    }
+  ],
+  "fixture_helper_constant_changes": [
+    {
+      "file": "tests/conftest.py",
+      "function": "api_client",
+      "line": 76,
+      "removed": {},
+      "added": {
+        "None": 1
+      }
+    },
+    {
+      "file": "tests/fixtures/fixture_database.py",
+      "function": "session",
+      "line": 44,
+      "removed": {},
+      "added": {
+        "None": 1,
+        "'default'": 1
+      }
+    },
+    {
+      "file": "tests/fixtures/fixture_shopping_lists.py",
+      "function": "list_with_items",
+      "line": 74,
+      "removed": {
+        "None": 1
+      },
+      "added": {}
+    },
+    {
+      "file": "tests/fixtures/fixture_users.py",
+      "function": "unique_admin",
+      "line": 232,
+      "removed": {},
+      "added": {
+        "None": 1,
+        "'household_id'": 1
+      }
+    },
+    {
+      "file": "tests/unit_tests/core/test_dependencies.py",
+      "function": "FakeSession.__init__",
+      "line": 55,
+      "removed": {},
+      "added": {
+        "'default'": 1
+      }
+    },
+    {
+      "file": "tests/unit_tests/repository_tests/test_pagination.py",
+      "function": "query_units",
+      "line": 211,
+      "removed": {
+        "None": 1
+      },
+      "added": {}
+    },
+    {
+      "file": "tests/unit_tests/services_tests/ingredient_parser/test_openai_parser.py",
+      "function": "test_openai_parser.mock_openai_init",
+      "line": 52,
+      "removed": {},
+      "added": {
+        "True": 1
+      }
+    },
+    {
+      "file": "tests/unit_tests/services_tests/ingredient_parser/test_openai_parser.py",
+      "function": "test_openai_parser_rejects_extra.mock_openai_init",
+      "line": 97,
+      "removed": {},
+      "added": {
+        "True": 1
+      }
+    },
+    {
+      "file": "tests/unit_tests/services_tests/ingredient_parser/test_openai_parser.py",
+      "function": "test_openai_parser_sanitize_output.mock_openai_init",
+      "line": 159,
+      "removed": {},
+      "added": {
+        "True": 1
+      }
+    },
+    {
+      "file": "tests/utils/routes/test_mixins.py",
+      "function": "make_postgres_integrity_error",
+      "line": 11,
+      "removed": {
+        "'psycopg2'": 1,
+        "None": 2,
+        "'psycopg2 is only installed with the pgsql extra'": 1
+      },
+      "added": {
+        "'PostgreSQL constraint violation'": 1
+      }
+    },
+    {
+      "file": "tests/utils/routes/test_mixins.py",
+      "function": "make_sqlite_integrity_error",
+      "line": 33,
+      "removed": {
+        "None": 2
+      },
+      "added": {}
+    }
+  ]
+}

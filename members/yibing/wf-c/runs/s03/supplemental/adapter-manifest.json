@@ -1,0 +1,69 @@
+{
+  "started_at_utc": "2026-10-11T07:25:44.870439+00:00",
+  "source_script": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/evidence/scripts/measure.sh",
+  "source_script_sha256": "ad474d912f66482a41e9662d5a8850efdf68c9fe51e896c0832de45c1a3ef442",
+  "source_baseline": "e365efc71",
+  "clone": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-c",
+  "member": "yibing",
+  "workflow": "wf-c",
+  "session": "s03",
+  "uv": "/opt/homebrew/bin/uv",
+  "python": "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-c/.venv/bin/python",
+  "pytest_workers": "4",
+  "adapter_files_sha256": {
+    "run_measure.py": "9772e8cdfc2416111d0b2282cb1799208ef6ad023ad733ecbb7905834c6b50c6",
+    "check-native.py": "932986396cc943764e7b86a00abeaab98cab232417abb378aa4dd2cc1ef3991a",
+    "run-measure.sh": "e77bdb7133a38057e72f0eafb82eaccdfc9f965dd2fb897eb57aeaa358e5ecec",
+    "timeout_adapter.py": "1f86b01bd65cd771d940e505fe59a82fb567744f493b26f23a47a15eb7d55291",
+    "measurement-env.sh": "a7bf7962e8b013417525d426a354a11a15f40f98f33e389c0758b8bf4e17f3c4",
+    "self-test.py": "298566f260fbc87fda73d6daa0658bf130c2820a472900ac0c471f4ef701d5ee"
+  },
+  "changes": [
+    "Original measure.sh bytes, metric expressions, baseline constants and CSV fields are unchanged.",
+    "Absent GNU timeout is replaced with process-group timeout: 45-minute budget, SIGTERM, up to 10-second shutdown grace, then SIGKILL; timeout status remains 124.",
+    "Script's python3 command is launched through uv using the existing clone Python environment.",
+    "Raw pytest-full.log, junit.xml and mypy.log are copied before the original cleanup deletes them.",
+    "Genuine pytest/timeout and mypy process exit codes are captured separately from the original CSV's parsed metrics.",
+    "Native grep, xargs and date are used unchanged; tested against all exact relevant expressions on scratch fixtures."
+  ],
+  "finished_at_utc": "2026-10-11T07:26:32.929328+00:00",
+  "measurement_script_exit_code": 0,
+  "source_script_unchanged": true,
+  "mypy_exit_code": 0,
+  "pytest_process": {
+    "argv": [
+      "uv",
+      "run",
+      "pytest",
+      "-n",
+      "4",
+      "--dist",
+      "loadfile",
+      "-p",
+      "no:cacheprovider",
+      "--junitxml=/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/evidence/members/yibing/wf-c/runs/s03/junit.xml"
+    ],
+    "timeout_seconds": 2700.0,
+    "started_at_utc": "2026-10-11T07:25:45.033907+00:00",
+    "timed_out": false,
+    "termination_grace_seconds": 10,
+    "child_returncode": 0,
+    "elapsed_seconds": 47.170798499995726,
+    "exit_code": 0
+  },
+  "preserved_files": {
+    "mypy.log": {
+      "bytes": 45,
+      "sha256": "450b9f1420cd00b02e3ebed406323cc69d5d856a5b71150b11167da501b9ebaf"
+    },
+    "pytest-full.log": {
+      "bytes": 14217,
+      "sha256": "a8b5cf794e330734c7a25b223e382ac832d0c291dc394715043f67e4b36a5502"
+    },
+    "junit.xml": {
+      "bytes": 570842,
+      "sha256": "425d7ed9285bd8f5fb6a955fe47adf71d5d3f9327da293211bc109970e333655"
+    }
+  },
+  "interpretation_warning": "The original mypy_errors metric uses only the Found N errors text. A crash/missing executable may produce 0: consult mypy_exit_code and mypy.log. The script exit code is not a test-success indicator. Test counts without a JUnit report must be interpreted using the actual process exit and raw log."
+}

@@ -1,0 +1,213 @@
+diff --git a/tests/conftest.py b/tests/conftest.py
+index c5148ba5c..1927cebac 100644
+--- a/tests/conftest.py
++++ b/tests/conftest.py
+@@ -65,7 +65,9 @@ def override_get_db():
+ def api_client():
+     app.dependency_overrides[generate_session] = override_get_db
+ 
+-    yield TestClient(app)
++    # entering the client runs the lifespan (starting Tortoise) and keeps one event loop
++    with TestClient(app) as client:
++        yield client
+ 
+     with contextlib.suppress(Exception):
+         settings = config.get_app_settings()
+diff --git a/tests/unit_tests/test_tortoise_behaviour.py b/tests/unit_tests/test_tortoise_behaviour.py
+new file mode 100644
+index 000000000..ce85f8245
+--- /dev/null
++++ b/tests/unit_tests/test_tortoise_behaviour.py
+@@ -0,0 +1,120 @@
++"""Stage S2 acceptance (REWRITE_PLAN.md): implicit SQLAlchemy behaviour, done explicitly for
++Tortoise, matches SQLAlchemy for one model of each kind.
++
++- cascade and nulling on delete: MultiPurposeLabel
++- one-to-one nested write: GroupEventNotifierModel.options
++- scoping through an association proxy: RecipeModel.household_id (really user.household_id)
++"""
++
++import sqlalchemy as sa
++from fastapi.testclient import TestClient
++
++from mealie.db.models.recipe.recipe import RecipeModel
++from mealie.db.tortoise import models as tm
++from mealie.db.tortoise.behaviour import delete_with_relations, scope_filter, write_children
++from mealie.schema.labels.multi_purpose_label import MultiPurposeLabelSave
++from mealie.schema.recipe import Recipe
++from mealie.schema.recipe.recipe_ingredient import SaveIngredientFood
++from tests.utils import api_routes
++from tests.utils.factories import random_string
++from tests.utils.fixture_schemas import TestUser
++
++
++def _run(api_client: TestClient, fn, *args):
++    return api_client.portal.call(fn, *args)  # type: ignore[union-attr]
++
++
++def test_label_delete_matches_sqlalchemy(api_client: TestClient, unique_user: TestUser):
++    repos = unique_user.repos
++    labels = [
++        repos.group_multi_purpose_labels.create(
++            MultiPurposeLabelSave(name=random_string(), group_id=unique_user.group_id)
++        )
++        for _ in range(2)
++    ]
++    # creating a list adds a label setting for every existing label
++    response = api_client.post(
++        api_routes.households_shopping_lists, json={"name": random_string()}, headers=unique_user.token
++    )
++    assert response.status_code == 201
++    list_id = response.json()["id"]
++    foods = [
++        repos.ingredient_foods.create(
++            SaveIngredientFood(name=random_string(), group_id=unique_user.group_id, label_id=label.id)
++        )
++        for label in labels
++    ]
++
++    async def label_state(label_id):
++        settings = await tm.ShoppingListMultiPurposeLabel.filter(label_id=label_id).count()
++        food = await tm.IngredientFoodModel.get(id=foods[[lbl.id for lbl in labels].index(label_id)].id)
++        return settings, food.label_id
++
++    for label in labels:
++        assert _run(api_client, label_state, label.id) == (1, label.id)
++
++    repos.group_multi_purpose_labels.delete(labels[0].id)
++
++    async def delete_with_tortoise(label_id):
++        await delete_with_relations(await tm.MultiPurposeLabel.get(id=label_id))
++
++    _run(api_client, delete_with_tortoise, labels[1].id)
++
++    # same outcome for both: settings deleted, foods kept without a label, list untouched
++    assert _run(api_client, label_state, labels[0].id) == (0, None)
++    assert _run(api_client, label_state, labels[1].id) == (0, None)
++
++    async def list_exists():
++        return await tm.ShoppingList.filter(id=list_id).exists()
++
++    assert _run(api_client, list_exists)
++
++
++def test_notifier_options_one_to_one_write(api_client: TestClient, unique_user: TestUser):
++    household = unique_user.repos.households.get_one(unique_user.household_id)
++    assert household
++
++    async def create():
++        notifier = await tm.GroupEventNotifierModel.create(
++            name=random_string(),
++            apprise_url="json://localhost",
++            enabled=True,
++            group_id=unique_user.group_id,
++            household_id=household.id,
++        )
++        await write_children(notifier, {"options": {"recipe_created": True}})
++        return notifier.id
++
++    notifier_id = _run(api_client, create)
++    read = unique_user.repos.group_event_notifier.get_one(notifier_id)
++    assert read and read.options.recipe_created and not read.options.tag_created
++
++    async def update():
++        notifier = await tm.GroupEventNotifierModel.get(id=notifier_id)
++        await write_children(notifier, {"options": {"recipe_created": False, "tag_created": True}})
++        return await tm.GroupEventNotifierOptionsModel.filter(event_notifier_id=notifier_id).count()
++
++    assert _run(api_client, update) == 1  # updated in place, not a second options row
++    unique_user.repos.session.expire_all()
++    read = unique_user.repos.group_event_notifier.get_one(notifier_id)
++    assert read and not read.options.recipe_created and read.options.tag_created
++
++
++def test_recipe_household_scope_follows_the_proxy(api_client: TestClient, unique_user: TestUser, h2_user: TestUser):
++    for user in (unique_user, h2_user):
++        user.repos.recipes.create(Recipe(user_id=user.user_id, group_id=user.group_id, name=random_string()))
++
++    session = unique_user.repos.session
++    for user in (unique_user, h2_user):
++        expected = set(
++            session.execute(sa.select(RecipeModel.id).filter_by(group_id=user.group_id, household_id=user.household_id))
++            .scalars()
++            .all()
++        )
++
++        async def tortoise_ids(group_id=user.group_id, household_id=user.household_id):
++            scope = scope_filter(tm.RecipeModel, group_id=group_id, household_id=household_id)
++            return set(await tm.RecipeModel.filter(**scope).values_list("id", flat=True))
++
++        assert expected
++        assert _run(api_client, tortoise_ids) == expected
+diff --git a/tests/unit_tests/test_tortoise_models.py b/tests/unit_tests/test_tortoise_models.py
+new file mode 100644
+index 000000000..e50436dd7
+--- /dev/null
++++ b/tests/unit_tests/test_tortoise_models.py
+@@ -0,0 +1,66 @@
++"""Stage S1 acceptance (REWRITE_PLAN.md): the Tortoise models describe the existing database.
++
++- every Tortoise model can query the database built by the Alembic migrations
++- a row written by Tortoise reads back correctly through SQLAlchemy, and the reverse
++"""
++
++import inspect
++
++import sqlalchemy as sa
++from fastapi.testclient import TestClient
++
++from mealie.db.models.recipe.tag import Tag as SATag
++from mealie.db.tortoise import models as tm
++from tests.utils.factories import random_string
++from tests.utils.fixture_schemas import TestUser
++
++
++def _tortoise_models() -> list[type[tm.Model]]:
++    return [
++        obj
++        for _, obj in inspect.getmembers(tm, inspect.isclass)
++        if issubclass(obj, tm.Model) and obj is not tm.Model and obj.__module__ == tm.__name__
++    ]
++
++
++def test_every_tortoise_model_reads_the_migrated_database(api_client: TestClient):
++    models = _tortoise_models()
++    assert len(models) == 56
++
++    async def query_all() -> list[str]:
++        failures = []
++        for model in models:
++            try:
++                await model.all().limit(5)
++            except Exception as e:
++                failures.append(f"{model.__name__}: {e}")
++        return failures
++
++    assert api_client.portal.call(query_all) == []  # type: ignore[union-attr]
++
++
++def test_rows_round_trip_between_orms(api_client: TestClient, unique_user: TestUser):
++    session = unique_user.repos.session
++    tortoise_name, sqlalchemy_name = random_string(), random_string()
++
++    async def write_with_tortoise():
++        tag = await tm.Tag.create(group_id=unique_user.group_id, name=tortoise_name, slug=tortoise_name)
++        return tag.id, tag.created_at
++
++    tag_id, created_at = api_client.portal.call(write_with_tortoise)  # type: ignore[union-attr]
++    row = session.execute(sa.select(SATag).where(SATag.id == tag_id)).scalar_one()
++    assert row.name == tortoise_name
++    assert str(row.group_id) == str(unique_user.group_id)
++    assert abs((row.created_at - created_at).total_seconds()) < 1
++
++    sa_tag = SATag(session=session, group_id=unique_user.group_id, name=sqlalchemy_name, slug=sqlalchemy_name)
++    session.add(sa_tag)
++    session.commit()
++
++    async def read_with_tortoise():
++        return await tm.Tag.get(id=sa_tag.id)
++
++    tag = api_client.portal.call(read_with_tortoise)  # type: ignore[union-attr]
++    assert tag.name == sqlalchemy_name
++    assert str(tag.group_id) == str(unique_user.group_id)
++    assert tag.created_at.tzinfo is not None

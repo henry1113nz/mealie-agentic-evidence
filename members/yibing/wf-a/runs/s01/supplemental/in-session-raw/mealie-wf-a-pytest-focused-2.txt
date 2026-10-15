@@ -1,0 +1,210 @@
+bringing up nodes...
+bringing up nodes...
+
+..............................................F................F........ [ 39%]
+........................................................................ [ 79%]
+.....................................                                    [100%][WARNING|settings|L109] 2026-10-05T14:33:43: Secrets directory '/run/secrets' does not exist
+
+=================================== FAILURES ===================================
+_____________________________ test_update_cookbook _____________________________
+[gw3] darwin -- Python 3.14.7 /Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-a/.venv/bin/python
+
+api_client = <starlette.testclient.TestClient object at 0x112725fd0>
+unique_user = TestUser(email='axk5s69i0x@fake.com', user_id=UUID('f865036d-e9e7-473d-a32c-2d7b5e07fca8'), username='f8ir2ie6zp', ful...7EyPiEKFsvyIEIEwJXVze2Xe1neQh2ruWYURU'}, repos=<mealie.repos.repository_factory.AllRepositories object at 0x1127e4100>)
+cookbooks = [TestCookbook(id=UUID('e1f4880c-5e5f-4ffa-b8c2-334cfce90dde'), slug='8r8va79vz7', name='8r8va79vz7', data={'name': '8r...uery_filter': {'parts': []}, 'household': {'id': UUID('b54aa765-c093-4f9c-a135-8a96f4edbc9a'), 'name': 'oi1viylqa0'}})]
+
+    def test_update_cookbook(api_client: TestClient, unique_user: TestUser, cookbooks: list[TestCookbook]):
+        cookbook = random.choice(cookbooks)
+    
+        update_data = get_page_data(unique_user.group_id, unique_user.household_id)
+    
+        update_data["name"] = random_string(10)
+    
+        response = api_client.put(
+            api_routes.households_cookbooks_item_id(cookbook.id), json=update_data, headers=unique_user.token
+        )
+>       assert response.status_code == 200
+E       assert 400 == 200
+E        +  where 400 = <Response [400 Bad Request]>.status_code
+
+tests/integration_tests/user_household_tests/test_group_cookbooks.py:127: AssertionError
+----------------------------- Captured stdout call -----------------------------
+[ERROR|mixins|L68] 2026-10-05T14:33:50: 2 validation errors for SaveCookBook
+groupId
+  Field required [type=missing, input_value={'name': 'mosladh7zs', 'd...uery_filter_string': ''}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+householdId
+  Field required [type=missing, input_value={'name': 'mosladh7zs', 'd...uery_filter_string': ''}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+Traceback (most recent call last):
+  File "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-a/mealie/routes/_base/mixins.py", line 121, in update_one
+    item = await self.repo.update(item_id, data)  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-a/mealie/repos/repository_cookbooks.py", line 35, in update
+    data = SaveCookBook.model_validate(data if isinstance(data, dict) else data.model_dump())
+  File "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-a/.venv/lib/python3.14/site-packages/pydantic/main.py", line 732, in model_validate
+    return cls.__pydantic_validator__.validate_python(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        obj,
+        ^^^^
+    ...<5 lines>...
+        by_name=by_name,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+pydantic_core._pydantic_core.ValidationError: 2 validation errors for SaveCookBook
+groupId
+  Field required [type=missing, input_value={'name': 'mosladh7zs', 'd...uery_filter_string': ''}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+householdId
+  Field required [type=missing, input_value={'name': 'mosladh7zs', 'd...uery_filter_string': ''}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+[INFO|_client|L1085] 2026-10-05T14:33:50: HTTP Request: PUT http://testserver/api/households/cookbooks/146a8bd2-bf72-4a07-a73d-917c419d3021 "HTTP/1.1 400 Bad Request"
+------------------------------ Captured log call -------------------------------
+ERROR    root:mixins.py:68 2 validation errors for SaveCookBook
+groupId
+  Field required [type=missing, input_value={'name': 'mosladh7zs', 'd...uery_filter_string': ''}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+householdId
+  Field required [type=missing, input_value={'name': 'mosladh7zs', 'd...uery_filter_string': ''}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+Traceback (most recent call last):
+  File "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-a/mealie/routes/_base/mixins.py", line 121, in update_one
+    item = await self.repo.update(item_id, data)  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-a/mealie/repos/repository_cookbooks.py", line 35, in update
+    data = SaveCookBook.model_validate(data if isinstance(data, dict) else data.model_dump())
+  File "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-a/.venv/lib/python3.14/site-packages/pydantic/main.py", line 732, in model_validate
+    return cls.__pydantic_validator__.validate_python(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        obj,
+        ^^^^
+    ...<5 lines>...
+        by_name=by_name,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+pydantic_core._pydantic_core.ValidationError: 2 validation errors for SaveCookBook
+groupId
+  Field required [type=missing, input_value={'name': 'mosladh7zs', 'd...uery_filter_string': ''}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+householdId
+  Field required [type=missing, input_value={'name': 'mosladh7zs', 'd...uery_filter_string': ''}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+INFO     httpx2:_client.py:1085 HTTP Request: PUT http://testserver/api/households/cookbooks/146a8bd2-bf72-4a07-a73d-917c419d3021 "HTTP/1.1 400 Bad Request"
+_____________ test_cookbook_validate_query_filter_string[valid qf] _____________
+[gw3] darwin -- Python 3.14.7 /Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-a/.venv/bin/python
+
+api_client = <starlette.testclient.TestClient object at 0x112725fd0>
+unique_user = TestUser(email='axk5s69i0x@fake.com', user_id=UUID('f865036d-e9e7-473d-a32c-2d7b5e07fca8'), username='f8ir2ie6zp', ful...7EyPiEKFsvyIEIEwJXVze2Xe1neQh2ruWYURU'}, repos=<mealie.repos.repository_factory.AllRepositories object at 0x1127e4100>)
+qf_string = 'tags.name CONTAINS ALL ["tag1","tag2"]', expected_code = 200
+
+    @pytest.mark.parametrize(
+        "qf_string, expected_code",
+        [
+            ('tags.name CONTAINS ALL ["tag1","tag2"]', 200),
+            ('badfield = "badvalue"', 422),
+            ('recipe_category.id IN ["1"]', 422),
+            ('created_at >= "not-a-date"', 422),
+        ],
+        ids=[
+            "valid qf",
+            "invalid field",
+            "invalid UUID",
+            "invalid date",
+        ],
+    )
+    def test_cookbook_validate_query_filter_string(
+        api_client: TestClient, unique_user: TestUser, qf_string: str, expected_code: int
+    ):
+        # Create
+        cb_data = {"name": random_string(10), "slug": random_string(10), "query_filter_string": qf_string}
+        response = api_client.post(api_routes.households_cookbooks, json=cb_data, headers=unique_user.token)
+        assert response.status_code == expected_code if expected_code != 200 else 201
+    
+        # Update
+        cb_data = {"name": random_string(10), "slug": random_string(10), "query_filter_string": ""}
+        response = api_client.post(api_routes.households_cookbooks, json=cb_data, headers=unique_user.token)
+        assert response.status_code == 201
+        cb_data = response.json()
+    
+        cb_data["queryFilterString"] = qf_string
+        response = api_client.put(
+            api_routes.households_cookbooks_item_id(cb_data["id"]), json=cb_data, headers=unique_user.token
+        )
+>       assert response.status_code == expected_code if expected_code != 201 else 200
+E       assert False
+
+tests/integration_tests/user_household_tests/test_group_cookbooks.py:252: AssertionError
+----------------------------- Captured stdout call -----------------------------
+[INFO|_client|L1085] 2026-10-05T14:33:50: HTTP Request: POST http://testserver/api/households/cookbooks "HTTP/1.1 201 Created"
+[INFO|_client|L1085] 2026-10-05T14:33:50: HTTP Request: POST http://testserver/api/households/cookbooks "HTTP/1.1 201 Created"
+[ERROR|mixins|L68] 2026-10-05T14:33:50: 2 validation errors for SaveCookBook
+groupId
+  Field required [type=missing, input_value={'name': 'ss8eawp8t7', 'd...NS ALL ["tag1","tag2"]'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+householdId
+  Field required [type=missing, input_value={'name': 'ss8eawp8t7', 'd...NS ALL ["tag1","tag2"]'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+Traceback (most recent call last):
+  File "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-a/mealie/routes/_base/mixins.py", line 121, in update_one
+    item = await self.repo.update(item_id, data)  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-a/mealie/repos/repository_cookbooks.py", line 35, in update
+    data = SaveCookBook.model_validate(data if isinstance(data, dict) else data.model_dump())
+  File "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-a/.venv/lib/python3.14/site-packages/pydantic/main.py", line 732, in model_validate
+    return cls.__pydantic_validator__.validate_python(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        obj,
+        ^^^^
+    ...<5 lines>...
+        by_name=by_name,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+pydantic_core._pydantic_core.ValidationError: 2 validation errors for SaveCookBook
+groupId
+  Field required [type=missing, input_value={'name': 'ss8eawp8t7', 'd...NS ALL ["tag1","tag2"]'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+householdId
+  Field required [type=missing, input_value={'name': 'ss8eawp8t7', 'd...NS ALL ["tag1","tag2"]'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+[INFO|_client|L1085] 2026-10-05T14:33:50: HTTP Request: PUT http://testserver/api/households/cookbooks/eb3a6a18-cba3-4d97-b7a2-fd20c6cb1639 "HTTP/1.1 400 Bad Request"
+------------------------------ Captured log call -------------------------------
+INFO     httpx2:_client.py:1085 HTTP Request: POST http://testserver/api/households/cookbooks "HTTP/1.1 201 Created"
+INFO     httpx2:_client.py:1085 HTTP Request: POST http://testserver/api/households/cookbooks "HTTP/1.1 201 Created"
+ERROR    root:mixins.py:68 2 validation errors for SaveCookBook
+groupId
+  Field required [type=missing, input_value={'name': 'ss8eawp8t7', 'd...NS ALL ["tag1","tag2"]'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+householdId
+  Field required [type=missing, input_value={'name': 'ss8eawp8t7', 'd...NS ALL ["tag1","tag2"]'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+Traceback (most recent call last):
+  File "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-a/mealie/routes/_base/mixins.py", line 121, in update_one
+    item = await self.repo.update(item_id, data)  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-a/mealie/repos/repository_cookbooks.py", line 35, in update
+    data = SaveCookBook.model_validate(data if isinstance(data, dict) else data.model_dump())
+  File "/Users/estherzhang/.codex/visualizations/2026/10/05/01a10975-2115-7a22-80b0-324473d3729c/agentic-study/mealie-wf-a/.venv/lib/python3.14/site-packages/pydantic/main.py", line 732, in model_validate
+    return cls.__pydantic_validator__.validate_python(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        obj,
+        ^^^^
+    ...<5 lines>...
+        by_name=by_name,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+pydantic_core._pydantic_core.ValidationError: 2 validation errors for SaveCookBook
+groupId
+  Field required [type=missing, input_value={'name': 'ss8eawp8t7', 'd...NS ALL ["tag1","tag2"]'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+householdId
+  Field required [type=missing, input_value={'name': 'ss8eawp8t7', 'd...NS ALL ["tag1","tag2"]'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+INFO     httpx2:_client.py:1085 HTTP Request: PUT http://testserver/api/households/cookbooks/eb3a6a18-cba3-4d97-b7a2-fd20c6cb1639 "HTTP/1.1 400 Bad Request"
+=========================== short test summary info ============================
+FAILED tests/integration_tests/user_household_tests/test_group_cookbooks.py::test_update_cookbook
+FAILED tests/integration_tests/user_household_tests/test_group_cookbooks.py::test_cookbook_validate_query_filter_string[valid qf]
+2 failed, 179 passed in 10.85s
